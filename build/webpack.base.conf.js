@@ -24,6 +24,11 @@ module.exports = {
   entry: {
     app: ['babel-polyfill', 'lib-flexible', './src/main.js']
   },
+  externals: {
+    'vue': 'Vue',
+    'vuex': 'Vuex',
+    'vue-router': 'VueRouter'
+  },
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -37,6 +42,8 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
       'styles': resolve('src/assets/styles'),
+      'imgurl': resolve('src/assets/img'),
+      'common': resolve('src/common')
     }
   },
   module: {
