@@ -22,24 +22,27 @@ export default {
     callback: {
       type: Function,
       default: () => {
+        // 结束后毁回调
       }
+    },
+    timeType: {
+      type: String,
+      default: 'symbol'
     }
   },
   mounted () {
-    this.countdowm(this.endTime)
+    this.countdowm(this.endTime, this.timeType)
   },
   methods: {
-    countdowm (timestamp) {
+    countdowm (timestamp, timetype) {
       let self = this
       let timer = setInterval(function () {
-        var jiuTest = (new Date('2019/04/02 15:01:00')).getTime() // 得到毫秒数
-        // var xindTest = new Date(jiuTest) // 就得到普通的时间了
+        // let jiuTest = timestamp
+        // var createTime = (new Date('2019/04/03 11:30:00')).getTime() // 得到毫秒数
 
         let nowTime = new Date()
+        let t = timestamp - nowTime.getTime()
 
-        // let endTime = new Date(timestamp * 1000)
-        // let t = endTime.getTime() - nowTime.getTime()
-        let t = jiuTest - nowTime.getTime()
         if (t > 0) {
           let day = Math.floor(t / 86400000)
           let hour = Math.floor((t / 3600000) % 24)
@@ -49,16 +52,29 @@ export default {
           min = min < 10 ? '0' + min : min
           sec = sec < 10 ? '0' + sec : sec
           let format = ''
-          if (day > 0) {
-            format = `${day}天${hour}小时${min}分${sec}秒`
+          if (timetype === 'symbol') {
+            if (day > 0) {
+              format = `${day} ${hour}:${min}:${sec}`
+            }
+            if (day <= 0 && hour > 0) {
+              format = `${hour}:${min}分${sec}`
+            }
+            if (day <= 0 && hour <= 0) {
+              format = `${min}:${sec}`
+            }
+            self.content = '（倒计时' + format + '）'
+          } else {
+            if (day > 0) {
+              format = `${day}天${hour}小时${min}分${sec}秒`
+            }
+            if (day <= 0 && hour > 0) {
+              format = `${hour}小时${min}分${sec}秒`
+            }
+            if (day <= 0 && hour <= 0) {
+              format = `${min}分${sec}秒`
+            }
+            self.content = '剩余：' + format
           }
-          if (day <= 0 && hour > 0) {
-            format = `${hour}小时${min}分${sec}秒`
-          }
-          if (day <= 0 && hour <= 0) {
-            format = `${min}分${sec}秒`
-          }
-          self.content = format
         } else {
           clearInterval(timer)
           self.content = self.endText
