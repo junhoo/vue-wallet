@@ -6,7 +6,11 @@
     <ul class="wrapper">
       <li class="li-tab-box">
         <div class="li-tab-text">充值</div>
-        <div class="li-tab-time">2019-03-18 18:28:22</div>
+        <div class="li-tab-time">
+          <template v-if="0">
+            <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
+          </template>
+        </div>
         <div
             class="li-tab-status"
         >状态</div>
@@ -33,8 +37,6 @@
         <div class="right">1903181149045289796</div>
       </li>
     </ul>
-
-    <count-down endTime="1490761620" :callback="callback" endText="已经结束了"></count-down>
 
     <!-- 支付信息 -->
     <ul class="wrapper" v-if="1">
@@ -90,7 +92,8 @@
         <div class="right">1903181149045289796</div>
       </li>
 
-      <div class="text-boxs">
+      <!-- 代付款 -->
+      <div class="text-boxs" v-if="0">
         <p class="hint">温馨提示：</p>
         <div>
           <p>1、平台不支持自动扣款,请用您本人的账号向以上账户转账。</p>
@@ -104,16 +107,24 @@
     </ul>
 
     <!-- 代付款按钮 -->
-    <div class="btn-boxs" v-if="0">
+    <div class="btn-pay-boxs" v-if="0">
       <button class="btn-pay">我已完成付款</button>
       <button class="btn-cancel">取消订单</button>
+    </div>
+
+    <!-- 未到账按钮 -->
+    <div class="btn-wait-boxs" v-if="1">
+      <p>申诉</p>
+      <div class="text">
+        <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='symbol'></count-down>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import CommonHeader from 'common/header/Header'
-import CountDown from 'common/time/daoji'
+import CountDown from 'common/time/CountDown'
 export default {
   name: 'Detail',
   components: {
@@ -136,7 +147,6 @@ export default {
       this.btnQRText = this.showQrcode ? '收起' : '点击查看'
     },
     callback () {
-      console.log('1')
     }
   }
 }
@@ -262,7 +272,7 @@ export default {
       }
     }
   }
-  .btn-boxs {
+  .btn-pay-boxs {
     padding: 0 75px;
     .btn-pay {
       width: 100%;
@@ -287,6 +297,29 @@ export default {
       font-weight: 400;
       text-align: center;
       color: #2F81FE;
+    }
+  }
+  .btn-wait-boxs {
+    margin: 233px auto 103px;
+    width: 600px;
+    height: 80px;
+    background:linear-gradient(94deg,rgba(196,208,247,1),rgba(196,208,247,1));
+    box-shadow:0px 3px 10px 0px rgba(0, 0, 0, 0.1);
+    border-radius:10px;
+    p {
+      display: inline-block;
+      font-size:32px;
+      color: #ffffff;
+      line-height: 80px;
+      margin-left: 177px;
+    }
+    .text {
+      display: inline-block;
+      margin-left: 26px;
+      color: #2F81FE;
+      font-size: 28px;
+      font-family: SourceHanSansCN-Regular;
+      font-weight: 400;
     }
   }
 }
