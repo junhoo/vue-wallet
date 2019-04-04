@@ -1,0 +1,200 @@
+<template>
+  <!-- 底部-列表 -->
+  <div class="orders">
+    <div class="tabs">
+      <ul>
+        <li v-for="(item, index) in tabTitle"
+            :key="index"
+            class="tabs-li"
+            @click="selectTab(item.title)"
+            :class="selectTitle === item.title ? 'tabs-li-select' : ''">
+          {{item.title}}
+        </li>
+      </ul>
+    </div>
+
+    <div class="lists">
+      <ul>
+        <li
+            v-for="(item, index) in list"
+            :key="index"
+            @click="jumpDetail()">
+          <div class="li-tab-box">
+            <div class="li-tab-text">{{item.充值}}</div>
+            <div class="li-tab-time">2019-03-18 18:28:22</div>
+            <div
+                class="li-tab-status"
+                :class="{
+                  'li-tab-orange': item.状态 === '待付款',
+                  'li-tab-blue': item.状态 === '已提交',
+                  'li-tab-red': item.状态 === '未到账'
+                }"
+            >{{item.状态}}</div>
+          </div>
+
+          <div class="li-money">
+            <div class="left">金额</div>
+            <div class="right">￥{{item.金额}}</div>
+          </div>
+
+          <div class="li-money">
+            <div class="left">积分</div>
+            <div class="right">{{item.积分}}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'HomeList',
+  props: {
+    list: Array
+  },
+  data () {
+    return {
+      selectTitle: '未完成',
+      tabTitle: [
+        {
+          title: '未完成'
+        },
+        {
+          title: '已完成'
+        },
+        {
+          title: '已取消'
+        }
+      ]
+    }
+  },
+  methods: {
+    selectTab (title) {
+      switch (title) {
+        case '未完成':
+          this.selectTitle = '未完成'
+          break
+        case '已完成':
+          this.selectTitle = '已完成'
+          break
+        case '已取消':
+          this.selectTitle = '已取消'
+          break
+        default:
+          this.selectTitle = '未完成'
+          break
+      }
+    },
+    jumpDetail () {
+      this.$router.push({ name: 'Detail' })
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+@white: #ffffff;
+
+.orders {
+  margin: 0 32px;
+  padding-bottom: 72px;
+  .tabs {
+    margin: 0 65px;
+    width:560px;
+    ul {
+      display: flex;
+      position: relative;
+      width: 560px;
+      border: 2px solid #0078FF;
+      border-radius: 10px;
+      .tabs-li:nth-child(1) {
+        border-left: 0px solid #0078FF;
+      }
+      .tabs-li {
+        width: 186px;
+        height: 70px;
+        line-height: 70px;
+        text-align: center;
+        color: #0078FF;
+        border-left: 2px solid #0078FF;
+        background: #ffffff
+      }
+      .tabs-li-select {
+        color: @white;
+        background: #0078FF;
+      }
+    }
+  }
+  .lists {
+    position: relative;
+    ul {
+      li {
+        margin-top: 28px;
+        padding-left: 20px;
+        padding-right: 26px;
+        height: 244px;
+        box-shadow: 0px 3px 5px 0px rgba(149,149,149,0.25);
+        border-radius: 10px;
+        background: #f8f8f8;
+        .li-tab-box {
+          display: flex;
+          height: 86px;
+          border-bottom: 2px solid #F8F8F8;
+          .li-tab-text {
+            color: #60C064;
+            font-size: 30px;
+            line-height: 86px;
+          }
+          .li-tab-time {
+            flex: 1;
+            font-size: 28px;
+            line-height: 86px;
+            text-align: center;
+            margin-right: -90px;
+            color: #999999;
+          }
+          .li-tab-status {
+            font-size: 30px;
+            line-height: 86px;
+            width: 129px;
+            background: url('~imgurl/arrow-right.png') no-repeat right 0 center;
+            background-size: 16px 28px;
+          }
+          .li-tab-orange {
+            color: #FF8C01;
+          }
+          .li-tab-blue {
+            color: #0568EE;
+          }
+          .li-tab-red {
+            color: #FE4A57;
+          }
+        }
+        .li-money {
+          display: flex;
+          justify-content: space-between;
+          line-height: 69px;
+          border-bottom: 2px solid #F8F8F8;
+          .left {
+            color: #999999;
+            font-size: 30px;
+          }
+          .right {
+            color: #333333;
+            font-size: 28px;
+          }
+        }
+        .li-time {
+          color: #2D79F1;
+          font-size: 28px;
+          text-align: right;
+          margin-right: 26px;
+          font-family:MicrosoftYaHei;
+          font-weight:bold;
+        }
+      }
+    }
+  }
+}
+</style>
