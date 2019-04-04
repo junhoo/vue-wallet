@@ -5,7 +5,7 @@
     <!-- 订单信息 -->
     <ul class="wrapper">
       <li class="li-tab-box">
-        <div class="li-tab-text">提现</div>
+        <div class="li-tab-text">充值</div>
         <div class="li-tab-time">
           <template v-if="0">
             <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
@@ -21,14 +21,6 @@
         <div class="left">积分</div>
         <div class="right">100</div>
       </li>
-       <li class="li-item clearfix">
-        <div class="left">费率</div>
-        <div class="right">100</div>
-      </li>
-       <li class="li-item clearfix">
-        <div class="left">实际到账</div>
-        <div class="right">100</div>
-      </li>
       <li class="li-item clearfix">
         <div class="left">下单时间</div>
         <div class="right">2019 18:38:22</div>
@@ -41,7 +33,7 @@
     </ul>
 
     <!-- 支付信息 -->
-    <ul class="wrapper" v-if="0">
+    <ul class="wrapper" v-if="1">
       <li class="li-tab-title">
         <div class="left">银行卡支付</div>
         <div class="icon"></div>
@@ -52,6 +44,12 @@
         <div class="left">收款人</div>
         <div class="icon"></div>
         <div class="right">啥打算大所多</div>
+      </li>
+
+       <li class="li-item clearfix">
+        <div class="left">微信账号</div>
+        <div class="icon"></div>
+        <div class="right">bu1624</div>
       </li>
 
       <!-- 银行卡 -->
@@ -75,7 +73,7 @@
         </li>
       </template>
 
-      <!-- 支付宝 -->
+      <!--  -->
       <template v-if="0">
         <li class="li-item clearfix">
           <div class="left">收款二维码</div>
@@ -94,29 +92,34 @@
         <div class="right">1903181149045289796</div>
       </li>
     </ul>
-    <!-- 收款账号 -->
-    <div class="account" v-if="orderStatus==3 || orderStatus==1">
-      <span>收款账号：银行卡（0988）</span>
-    </div>
-    <!-- 手动取消提示 -->
-    <div class="cancel" v-if="orderStatus==4">
-      <span>您已手动取消该笔充值订单</span>
-    </div>
     <!-- 提示 -->
-    <div class="text-boxs" v-if="orderStatus!=4 && orderStatus!=3">
+    <div class="text-boxs" v-if="orderStatus!=2 && orderStatus!=5">
       <p class="hint">提示：</p>
       <div>
         <p>{{orderStatus|tipStatus1}}</p>
         <p>{{orderStatus|tipStatus2}}</p>
         <p>{{orderStatus|tipStatus3}}</p>
+        <p>{{orderStatus|tipStatus4}}</p>
+        <p>{{orderStatus|tipStatus5}}</p>
+        <p>{{orderStatus|tipStatus6}}</p>
       </div>
     </div>
-
+     <!-- 手动取消提示 -->
+    <div class="cancelTips">
+      <span v-if="orderStatus==3">您已手动取消该笔充值订单</span>
+      <span v-else-if="orderStatus==4">超时未付款，系统自动取消订单</span>
+    </div>
+    <!-- 取消按钮 -->
+    <div class="cancel" v-if="orderStatus == 1">
+      <span class="btn-pay">取消订单</span>
+    </div>
     <!-- 确认按钮 -->
-    <div class="btn-pay-boxs" v-if="1">
+    <div class="btn-pay-boxs2" v-if="orderStatus == 0 || orderStatus == 1">
       <button class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="appeal" v-if="orderStatus==2"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
+    <div class="btn-pay-boxs" v-else>
+      <button class="btn-pay">{{orderStatus|btnStatus}}</button>
+    </div>
   </div>
 </template>
 <script>
@@ -134,8 +137,8 @@ export default {
       btnQRText: '查看',
       bodyHeight: 0,
       navTitle: '订单详情',
-      showQrcode: true,
-      orderStatus: '2'
+      showQrcode: false,
+      orderStatus: '1'
     }
   },
   mounted () {
@@ -164,7 +167,9 @@ export default {
       if (value === '0') {
         value = '取消订单'
       } else if (value === '1') {
-        value = '确认收款'
+        value = '我已完成付款'
+      } else if (value === '5') {
+        value = '申诉'
       } else {
         value = '返回'
       }
@@ -174,11 +179,11 @@ export default {
       if (value === '0') {
         value = '已提交'
       } else if (value === '1') {
-        value = '待确认'
+        value = '待付款'
       } else if (value === '2') {
-        value = '已匹配'
-      } else if (value === '3') {
         value = '已完成'
+      } else if (value === '3') {
+        value = '已取消'
       } else {
         value = '已取消'
       }
@@ -186,13 +191,15 @@ export default {
     },
     tipStatus1: function (value) {
       if (value === '0') {
-        value = '1、我们已接收您的提现订单，并正在为您匹配买方。'
+        value = '1、我们已接收您的充值订单，并正在为您匹配卖方。'
       } else if (value === '1') {
-        value = '1、当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻。'
+        value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。'
       } else if (value === '2') {
-        value = '1、买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“我已确认收款”按钮。'
-      } else if (value === '3') {
         value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
+      } else if (value === '4') {
+        value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。'
+      } else if (value === '3') {
+        value = '1、您已手动关闭了该订单交易'
       } else {
         value = ''
       }
@@ -200,11 +207,13 @@ export default {
     },
     tipStatus2: function (value) {
       if (value === '0') {
-        value = '2、当订单变更为已匹配状态时，则表示已有买方正准备向你的订单付款。'
+        value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。'
       } else if (value === '1') {
-        value = '2、如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配。'
-      } else if (value === '2') {
-        value = '2、如果3分钟内未收到买方款项，请点击下方申诉按钮进行申诉。'
+        value = '2、转账成功后请点击下方“我已完成付款”按钮。'
+      } else if (value === '3') {
+        value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。'
+      } else if (value === '4') {
+        value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉'
       } else {
         value = ''
       }
@@ -212,11 +221,33 @@ export default {
     },
     tipStatus3: function (value) {
       if (value === '0') {
-        value = '3、成功完单笔提现订单后才可发起下一笔提现。'
+        value = '3、成功完单笔充值订单后才可发起下一笔充值。'
       } else if (value === '1') {
-        value = '3、提现订单已匹配状态下，您不能取消操作。'
-      } else if (value === '2') {
-        value = '3、如果未收到买方支付的款项，请勿点击下方“我已确认收款”按钮，以免造成损失。'
+        value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。'
+      } else {
+        value = ''
+      }
+      return value
+    },
+    tipStatus4: function (value) {
+      if (value === '1') {
+        value = '4、请尽量保留转账截图，作为纠纷时证据。'
+      } else {
+        value = ''
+      }
+      return value
+    },
+    tipStatus5: function (value) {
+      if (value === '1') {
+        value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。'
+      } else {
+        value = ''
+      }
+      return value
+    },
+    tipStatus6: function (value) {
+      if (value === '1') {
+        value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。'
       } else {
         value = ''
       }
@@ -325,25 +356,19 @@ export default {
       border: 1px #000000 solid;
     }
   }
-  .cancel{
+  .cancelTips{
     font-size: 28px;
-    color: #999999;
+    color: #384253;
     text-align: center;
-    margin: 250px 0 45px;
+    margin: 250px 0 85px;
   }
-  .account{
-    margin: 29px 30px 310px;
-    background: #FFFFFF;
-    border-radius: 10px;
-    color: #242424;
-    font-size: 26px;
-    height: 84px;
-    line-height: 84px;
+  .cancel{
+    font-size: 32px;
+    color: #0078FF;
     text-align: center;
   }
   .text-boxs {
     padding: 0 43px;
-    margin-bottom: 200px;
       p {
         font-size: 24px;
         color: #999;
@@ -371,15 +396,19 @@ export default {
       color: #FFFEFE;
     }
   }
-  .appeal{
-    font-size: 26px;
-    color: #ABABAB;
+  .btn-pay-boxs2 {
+    position: fixed;
+    bottom: 0;
     width: 100%;
-    padding: 0 190px;
-    i{
-      font-style: normal;
-      color: #3B67E0;
-      margin-left: 20px;
+    .btn-pay {
+      width: 100%;
+      height: 96px;
+      background: linear-gradient(94deg,rgba(47,131,255,1),rgba(60,59,238,1));
+      font-size: 32px;
+      font-family: SourceHanSansCN-Regular;
+      font-weight: 400;
+      text-align: center;
+      color: #FFFEFE;
     }
   }
 }

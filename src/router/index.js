@@ -1,5 +1,6 @@
 import Home from '@/views/home/Home'
 import Detail from '@/views/detail/Detail'
+import DetailRecharge from '@/views/detail/DetailRecharge'
 // import Vue from 'vue'
 // import Router from 'vue-router'
 
@@ -18,6 +19,11 @@ export default new Router({
       path: '/detail',
       name: 'Detail',
       component: Detail
+    },
+    {
+      path: '/detailRecharge',
+      name: 'DetailRecharge',
+      component: DetailRecharge
     }
   ],
   scrollBehavior (to, from, savedPosition) {

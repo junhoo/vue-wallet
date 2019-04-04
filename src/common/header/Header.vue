@@ -31,8 +31,6 @@ export default {
   position: relative;
   width: 100%;
   height: 88px;
-  border-bottom: 1px solid #e5e5e5; /*no*/
-  background-color: #fff;
   z-index: 100;
   .back {
     z-index: 102;
