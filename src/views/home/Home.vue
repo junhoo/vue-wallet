@@ -22,7 +22,7 @@
           </div>
           <p class="text">冻结0</p>
           <button>
-            <span class="hide-icon"></span>
+            <div class="hide-icon"></div>
             <span class="hide-text" @click="hideMoney()">隐藏</span>
           </button>
         </div>
@@ -30,7 +30,7 @@
         <div class="down clearfix">
           <div class="down-left">
             <button>
-              <span class="btn-icon"></span>
+              <div class="btn-icon"></div>
               <span class="btn-text">充值</span>
             </button>
           </div>
@@ -235,16 +235,24 @@ export default {
   color: @white;
   .btn-text {
     float: right;
-    margin-right: 59px;
+    margin-right: 30px;
+    flex: 1;
   }
 };
-
+@btnIcon: {
+   display: inline-block;
+  width: 38px;
+  height: 35px;
+  background: url('~imgurl/moneyActive-icon.png') no-repeat;
+  background-size: 100%;
+  background-position: center;
+  margin-right: 2px;
+};
 .clearfix:after {
     content: '';
     display: block;
     clear: both;
 }
-
 header {
   position: relative;
   box-sizing: border-box;
@@ -356,6 +364,16 @@ header {
           float: right;
           margin-right: 20px;
         }
+        .hide-icon{
+          width: 39px;
+          height: 28px;
+          position: absolute;
+          left: 21px;
+          top: 15px;
+          background: url('~imgurl/look-icon.png') no-repeat;
+          background-size: 100%;
+          background-position: center;
+        }
       }
     }
     .down {
@@ -364,6 +382,11 @@ header {
         @buttonBox();
         button {
           @buttonColor();
+          display: flex;
+           padding-left: 59px;
+          .btn-icon{
+            @btnIcon();
+          }
         }
       }
       .down-right {
@@ -419,8 +442,9 @@ main {
       .item {
         width:160px;
         height:54px;
-        border: 1px orangered solid;
+        background-color: #0078FF;
         margin-left: 50px;
+        border-radius: 10px;
       }
     }
     p {
