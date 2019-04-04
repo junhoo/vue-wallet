@@ -5,7 +5,7 @@
     <header class="header">
       <div class="bars clearfix">
         <div class="left"><p>设置</p></div>
-        <div class="title">我的钱包</div>
+        <div class="title">资产</div>
         <div class="right"><p>申诉</p></div>
       </div>
 
@@ -16,117 +16,73 @@
                1000<span>积分</span>
             </div>
             <div class="money-state-b" v-show="!moneyShow">
-               <p class="qian">****</p>
-               <p class="ziti">积分</p>
+               <p class="hine-sum">****</p>
+               <p class="hine-text">积分</p>
             </div>
           </div>
           <p class="text">冻结0</p>
-          <button>
+          <button @click="hideMoney()">
             <div class="hide-icon"></div>
-            <span class="hide-text" @click="hideMoney()">隐藏</span>
+            <span class="hide-text">隐藏</span>
           </button>
         </div>
 
         <div class="down clearfix">
-          <div class="down-left">
+          <div class="down-default">
             <button>
               <div class="btn-icon"></div>
-              <span class="btn-text">充值</span>
+              <div class="btn-text">充值</div>
             </button>
           </div>
-          <div class="down-right">
+          <div class="down-active">
             <button>
-              <span class="btn-icon"></span>
-              <span class="btn-text">提现</span>
+              <div class="btn-icon"></div>
+              <div class="btn-text">提现</div>
             </button>
           </div>
         </div>
       </div>
     </header>
 
-    <p class="blank"></p>
+    <div class="bg-wrapper">
+      <p class="blank"></p>
 
-    <!-- 中间-金额区 -->
-    <main>
-      <div class="main-top">
-        <p>充值积分</p>
-        <input placeholder="请输入积分数量"/>
-      </div>
-      <div class="main-mid">
-        <div class="main-imgs">
-          <div class="item"></div>
-          <div class="item"></div>
-          <div class="item"></div>
+      <!-- 中间-金额区 -->
+      <main>
+        <div class="main-top">
+          <p>充值积分</p>
+          <input placeholder="请输入积分数量"/>
         </div>
-        <p>付款金额：500CNY</p>
-      </div>
-      <button class="main-down" @click="changeValue">提交订单</button>
-      <myComponent :show.sync='valueChild'></myComponent>
-    </main>
+        <div class="main-mid">
+          <div class="main-imgs">
+            <div class="item item-wx"></div>
+            <div class="item item-ali-no"></div>
+            <div class="item item-bank-no"></div>
+          </div>
+          <p>额外扣除服务10%，实际到账5000</p>
+        </div>
+        <button class="main-down" @click="changeValue">提交订单</button>
+        <home-dialog :show.sync='valueChild'></home-dialog>
+      </main>
 
-    <div class="text-boxs">
-      <p class="hint">温馨提示：</p>
-      <div>
-        <p>1、单笔最小充值额为100CNY，最大充值额为5万CNY。</p>
-        <p>2、每次只能用时进行一笔充值，成功完成单笔充值后才可发起下笔充值。</p>
-      </div>
-    </div>
-
-    <!-- 底部-列表 -->
-    <div class="orders">
-      <div class="tabs">
-        <ul>
-          <li v-for="(item, index) in tabTitle"
-              :key="index"
-              class="tabs-li"
-              @click="selectTab(item.title)"
-              :class="selectTitle === item.title ? 'tabs-li-select' : ''">
-            {{item.title}}
-          </li>
-        </ul>
+      <div class="text-boxs">
+        <p class="hint">温馨提示：</p>
+        <div>
+          <p>1、单笔最小充值额为100CNY，最大充值额为5万CNY。</p>
+          <p>2、每次只能用时进行一笔充值，成功完成单笔充值后才可发起下笔充值。</p>
+        </div>
       </div>
 
-      <div class="lists">
-        <ul>
-          <li
-              v-for="(item, index) in orderList"
-              :key="index"
-              @click="jumpDetail()">
-            <div class="li-tab-box">
-              <div class="li-tab-text">{{item.充值}}</div>
-              <div class="li-tab-time">2019-03-18 18:28:22</div>
-              <div
-                  class="li-tab-status"
-                  :class="{
-                    'li-tab-orange': item.状态 === '待付款',
-                    'li-tab-blue': item.状态 === '已提交',
-                    'li-tab-red': item.状态 === '未到账'
-                  }"
-              >{{item.状态}}</div>
-            </div>
-
-            <div class="li-money">
-              <div class="left">金额</div>
-              <div class="right">￥{{item.金额}}</div>
-            </div>
-
-            <div class="li-money">
-              <div class="left">积分</div>
-              <div class="right">{{item.积分}}</div>
-            </div>
-
-            <p class="li-time">
-              剩余：{{item.剩余时间}}
-            </p>
-          </li>
-        </ul>
-      </div>
+      <!-- order -->
+      <home-list :list="orderList"></home-list>
     </div>
   </div>
 </template>
 
 <script>
-import myComponent from 'common/dialog/Dialog'
+import HomeDialog from 'common/dialog/Dialog'
+import HomeList from './components/List'
+// import { encrypt, decrypt } from '@/assets/utils.js'
 export default {
   name: 'Home',
   data () {
@@ -134,18 +90,7 @@ export default {
       visibleMoney: '',
       valueChild: false,
       moneyShow: true,
-      selectTitle: '未完成',
-      tabTitle: [
-        {
-          title: '未完成'
-        },
-        {
-          title: '已完成'
-        },
-        {
-          title: '已取消'
-        }
-      ],
+      orderState: '已提交',
       orderList: [
         {
           '充值': '充值',
@@ -175,25 +120,20 @@ export default {
     }
   },
   components: {
-    myComponent
+    HomeDialog,
+    HomeList
+  },
+  created () {
+    // let name = '123123'
+    // 加密
+    // let a = encrypt(name)
+    // // 解密
+    // let b = decrypt(a)
+
+    // console.log('加密', a)
+    // console.log('解密', b)
   },
   methods: {
-    selectTab (title) {
-      switch (title) {
-        case '未完成':
-          this.selectTitle = '未完成'
-          break
-        case '已完成':
-          this.selectTitle = '已完成'
-          break
-        case '已取消':
-          this.selectTitle = '已取消'
-          break
-        default:
-          this.selectTitle = '未完成'
-          break
-      }
-    },
     changeValue () {
       this.valueChild = !this.valueChild
     },
@@ -204,9 +144,6 @@ export default {
       } else {
         this.visibleMoney = '****'
       }
-    },
-    jumpDetail () {
-      this.$router.push({ name: 'Detail' })
     }
   }
 }
@@ -214,6 +151,7 @@ export default {
 
 <style lang="less" scoped>
 @white: #ffffff;
+@bgColor: #f8f8f8;
 
 @buttonBox: {
   position: relative;
@@ -230,13 +168,24 @@ export default {
   transform: translate(-50%,-50%);
   width: 240px;
   height: 60px;
-  background:#0078FF;
   border-radius: 28px;
-  color: @white;
+  text-align: center;
+  color: #727272;
+  border:2px solid #656565;
+  background: #ffffff;
+  .btn-icon {
+    display: inline-block;
+    width: 120px;
+    height: 60px;
+    float: left;
+  }
   .btn-text {
-    float: right;
-    margin-right: 30px;
-    flex: 1;
+    display: inline-block;
+    width: 50px;
+    line-height: 60px;
+    float: left;
+    text-align: left;
+    margin-left: 11.5px;
   }
 };
 @btnIcon: {
@@ -310,10 +259,10 @@ header {
       text-align: center;
       .money-state-box {
         height: 189px;
-        color: #2F2D2D;
         font-size: 72px;
         font-family: SourceHanSansCN-Medium;
         font-weight: 500;
+        color: #2F2D2D;
         .money-state-a {
           line-height: 189px;
           span {
@@ -324,17 +273,17 @@ header {
           }
         }
         .money-state-b {
-          .qian {
+          .hine-sum {
             display: inline-block;
             position: absolute;
             top: 77px;
             right: 292px;
           }
-          .ziti {
+          .hine-text {
             display: inline-block;
             position: absolute;
-            top: 100px;
-            right: 220px;
+            top: 98px;
+            right: 221px;
             color: #666666;
             font-size: 26px;
             margin-left: 6px;
@@ -378,202 +327,134 @@ header {
     }
     .down {
       height: 189px;
-      .down-left {
+      .down-default {
         @buttonBox();
         button {
           @buttonColor();
-          display: flex;
-           padding-left: 59px;
-          .btn-icon{
-            @btnIcon();
+          .btn-icon {
+            background: url('~imgurl/money-icon.png') no-repeat right 11.5px center;
+            background-size: 38px 35px;
           }
         }
       }
-      .down-right {
+      .down-active {
         @buttonBox();
         button {
           @buttonColor();
-          background: #ffffff;
-          color: #727272;
-          border:2px solid #656565;
+          color: @white;
+          background: #0078FF;
+          border:2px solid #0078FF;
+          .btn-icon {
+            background: url('~imgurl/moneyActive-icon.png') no-repeat right 11.5px center;
+            background-size: 38px 35px;
+          }
         }
       }
     }
   }
 }
 
-.blank {
-  height: 223px;
-}
-
-main {
-  box-sizing: border-box;
-  // border: 1px solid salmon;
-  height: 384px;
-  margin: 0 32px;
-  box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.2);
-  .main-top {
-    height: 91px;
-    margin: 0 21px;
-    border-bottom: 2px solid #D4D4D4;
-    p {
-      display: inline-block;
-      height: 91px;
-      line-height: 91px;
-      color: #384253;
-      font-size: 32px;
-    }
-    input {
-      display: inline-block;
-      width: 500px;
-      float: right;
-      height: 91px;
-      line-height: 91px;
-      text-align: right;
-      font-size: 30px;
-    }
+.bg-wrapper {
+  background: @bgColor;
+  .blank {
+    height: 223px;
   }
-  .main-mid {
-    height: 178px;
-    border: 1px #ffffff solid;
-    .main-imgs {
-      display: flex;
-      margin-top: 27px;
-      .item {
-        width:160px;
-        height:54px;
-        background-color: #0078FF;
-        margin-left: 50px;
-        border-radius: 10px;
+
+  main {
+    box-sizing: border-box;
+    height: 384px;
+    margin: 0 32px;
+    box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.2);
+    background: #f8f8f8;
+    .main-top {
+      height: 91px;
+      margin: 0 21px;
+      border-bottom: 2px solid #D4D4D4;
+      p {
+        display: inline-block;
+        height: 91px;
+        line-height: 91px;
+        color: #384253;
+        font-size: 32px;
+      }
+      input {
+        display: inline-block;
+        width: 500px;
+        float: right;
+        height: 91px;
+        line-height: 91px;
+        text-align: right;
+        font-size: 30px;
       }
     }
-    p {
-      margin-top: 46px;
-      font-size: 24px;
-      text-align: center;
-    }
-  }
-  .main-down {
-    display: block;
-    width:600px;
-    height:80px;
-    background: #0078FF;
-    border-radius: 10px;
-    font-size:32px;
-    color: @white;
-    margin: 0 auto;
-  }
-}
-
-.text-boxs {
-  height: 239px;
-  margin: 0 32px;
-  p {
-    font-size: 24px;
-    color: #999999;
-    line-height: 33px;
-  }
-  .hint {
-    margin: 21px 0;
-  }
-}
-
-.orders {
-  margin: 0 32px;
-  .tabs {
-    margin: 0 65px;
-    width:560px;
-    ul {
-      display: flex;
-      position: relative;
-      width: 560px;
-      border: 2px solid #0078FF;
-      border-radius: 10px;
-      .tabs-li:nth-child(1) {
-        border-left: 0px solid #0078FF;
+    .main-mid {
+      height: 178px;
+      border: 1px #ffffff solid;
+      .main-imgs {
+        display: flex;
+        margin-top: 27px;
+        .item {
+          width:160px;
+          height:54px;
+          background-color: #0078FF;
+          margin-left: 50px;
+          border-radius: 10px;
+        }
+        .item-wx {
+          background: url('~imgurl/wx_icon_active.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-ali {
+          background: url('~imgurl/ali_icon_active.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-bank {
+          background: url('~imgurl/bank_icon_active.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-wx-no {
+          background: url('~imgurl/wx_icon_no.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-ali-no {
+          background: url('~imgurl/ali_icon_no.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-bank-no {
+          background: url('~imgurl/bank_icon_no.png') no-repeat right 0 center;
+          background-size: 100%
+        }
       }
-      .tabs-li {
-        width: 186px;
-        height: 70px;
-        line-height: 70px;
+      p {
+        margin-top: 46px;
+        font-size: 24px;
         text-align: center;
-        color: #0078FF;
-        border-left: 2px solid #0078FF;
-      }
-      .tabs-li-select {
-        color: @white;
-        background: #0078FF;
       }
     }
-  }
-  .lists {
-    position: relative;
-    ul {
-      li:last-child {
-        box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
-      }
-      li {
-        margin-top: 28px;
-        height: 275px;
-        box-shadow: 0px 3px 5px 0px rgba(149,149,149,0.25);
-        .li-tab-box {
-          display: flex;
-          height: 86px;
-          .li-tab-text {
-            color: #60C064;
-            font-size: 30px;
-            line-height: 86px;
-            margin-left: 20px;
-          }
-          .li-tab-time {
-            flex: 1;
-            font-size:22px;
-            line-height: 86px;
-            text-align: center;
-            margin-right: -90px;
-          }
-          .li-tab-status {
-            font-size: 30px;
-            line-height: 86px;
-            width: 155px;
-            background: url('~imgurl/mine_more.png') no-repeat right 26px center;
-            background-size: 16px 28px;
-          }
-          .li-tab-orange {
-            color: #FF8C01;
-          }
-          .li-tab-blue {
-            color: #0568EE;
-          }
-          .li-tab-red {
-            color: #FE4A57;
-          }
-        }
-        .li-money {
-          display: flex;
-          justify-content: space-between;
-          line-height: 69px;
-          .left {
-            color: #999999;
-            margin-left: 20px;
-            font-size: 30px;
-          }
-          .right {
-            color: #333333;
-            margin-right: 26px;
-            font-size: 28px;
-          }
-        }
-        .li-time {
-          color: #2D79F1;
-          font-size: 28px;
-          text-align: right;
-          margin-right: 26px;
-          font-family:MicrosoftYaHei;
-          font-weight:bold;
-        }
-      }
+    .main-down {
+      display: block;
+      width:600px;
+      height:80px;
+      background: #0078FF;
+      border-radius: 10px;
+      font-size:32px;
+      color: @white;
+      margin: 0 auto;
     }
   }
+
+  .text-boxs {
+    height: 239px;
+    margin: 0 32px;
+    p {
+      font-size: 24px;
+      color: #999999;
+      line-height: 33px;
+    }
+    .hint {
+      margin: 21px 0;
+    }
+  }
+
 }
 </style>
