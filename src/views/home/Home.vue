@@ -82,10 +82,6 @@
       <home-list ref="dialog" :list="orderList" v-on:tabevent='onTabEvent' ></home-list>
       <dialog-order :show.sync='dialogOrderVal' :text='dialogText'></dialog-order>
       <dialog-box
-<<<<<<< HEAD
-                ref="dialogBoxChild"
-=======
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
                 :show.sync='dialogBoxVal'
                 :dialog-option="dialogOption"
                 v-on:dialogboxEvent='onDialogBox'>
@@ -164,12 +160,7 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === '10000') {
-<<<<<<< HEAD
-            // const _obj = res.data.list
-=======
-            console.log('获取首页', res)
             const _obj = res.data.list
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
             // "id": 7,
             // "user_id": 1,
             // "order_number": "",
@@ -188,22 +179,14 @@ export default {
           }
         })
         .catch(e => {
-<<<<<<< HEAD
-          this.$toast('网络错误，不能访问')
-=======
           console.log(e)
           this.$toast('网络错误')
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
         })
     },
 
     // 选择- 充值 / 提现
     selectBtnType () {
       this.buttonVal = this.buttonVal === '充值' ? '提现' : '充值'
-<<<<<<< HEAD
-      this.refs.dialogBoxChild.selectBtnType('未完成')
-      this.getOrderInfo('1')
-=======
       if (this.buttonVal === '充值') {
         this.mainInfo = {
           state: '充值积分',
@@ -216,13 +199,11 @@ export default {
         }
       }
       this.$refs.dialog.selectTab('未完成')
-      console.log(this.buttonVal)
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
     },
 
     // 验证窗口
     changeValue () {
-      const types = '' // 付款-类型
+      const types = 'ss' // 付款-类型
       const inputs = this.keyword
       if (types === '') {
         this.dialogOption = {
@@ -277,12 +258,8 @@ export default {
           }
         })
         .catch(e => {
-<<<<<<< HEAD
-          this.$toast('网络错误，不能访问')
-=======
           console.log(e)
           this.$toast('网络错误')
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
         })
     },
 
@@ -300,12 +277,8 @@ export default {
           }
         })
         .catch(e => {
-<<<<<<< HEAD
-          this.$toast('网络错误，不能访问')
-=======
           console.log(e)
           this.$toast('网络错误')
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
         })
     },
 
@@ -370,12 +343,8 @@ export default {
           }
         })
         .catch(e => {
-<<<<<<< HEAD
-          this.$toast('网络错误，不能访问')
-=======
           console.log(e)
           this.$toast('网络错误')
->>>>>>> 8a02dd6f002027a9ce269d1db1b2ae0bcb802fc9
         })
     },
     hideMoney () {

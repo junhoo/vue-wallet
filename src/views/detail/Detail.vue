@@ -11,32 +11,32 @@
             <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
           </template>
         </div>
-        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==1,'li-tab-red':orderStatus==2||orderStatus==4}">{{orderStatus|orderStatus}}</div>
+        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==7,'li-tab-red':orderStatus==6||orderStatus==4}">{{orderStatus|orderStatus}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
-        <div class="right strong">￥1000</div>
+        <div class="right strong">￥{{orderDetailData.order_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">积分</div>
-        <div class="right">100</div>
+        <div class="right">{{orderDetailData.order_amount}}</div>
       </li>
        <li class="li-item clearfix">
         <div class="left">费率</div>
-        <div class="right">100</div>
+        <div class="right">{{orderDetailData.rate}}</div>
       </li>
        <li class="li-item clearfix">
         <div class="left">实际到账</div>
-        <div class="right">100</div>
+        <div class="right">{{orderDetailData.real_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">下单时间</div>
-        <div class="right">2019 18:38:22</div>
+        <div class="right">{{orderDetailData.time_str}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">订单号</div>
-        <div class="icon tag-read" :data-clipboard-text="1903181149045289796" @click="copy"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right">1903181149045289796</div>
+        <div class="icon tag-read" :data-clipboard-text="orderDetailData.order_no" @click="copy"><img src="~imgurl/copy-icon.png" alt=""></div>
+        <div class="right">{{orderDetailData.order_no}}</div>
       </li>
     </ul>
 
@@ -95,15 +95,15 @@
       </li>
     </ul>
     <!-- 收款账号 -->
-    <div class="account" v-if="orderStatus==3 || orderStatus==1">
-      <span>收款账号：银行卡（0988）</span>
+    <div class="account" :class="{'account2': orderStatus==7}" v-if="orderStatus==5 || orderStatus==7">
+      <span>收款账号：{{orderDetailData.pay_type | payTypeText}}({{orderDetailData.account}})</span>
     </div>
     <!-- 手动取消提示 -->
     <div class="cancel" v-if="orderStatus==4">
       <span>您已手动取消该笔充值订单</span>
     </div>
     <!-- 提示 -->
-    <div class="text-boxs" v-if="orderStatus!=4 && orderStatus!=3">
+    <div class="text-boxs" v-if="orderStatus != 4 && orderStatus != 5">
       <p class="hint">提示：</p>
       <div>
         <p>{{orderStatus|tipStatus1}}</p>
@@ -114,12 +114,13 @@
 
     <!-- 确认按钮 -->
     <div class="btn-pay-boxs" v-if="1">
-      <button class="btn-pay">{{orderStatus|btnStatus}}</button>
+      <button @click="submit()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="appeal" v-if="orderStatus==2"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
+    <div class="appeal" v-if="orderStatus==6"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
   </div>
 </template>
 <script>
+import axios from 'axios'
 import CommonHeader from 'common/header/Header'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
@@ -135,12 +136,100 @@ export default {
       bodyHeight: 0,
       navTitle: '订单详情',
       showQrcode: true,
-      orderStatus: '2'
+      orderStatus: '2',
+      order_no: '',
+      orderDetailData: {}
     }
   },
-  mounted () {
+  created () {
+    this.orderStatus = this.$route.query.status
+    this.order_no = this.$route.query.orderid
+    this.getOrderData()
   },
   methods: {
+    // 获取订单信息
+    getOrderData () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': this.order_no,
+        'third_user_id': '1'
+      }
+      const url = 'http://order.service.168mi.cn/api/order/drawDetail'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.orderDetailData = res.data.list
+            console.log(this.orderDetailData, '132')
+            // this.payway = res.data.list.pay_type
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
+    },
+    // 取消订单
+    cancelOrder () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': this.order_no,
+        'third_user_id': '1'
+      }
+      const url = 'http://order.service.168mi.cn/api/order/cancelOrder'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          console.log(res, 123)
+          if (res.code === '10000') {
+            this.$router.go(-1)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
+    },
+    // 确认收款
+    finishOrder () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': this.order_no,
+        'third_user_id': '1'
+      }
+      const url = 'http://order.service.168mi.cn/api/order/confirmOrder'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.$router.go(-1)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
+    },
+    submit () {
+      this.orderStatus = this.orderStatus.toString()
+      if (this.orderStatus === '1') {
+        this.cancelOrder()
+        return false
+      } else if (this.orderStatus === '6') {
+        this.finishOrder()
+      } else {
+        this.$router.go(-1)
+      }
+    },
     openQrcode () {
       this.showQrcode = !this.showQrcode
       this.btnQRText = this.showQrcode ? '收起' : '点击查看'
@@ -160,10 +249,22 @@ export default {
     }
   },
   filters: {
+    payTypeText: function (value) {
+      // value = value.toString()
+      if (value === 1) {
+        value = '支付宝'
+      } else if (value === 2) {
+        value = '微信'
+      } else {
+        value = '银行卡'
+      }
+      return value
+    },
     btnStatus: function (value) {
-      if (value === '0') {
+      value = value.toString()
+      if (value === '1') {
         value = '取消订单'
-      } else if (value === '1') {
+      } else if (value === '6') {
         value = '确认收款'
       } else {
         value = '返回'
@@ -171,13 +272,14 @@ export default {
       return value
     },
     orderStatus: function (value) {
-      if (value === '0') {
+      value = value.toString()
+      if (value === '1') {
         value = '已提交'
-      } else if (value === '1') {
+      } else if (value === '7') {
         value = '待确认'
-      } else if (value === '2') {
+      } else if (value === '6') {
         value = '已匹配'
-      } else if (value === '3') {
+      } else if (value === '5') {
         value = '已完成'
       } else {
         value = '已取消'
@@ -185,13 +287,14 @@ export default {
       return value
     },
     tipStatus1: function (value) {
-      if (value === '0') {
+      value = value.toString()
+      if (value === '1') {
         value = '1、我们已接收您的提现订单，并正在为您匹配买方。'
-      } else if (value === '1') {
+      } else if (value === '7') {
         value = '1、当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻。'
-      } else if (value === '2') {
+      } else if (value === '6') {
         value = '1、买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“我已确认收款”按钮。'
-      } else if (value === '3') {
+      } else if (value === '5') {
         value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
       } else {
         value = ''
@@ -199,11 +302,12 @@ export default {
       return value
     },
     tipStatus2: function (value) {
-      if (value === '0') {
+      value = value.toString()
+      if (value === '1') {
         value = '2、当订单变更为已匹配状态时，则表示已有买方正准备向你的订单付款。'
-      } else if (value === '1') {
+      } else if (value === '7') {
         value = '2、如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配。'
-      } else if (value === '2') {
+      } else if (value === '6') {
         value = '2、如果3分钟内未收到买方款项，请点击下方申诉按钮进行申诉。'
       } else {
         value = ''
@@ -211,11 +315,12 @@ export default {
       return value
     },
     tipStatus3: function (value) {
-      if (value === '0') {
+      value = value.toString()
+      if (value === '1') {
         value = '3、成功完单笔提现订单后才可发起下一笔提现。'
-      } else if (value === '1') {
+      } else if (value === '7') {
         value = '3、提现订单已匹配状态下，您不能取消操作。'
-      } else if (value === '2') {
+      } else if (value === '6') {
         value = '3、如果未收到买方支付的款项，请勿点击下方“我已确认收款”按钮，以免造成损失。'
       } else {
         value = ''
@@ -340,6 +445,9 @@ export default {
     height: 84px;
     line-height: 84px;
     text-align: center;
+  }
+  .account2{
+    margin: 29px 30px 24px !important;;
   }
   .text-boxs {
     padding: 0 43px;

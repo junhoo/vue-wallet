@@ -1,7 +1,9 @@
 <template>
   <div class="header clearfix">
     <div class="button">
-      <div @click="backPage" class="back"></div>
+      <div @click="backPage" class="back">
+        <img src="~imgurl/toLeftarrow.png" alt="">
+      </div>
     </div>
     <div class="title">{{this.title}}</div>
   </div>
@@ -37,8 +39,11 @@ export default {
     width: 88px;
     height: 88px;
     float: left;
-    background: url('~imgurl/top_back_black.png') no-repeat center;
-    background-size: 44px 44px;
+    line-height: 88px;
+    text-align: center;
+    img{
+      width: 20px;
+    }
   }
   .button {
     float: left;
