@@ -4,7 +4,7 @@
     <!-- 头部-金额区 -->
     <header class="header">
       <div class="bars clearfix">
-        <div class="left"><p>设置</p></div>
+        <div class="left" @click="jumpSetPage()"><p>设置</p></div>
         <div class="title">资产</div>
         <div class="right"><p>申诉</p></div>
       </div>
@@ -13,14 +13,14 @@
         <div class="boxs-top">
           <div class="money-state-box">
             <div class="money-state-a" v-show="moneyShow">
-               1000<span>积分</span>
+               {{headerInfo.operating_amount}}<span>积分</span>
             </div>
             <div class="money-state-b" v-show="!moneyShow">
                <p class="hine-sum">****</p>
                <p class="hine-text">积分</p>
             </div>
           </div>
-          <p class="text">冻结0</p>
+          <p class="text">冻结{{headerInfo.freezing_amount}}</p>
           <button @click="hideMoney()">
             <div class="hide-icon"></div>
             <span class="hide-text">隐藏</span>
@@ -50,7 +50,8 @@
       <!-- 中间-金额区 -->
       <main>
         <div class="main-top">
-          <p>充值积分</p>
+          <p v-show="buttonVal === '充值'">充值积分</p>
+          <p v-show="buttonVal === '提现'">提现积分</p>
           <input type="text"
                  v-model="keyword"
                  placeholder="请输入积分数量"
@@ -63,7 +64,8 @@
             <div class="item item-ali-no"></div>
             <div class="item item-bank-no"></div>
           </div>
-          <p>额外扣除服务10%，实际到账5000</p>
+          <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
+          <p v-show="buttonVal === '提现'">资产余额1000积分，<span>全部提现</span></p>
         </div>
         <button class="main-down" @click="changeValue()">提交订单</button>
       </main>
@@ -77,9 +79,13 @@
       </div>
 
       <!-- order -->
-      <home-list :list="orderList" v-on:tabevent='onTabEvent'></home-list>
+      <home-list ref="dialog" :list="orderList" v-on:tabevent='onTabEvent' ></home-list>
       <dialog-order :show.sync='dialogOrderVal' :text='dialogText'></dialog-order>
-      <dialog-box :show.sync='dialogBoxVal' :dialog-option="dialogOption" v-on:dialogboxEvent='onDialogBox'></dialog-box>
+      <dialog-box
+                :show.sync='dialogBoxVal'
+                :dialog-option="dialogOption"
+                v-on:dialogboxEvent='onDialogBox'>
+      </dialog-box>
 
     </div>
   </div>
@@ -106,6 +112,7 @@ export default {
       orderState: '已提交',
       headerInfo: {},
       mainInfo: {
+        state: '充值积分',
         text: ''
       },
       orderList: [],
@@ -140,6 +147,9 @@ export default {
     // console.log('解密', b)
     this.getHomeInfo()
     this.getOrderInfo('1')
+    if (!JSON.parse(localStorage.getItem('visibleMoney'))) {
+      this.moneyShow = false
+    }
   },
   methods: {
     getHomeInfo () {
@@ -153,12 +163,12 @@ export default {
           res = res.data
           if (res.code === '10000') {
             console.log('获取首页', res)
-            // const _obj = res.data.list
+            const _obj = res.data.list
             // "id": 7,
             // "user_id": 1,
             // "order_number": "",
-            // "operating_amount": "1.00",
-            // "freezing_amount": "1.00",
+            // "operating_amount": "1.00", // 盈利
+            // "freezing_amount": "1.00", // 冻结
             // "wallet_type": 0,
             // "operation_type": 1,
             // "remarks_info": "测试数据",
@@ -166,25 +176,38 @@ export default {
             // "add_time": 1554361663,
             // "add_date": "2019-04-04 15:07:43",
             // "operation_type_str": "充值"
+            this.headerInfo = _obj
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误')
         })
     },
 
     // 选择- 充值 / 提现
     selectBtnType () {
       this.buttonVal = this.buttonVal === '充值' ? '提现' : '充值'
+      if (this.buttonVal === '充值') {
+        this.mainInfo = {
+          state: '充值积分',
+          text: '额外扣除服务10%，实际到账5000'
+        }
+      } else {
+        this.mainInfo = {
+          state: '提现积分',
+          text: '资产余额1000积分，'
+        }
+      }
+      this.$refs.dialog.selectTab('未完成')
       console.log(this.buttonVal)
     },
 
     // 验证窗口
     changeValue () {
-      const types = 'wechat'
+      const types = '' // 付款-类型
       const inputs = this.keyword
       if (types === '') {
         this.dialogOption = {
@@ -245,7 +268,7 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误')
         })
     },
 
@@ -267,7 +290,7 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误')
         })
     },
 
@@ -340,16 +363,19 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误')
         })
     },
     hideMoney () {
       this.moneyShow = !this.moneyShow
-      if (this.editLeft) {
-        this.visibleMoney = '1000'
+      if (this.moneyShow) {
+        localStorage.setItem('visibleMoney', true)
       } else {
-        this.visibleMoney = '****'
+        localStorage.setItem('visibleMoney', false)
       }
+    },
+    jumpSetPage () {
+      this.$router.push({ name: 'Setting' })
     }
   }
 }
@@ -640,6 +666,9 @@ header {
         margin-top: 46px;
         font-size: 24px;
         text-align: center;
+        span {
+          color: #0078FF;
+        }
       }
     }
     .main-down {
