@@ -2,6 +2,7 @@ import Home from '@/views/home/Home'
 import Detail from '@/views/detail/Detail'
 import Setting from '@/views/setting/Setting'
 import SettingPay from '@/views/setting/SettingPay'
+import SettingBound from '@/views/setting/SettingBound'
 
 const Vue = require('vue')
 const Router = require('vue-router')
@@ -22,17 +23,18 @@ export default new Router({
     {
       path: '/setting',
       name: 'Setting',
-      component: Setting,
-      children: [
-        { name: 'SettingPay', path: 'pay', component: SettingPay }
-      ]
+      component: Setting
+    },
+    {
+      path: '/setting/pay',
+      name: 'SettingPay',
+      component: SettingPay
+    },
+    {
+      path: '/setting/bound',
+      name: 'SettingBound',
+      component: SettingBound
     }
-    // ,
-    // {
-    //   path: '/setting_pay',
-    //   name: 'SettingPay',
-    //   component: SettingPay
-    // }
   ],
   scrollBehavior (to, from, savedPosition) {
     return { x: 0, y: 0 }

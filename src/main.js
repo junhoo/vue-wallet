@@ -9,9 +9,12 @@ import 'styles/reset.css'
 import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'lib-flexible/flexible'
+import { Uploader } from 'vant'
+import 'vant/lib/uploader/style'
 
 const Vue = require('vue')
 Vue.use(Toast)
+Vue.use(Uploader)
 
 Vue.config.productionTip = false
 fastClick.attach(document.body)

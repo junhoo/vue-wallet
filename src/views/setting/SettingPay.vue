@@ -2,15 +2,15 @@
   <div>
     <common-header :title="navTitle"></common-header>
     <main>
-      <div class="boxs">
+      <div class="boxs" @click="jumpPayBound">
         <div class="name">银行卡</div>
         <div class="text">立即绑定</div>
       </div>
-      <div class="boxs">
+      <div class="boxs" @click="jumpPayBound">
         <div class="name">支付宝</div>
         <div class="text">立即绑定</div>
       </div>
-      <div class="boxs">
+      <div class="boxs" @click="jumpPayBound">
         <div class="name">微信</div>
         <div class="text">立即绑定</div>
       </div>
@@ -33,10 +33,7 @@ export default {
   },
   methods: {
     jumpPayBound () {
-      this.$router.push({ name: 'Detail' })
-    },
-    jumpRealBound () {
-      this.$router.push({ name: 'Detail' })
+      this.$router.push({ name: 'SettingBound' })
     }
   }
 }
@@ -45,26 +42,27 @@ export default {
 <style lang="less" scoped>
 main {
   box-sizing: border-box;
-  margin: 0 20px;
+  margin: 40px 20px 0 20px;
   .boxs {
     display: flex;
     justify-content: space-between;
-    height: 182.5px;
-    line-height: 182.5px;
+    height: 144px;
+    line-height: 144px;
     margin: 20px 0px;
     text-align: center;
-    background: url('~imgurl/bank_icon_active.png') center left 30px no-repeat;
-    background-size: 40px 40px;
+    background: url('~imgurl/bank_icon_active.png') center left 32px no-repeat;
+    background-size: 42px 37px;
     background-color: #F5F6FA;
     border-radius: 20px;
     .name {
-      font-size: 28px;
-      margin-left: 90px;
+      font-size: 32px;
+      margin-left: 92px;
       color: #9EA8B9;
     }
     .text {
-      font-size: 30px;
+      font-size: 32px;
       color: #6D778B;
+      font-weight: bold;
       padding-right: 50px;
       background: url('~imgurl/arrow-right.png') no-repeat right 20px center;
       background-size: 16px 28px;
@@ -72,7 +70,7 @@ main {
   }
   p {
     padding: 0 18px;
-    line-height: 67px;
+    line-height: 48px;
     font-size: 26px;
     font-family: PingFang-SC-Medium;
     color:#666666;
