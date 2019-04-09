@@ -7,11 +7,11 @@
       <li class="li-tab-box">
         <div class="li-tab-text">充值</div>
         <div class="li-tab-time">
-          <template v-if="0">
-            <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
+          <template v-if="orderStatus==1">
+            <count-down endTime="1554622200000" :callback="callback(0)" endText="已经结束了" timeType='zh'></count-down>
           </template>
         </div>
-        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==1,'li-tab-red':orderStatus==2||orderStatus==4}">{{orderStatus|orderStatus}}</div>
+        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==1,'li-tab-red':orderStatus==3||orderStatus==4||orderStatus==5}">{{orderStatus|orderStatus}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
@@ -33,49 +33,49 @@
     </ul>
 
     <!-- 支付信息 -->
-    <ul class="wrapper" v-if="1">
+    <ul class="wrapper" v-if="orderStatus == 1 || orderStatus == 2 || orderStatus == 5">
       <li class="li-tab-title">
-        <div class="left">银行卡支付</div>
+        <div class="left" v-text="payText"></div>
         <div class="icon"></div>
-        <div class="right">切换支付方式</div>
+        <div @click="checkoutPay()" v-if="orderStatus == 1" class="right">切换支付方式</div>
       </li>
 
       <li class="li-item clearfix">
         <div class="left">收款人</div>
-        <div class="icon"></div>
+        <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
         <div class="right">啥打算大所多</div>
       </li>
 
-       <li class="li-item clearfix">
-        <div class="left">微信账号</div>
-        <div class="icon"></div>
+       <li class="li-item clearfix" v-if="payway != 3 ">
+        <div class="left" v-text="payText2"></div>
+        <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
         <div class="right">bu1624</div>
       </li>
 
       <!-- 银行卡 -->
-      <template v-if="0">
+      <template v-if="payway == 3">
         <li class="li-item clearfix">
           <div class="left">银行名称</div>
-          <div class="icon"></div>
+          <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
           <div class="right">一个银行</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">支行名称</div>
-          <div class="icon"></div>
+          <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
           <div class="right">营业厅</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">银行卡号</div>
-          <div class="icon"></div>
+          <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
           <div class="right">1561165456</div>
         </li>
       </template>
 
       <!--  -->
-      <template v-if="0">
-        <li class="li-item clearfix">
+      <template>
+        <li class="li-item clearfix" v-if="orderStatus == 1">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
             <div class="icon"></div>
@@ -88,12 +88,12 @@
 
       <li class="li-item clearfix">
         <div class="left">付款时备注</div>
-        <div class="icon"></div>
+        <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
         <div class="right">1903181149045289796</div>
       </li>
     </ul>
     <!-- 提示 -->
-    <div class="text-boxs" v-if="orderStatus!=2 && orderStatus!=5">
+    <div class="text-boxs" v-if="orderStatus!=5">
       <p class="hint">提示：</p>
       <div>
         <p>{{orderStatus|tipStatus1}}</p>
@@ -105,7 +105,7 @@
       </div>
     </div>
      <!-- 手动取消提示 -->
-    <div class="cancelTips">
+    <div class="cancelTips" v-if="orderStatus==3 ||orderStatus==4 ">
       <span v-if="orderStatus==3">您已手动取消该笔充值订单</span>
       <span v-else-if="orderStatus==4">超时未付款，系统自动取消订单</span>
     </div>
@@ -113,148 +113,215 @@
     <div class="cancel" v-if="orderStatus == 1">
       <span class="btn-pay">取消订单</span>
     </div>
+    <!-- 付款方式弹框 -->
+    <van-popup v-model="show" position="bottom">
+      <van-radio-group v-model="radio" :click="payChange(radio)">
+        <ul class="wrapper">
+          <li class="li-item clearfix">
+            <div class="left"><img src="~imgurl/copy-icon.png" alt=""></div>
+            <div class="center">选择付款方式</div>
+          </li>
+
+          <li class="li-item clearfix">
+            <div class="left"><img src="~imgurl/copy-icon.png" alt=""></div>
+            <div class="left">微信</div>
+            <div class="right"><van-radio name="1"></van-radio></div>
+          </li>
+
+          <li class="li-item clearfix">
+            <div class="left"><img src="~imgurl/copy-icon.png" alt=""></div>
+            <div class="left">支付宝</div>
+            <div class="right"><van-radio name="2"></van-radio></div>
+          </li>
+
+          <li class="li-item clearfix">
+            <div class="left"><img src="~imgurl/copy-icon.png" alt=""></div>
+            <div class="left">银行卡</div>
+            <div class="right"><van-radio name="3"></van-radio></div>
+          </li>
+        </ul>
+      </van-radio-group>
+      <div class="btn-pay-boxs">
+        <button @click="checkoutPay()" class="0 ">确定</button>
+      </div>
+    </van-popup>
     <!-- 确认按钮 -->
     <div class="btn-pay-boxs2" v-if="orderStatus == 0 || orderStatus == 1">
       <button class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="btn-pay-boxs" v-else>
-      <button class="btn-pay">{{orderStatus|btnStatus}}</button>
+    <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 5}" v-else>
+      <button @click="submit()" class="btn-pay" :class="{'appeal':appeal=='1'}">{{orderStatus|btnStatus}}
+        <span v-if="appeal=='1'">
+          <template>
+            <count-down endTime="1554624000000" :callback="callback(1)" endText="已经结束了" timeType='zh'></count-down>
+          </template>
+        </span>
+      </button>
     </div>
   </div>
 </template>
 <script>
-import CommonHeader from 'common/header/Header'
-import CountDown from 'common/time/CountDown'
-import Clipboard from 'clipboard'
+import CommonHeader from 'common/header/Header';
+import CountDown from 'common/time/CountDown';
+import Clipboard from 'clipboard';
 export default {
   name: 'Detail',
   components: {
     CommonHeader,
     CountDown
   },
-  data () {
+  data() {
     return {
       btnQRText: '查看',
+      payText: '微信支付',
+      payText2: '微信账号',
       bodyHeight: 0,
       navTitle: '订单详情',
       showQrcode: false,
-      orderStatus: '1'
-    }
+      orderStatus: '5',
+      payway: '1', // 1微信，2支付宝，3银行卡
+      appeal: '0', // 点击申诉之后变为1
+      show: false,
+      checked: true,
+      radio: '1'
+    };
   },
-  mounted () {
+  mounted() {
   },
   methods: {
-    openQrcode () {
-      this.showQrcode = !this.showQrcode
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
+    openQrcode() {
+      this.showQrcode = !this.showQrcode;
+      this.btnQRText = this.showQrcode ? '收起' : '点击查看';
     },
-    callback () {
+    callback() {
     },
-    copy () {
-      var clipboard = new Clipboard('.tag-read')
+    copy() {
+      var clipboard = new Clipboard('.tag-read');
       clipboard.on('success', e => {
-        alert('复制成功')
-        clipboard.destroy()
-      })
+        alert('复制成功');
+        clipboard.destroy();
+      });
       clipboard.on('error', e => {
-        console.log('该浏览器不支持自动复制')
-        clipboard.destroy()
-      })
+        console.log('该浏览器不支持自动复制');
+        clipboard.destroy();
+      });
+    },
+    submit() {
+      if (this.orderStatus === '5') {
+        this.appeal = '1';
+      } else {
+        this.$router.push({ name: '/' });
+      }
+    },
+    checkoutPay() {
+      this.show = !this.show;
+    },
+    payChange(name) {
+      console.log(name);
+      this.payway = name;
+      if (name === '2') {
+        this.payText = '支付宝支付';
+        this.payText2 = '支付宝账号';
+      } else if (name === '3') {
+        this.payText = '银行卡支付';
+      }
     }
   },
   filters: {
-    btnStatus: function (value) {
+    btnStatus: function(value) {
       if (value === '0') {
-        value = '取消订单'
+        value = '取消订单';
       } else if (value === '1') {
-        value = '我已完成付款'
+        value = '我已完成付款';
       } else if (value === '5') {
-        value = '申诉'
+        value = '申诉';
       } else {
-        value = '返回'
+        value = '返回';
       }
-      return value
+      return value;
     },
-    orderStatus: function (value) {
+    orderStatus: function(value) {
       if (value === '0') {
-        value = '已提交'
+        value = '已提交';
       } else if (value === '1') {
-        value = '待付款'
+        value = '待付款';
       } else if (value === '2') {
-        value = '已完成'
+        value = '已完成';
+      } else if (value === '5') {
+        value = '未到账';
       } else if (value === '3') {
-        value = '已取消'
+        value = '已取消';
       } else {
-        value = '已取消'
+        value = '已取消';
       }
-      return value
+      return value;
     },
-    tipStatus1: function (value) {
+    tipStatus1: function(value) {
       if (value === '0') {
-        value = '1、我们已接收您的充值订单，并正在为您匹配卖方。'
+        value = '1、我们已接收您的充值订单，并正在为您匹配卖方。';
       } else if (value === '1') {
-        value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。'
+        value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。';
       } else if (value === '2') {
-        value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
+        value = '1、该笔充值已完成，如没有充值到账请联系***核实。';
       } else if (value === '4') {
-        value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。'
+        value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。';
       } else if (value === '3') {
-        value = '1、您已手动关闭了该订单交易'
+        value = '1、您已手动关闭了该订单交易';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     },
-    tipStatus2: function (value) {
+    tipStatus2: function(value) {
       if (value === '0') {
-        value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。'
+        value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。';
       } else if (value === '1') {
-        value = '2、转账成功后请点击下方“我已完成付款”按钮。'
+        value = '2、转账成功后请点击下方“我已完成付款”按钮。';
       } else if (value === '3') {
-        value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。'
+        value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。';
       } else if (value === '4') {
-        value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉'
+        value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     },
-    tipStatus3: function (value) {
+    tipStatus3: function(value) {
       if (value === '0') {
-        value = '3、成功完单笔充值订单后才可发起下一笔充值。'
+        value = '3、成功完单笔充值订单后才可发起下一笔充值。';
       } else if (value === '1') {
-        value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。'
+        value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     },
-    tipStatus4: function (value) {
+    tipStatus4: function(value) {
       if (value === '1') {
-        value = '4、请尽量保留转账截图，作为纠纷时证据。'
+        value = '4、请尽量保留转账截图，作为纠纷时证据。';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     },
-    tipStatus5: function (value) {
+    tipStatus5: function(value) {
       if (value === '1') {
-        value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。'
+        value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     },
-    tipStatus6: function (value) {
+    tipStatus6: function(value) {
       if (value === '1') {
-        value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。'
+        value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。';
       } else {
-        value = ''
+        value = '';
       }
-      return value
+      return value;
     }
   }
-}
+};
 </script>
 
 <style lang="less" >
@@ -301,8 +368,8 @@ export default {
         font-size:28px;
         line-height: 86px;
         text-align: center;
-        margin-right: -122px;
-        color: #2D79F1;
+        margin-right: -60px;
+        color: #1C6FE9;
       }
       .li-tab-status {
         font-size: 34px;
@@ -332,6 +399,11 @@ export default {
         font-family: SourceHanSansCN-Medium;
         font-weight: 500;
         float: right;
+      }
+      .center{
+        text-align: center;
+        font-size: 28px;
+        color: #070707;
       }
       .strong {
         font-size:34px;
@@ -366,9 +438,10 @@ export default {
     font-size: 32px;
     color: #0078FF;
     text-align: center;
+    padding-bottom: 150px;
   }
   .text-boxs {
-    padding: 0 43px;
+    padding: 0 43px 95px;
       p {
         font-size: 24px;
         color: #999;
@@ -380,8 +453,41 @@ export default {
         margin-bottom: 5px;
       }
     }
+  .van-popup{
+    .li-item{
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+      &:last-of-type{
+        border: none;
+      }
+      .left{
+        margin-right: 20px;
+      }
+    }
+    .btn-pay-boxs{
+      padding: 40px 75px 0;
+      margin-bottom: 50px;
+      .btn-pay {
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(94deg,rgba(47,131,255,1),rgba(60,59,238,1));
+        box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        font-size: 32px;
+        font-family: SourceHanSansCN-Regular;
+        font-weight: 400;
+        text-align: center;
+        color: #FFFEFE;
+      }
+    }
+    .van-icon{
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+    }
+  }
   .btn-pay-boxs {
-    padding: 0 75px;
+    padding: 0 75px 0;
     margin-bottom: 27px;
     .btn-pay {
       width: 100%;
@@ -395,6 +501,17 @@ export default {
       text-align: center;
       color: #FFFEFE;
     }
+    .appeal{
+      background: #D2D2D2 !important;
+      color: #606875;
+    }
+    span{
+      font-size: 24px;
+      color: #69707D;
+    }
+  }
+  .padtop{
+    padding-top: 200px;
   }
   .btn-pay-boxs2 {
     position: fixed;

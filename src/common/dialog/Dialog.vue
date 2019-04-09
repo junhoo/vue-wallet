@@ -20,19 +20,19 @@
 export default {
   name: 'Dialog',
   props: ['show'],
-  data () {
+  data() {
     return {
       stateA: false, // 匹配中
       stateB: false, // 匹配成功
       stateC: true // 已付款
-    }
+    };
   },
   methods: {
-    closeDiv () {
-      this.$emit('update:show', false) // 触发 input 事件，并传入新值
+    closeDiv() {
+      this.$emit('update:show', false);// 触发 input 事件，并传入新值
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

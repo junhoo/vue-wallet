@@ -80,12 +80,12 @@
 </template>
 
 <script>
-import HomeDialog from 'common/dialog/Dialog'
-import HomeList from './components/List'
+import HomeDialog from 'common/dialog/Dialog';
+import HomeList from './components/List';
 // import { encrypt, decrypt } from '@/assets/utils.js'
 export default {
   name: 'Home',
-  data () {
+  data() {
     return {
       visibleMoney: '',
       valueChild: false,
@@ -117,13 +117,13 @@ export default {
           '剩余时间': '29分59秒'
         }
       ]
-    }
+    };
   },
   components: {
     HomeDialog,
     HomeList
   },
-  created () {
+  created() {
     // let name = '123123'
     // 加密
     // let a = encrypt(name)
@@ -134,19 +134,19 @@ export default {
     // console.log('解密', b)
   },
   methods: {
-    changeValue () {
-      this.valueChild = !this.valueChild
+    changeValue() {
+      this.valueChild = !this.valueChild;
     },
-    hideMoney () {
-      this.moneyShow = !this.moneyShow
+    hideMoney() {
+      this.moneyShow = !this.moneyShow;
       if (this.editLeft) {
-        this.visibleMoney = '1000'
+        this.visibleMoney = '1000';
       } else {
-        this.visibleMoney = '****'
+        this.visibleMoney = '****';
       }
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

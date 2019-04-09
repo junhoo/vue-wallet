@@ -53,7 +53,7 @@ export default {
   props: {
     list: Array
   },
-  data () {
+  data() {
     return {
       selectTitle: '未完成',
       tabTitle: [
@@ -67,32 +67,31 @@ export default {
           title: '已取消'
         }
       ]
-    }
+    };
   },
   methods: {
-    selectTab (title) {
+    selectTab(title) {
       switch (title) {
         case '未完成':
-          this.selectTitle = '未完成'
-          break
+          this.selectTitle = '未完成';
+          break;
         case '已完成':
-          this.selectTitle = '已完成'
-          break
+          this.selectTitle = '已完成';
+          break;
         case '已取消':
-          this.selectTitle = '已取消'
-          break
+          this.selectTitle = '已取消';
+          break;
         default:
-          this.selectTitle = '未完成'
-          break
+          this.selectTitle = '未完成';
+          break;
       }
     },
-    jumpDetail () {
-      this.$router.push({ name: 'Detail' })
+    jumpDetail() {
+      this.$router.push({ name: 'Detail' });
     }
   }
-}
+};
 </script>
-
 <style lang="less" scoped>
 @white: #ffffff;
 

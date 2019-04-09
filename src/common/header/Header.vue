@@ -14,11 +14,11 @@ export default {
     title: String
   },
   methods: {
-    backPage () {
-      this.$router.go(-1)
+    backPage() {
+      this.$router.go(-1);
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

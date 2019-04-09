@@ -5,10 +5,10 @@
 </template>
 <script>
 export default {
-  data () {
+  data() {
     return {
       content: ''
-    }
+    };
   },
   props: {
     endTime: {
@@ -30,63 +30,63 @@ export default {
       default: 'symbol'
     }
   },
-  mounted () {
-    this.countdowm(this.endTime, this.timeType)
+  mounted() {
+    this.countdowm(this.endTime, this.timeType);
   },
   methods: {
-    countdowm (timestamp, timetype) {
-      let self = this
-      let timer = setInterval(function () {
+    countdowm(timestamp, timetype) {
+      let self = this;
+      let timer = setInterval(function() {
         // let jiuTest = timestamp
         // var createTime = (new Date('2019/04/03 11:30:00')).getTime() // 得到毫秒数
 
-        let nowTime = new Date()
-        let t = timestamp - nowTime.getTime()
+        let nowTime = new Date();
+        let t = timestamp - nowTime.getTime();
 
         if (t > 0) {
-          let day = Math.floor(t / 86400000)
-          let hour = Math.floor((t / 3600000) % 24)
-          let min = Math.floor((t / 60000) % 60)
-          let sec = Math.floor((t / 1000) % 60)
-          hour = hour < 10 ? '0' + hour : hour
-          min = min < 10 ? '0' + min : min
-          sec = sec < 10 ? '0' + sec : sec
-          let format = ''
+          let day = Math.floor(t / 86400000);
+          let hour = Math.floor((t / 3600000) % 24);
+          let min = Math.floor((t / 60000) % 60);
+          let sec = Math.floor((t / 1000) % 60);
+          hour = hour < 10 ? '0' + hour : hour;
+          min = min < 10 ? '0' + min : min;
+          sec = sec < 10 ? '0' + sec : sec;
+          let format = '';
           if (timetype === 'symbol') {
             if (day > 0) {
-              format = `${day} ${hour}:${min}:${sec}`
+              format = `${day} ${hour}:${min}:${sec}`;
             }
             if (day <= 0 && hour > 0) {
-              format = `${hour}:${min}分${sec}`
+              format = `${hour}:${min}分${sec}`;
             }
             if (day <= 0 && hour <= 0) {
-              format = `${min}:${sec}`
+              format = `${min}:${sec}`;
             }
-            self.content = '（倒计时' + format + '）'
+            self.content = '（倒计时' + format + '）';
           } else {
             if (day > 0) {
-              format = `${day}天${hour}小时${min}分${sec}秒`
+              format = `${day}天${hour}小时${min}分${sec}秒`;
             }
             if (day <= 0 && hour > 0) {
-              format = `${hour}小时${min}分${sec}秒`
+              format = `${hour}小时${min}分${sec}秒`;
             }
             if (day <= 0 && hour <= 0) {
-              format = `${min}分${sec}秒`
+              format = `${min}分${sec}秒`;
             }
-            self.content = '剩余：' + format
+            self.content = '剩余：' + format;
           }
         } else {
-          clearInterval(timer)
-          self.content = self.endText
-          self._callback()
+          clearInterval(timer);
+          self.content = self.endText;
+          self._callback();
         }
-      }, 1000)
+      }, 1000);
     },
-    _callback () {
+    _callback() {
       if (this.callback && this.callback instanceof Function) {
-        this.callback(...this)
+        this.callback(...this);
       }
     }
   }
-}
+};
 </script>
