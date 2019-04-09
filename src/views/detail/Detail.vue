@@ -120,110 +120,110 @@
   </div>
 </template>
 <script>
-import CommonHeader from 'common/header/Header';
-import CountDown from 'common/time/CountDown';
-import Clipboard from 'clipboard';
+import CommonHeader from 'common/header/Header'
+import CountDown from 'common/time/CountDown'
+import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
     CommonHeader,
     CountDown
   },
-  data() {
+  data () {
     return {
       btnQRText: '查看',
       bodyHeight: 0,
       navTitle: '订单详情',
       showQrcode: true,
       orderStatus: '2'
-    };
+    }
   },
-  mounted() {
+  mounted () {
   },
   methods: {
-    openQrcode() {
-      this.showQrcode = !this.showQrcode;
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看';
+    openQrcode () {
+      this.showQrcode = !this.showQrcode
+      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
     },
-    callback() {
+    callback () {
     },
-    copy() {
-      var clipboard = new Clipboard('.tag-read');
+    copy () {
+      var clipboard = new Clipboard('.tag-read')
       clipboard.on('success', e => {
-        alert('复制成功');
-        clipboard.destroy();
-      });
+        alert('复制成功')
+        clipboard.destroy()
+      })
       clipboard.on('error', e => {
-        console.log('该浏览器不支持自动复制');
-        clipboard.destroy();
-      });
+        console.log('该浏览器不支持自动复制')
+        clipboard.destroy()
+      })
     }
   },
   filters: {
-    btnStatus: function(value) {
+    btnStatus: function (value) {
       if (value === '0') {
-        value = '取消订单';
+        value = '取消订单'
       } else if (value === '1') {
-        value = '确认收款';
+        value = '确认收款'
       } else {
-        value = '返回';
+        value = '返回'
       }
-      return value;
+      return value
     },
-    orderStatus: function(value) {
+    orderStatus: function (value) {
       if (value === '0') {
-        value = '已提交';
+        value = '已提交'
       } else if (value === '1') {
-        value = '待确认';
+        value = '待确认'
       } else if (value === '2') {
-        value = '已匹配';
+        value = '已匹配'
       } else if (value === '3') {
-        value = '已完成';
+        value = '已完成'
       } else {
-        value = '已取消';
+        value = '已取消'
       }
-      return value;
+      return value
     },
-    tipStatus1: function(value) {
+    tipStatus1: function (value) {
       if (value === '0') {
-        value = '1、我们已接收您的提现订单，并正在为您匹配买方。';
+        value = '1、我们已接收您的提现订单，并正在为您匹配买方。'
       } else if (value === '1') {
-        value = '1、当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻。';
+        value = '1、当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻。'
       } else if (value === '2') {
-        value = '1、买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“我已确认收款”按钮。';
+        value = '1、买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“我已确认收款”按钮。'
       } else if (value === '3') {
-        value = '1、该笔充值已完成，如没有充值到账请联系***核实。';
+        value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     },
-    tipStatus2: function(value) {
+    tipStatus2: function (value) {
       if (value === '0') {
-        value = '2、当订单变更为已匹配状态时，则表示已有买方正准备向你的订单付款。';
+        value = '2、当订单变更为已匹配状态时，则表示已有买方正准备向你的订单付款。'
       } else if (value === '1') {
-        value = '2、如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配。';
+        value = '2、如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配。'
       } else if (value === '2') {
-        value = '2、如果3分钟内未收到买方款项，请点击下方申诉按钮进行申诉。';
+        value = '2、如果3分钟内未收到买方款项，请点击下方申诉按钮进行申诉。'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     },
-    tipStatus3: function(value) {
+    tipStatus3: function (value) {
       if (value === '0') {
-        value = '3、成功完单笔提现订单后才可发起下一笔提现。';
+        value = '3、成功完单笔提现订单后才可发起下一笔提现。'
       } else if (value === '1') {
-        value = '3、提现订单已匹配状态下，您不能取消操作。';
+        value = '3、提现订单已匹配状态下，您不能取消操作。'
       } else if (value === '2') {
-        value = '3、如果未收到买方支付的款项，请勿点击下方“我已确认收款”按钮，以免造成损失。';
+        value = '3、如果未收到买方支付的款项，请勿点击下方“我已确认收款”按钮，以免造成损失。'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     }
   }
-};
+}
 </script>
 
 <style lang="less" >

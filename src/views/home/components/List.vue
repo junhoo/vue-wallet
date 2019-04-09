@@ -18,28 +18,29 @@
         <li
             v-for="(item, index) in list"
             :key="index"
-            @click="jumpDetail()">
+            @click="jumpDetail(item.order_type,item.status,item.order_no)">
           <div class="li-tab-box">
-            <div class="li-tab-text">{{item.充值}}</div>
-            <div class="li-tab-time">2019-03-18 18:28:22</div>
+            <div class="li-tab-text">{{item.title_type}}</div>
+            <div class="li-tab-time">{{item.add_time_str}}</div>
+            <!-- 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6已匹配 7 待确认 -->
             <div
                 class="li-tab-status"
                 :class="{
-                  'li-tab-orange': item.状态 === '待付款',
-                  'li-tab-blue': item.状态 === '已提交',
-                  'li-tab-red': item.状态 === '未到账'
+                  'li-tab-orange': item.status === 2,
+                  'li-tab-blue': item.status === 1,
+                  'li-tab-red': item.status === 3 || item.status === 4
                 }"
-            >{{item.状态}}</div>
+            >{{item.status_text}}</div>
           </div>
 
           <div class="li-money">
             <div class="left">金额</div>
-            <div class="right">￥{{item.金额}}</div>
+            <div class="right">￥{{item.order_amount}}</div>
           </div>
 
           <div class="li-money">
             <div class="left">积分</div>
-            <div class="right">{{item.积分}}</div>
+            <div class="right">{{item.order_amount}}</div>
           </div>
         </li>
       </ul>
@@ -53,7 +54,7 @@ export default {
   props: {
     list: Array
   },
-  data() {
+  data () {
     return {
       selectTitle: '未完成',
       tabTitle: [
@@ -67,31 +68,51 @@ export default {
           title: '已取消'
         }
       ]
-    };
+    }
   },
   methods: {
-    selectTab(title) {
+    selectTab (title) {
       switch (title) {
         case '未完成':
-          this.selectTitle = '未完成';
-          break;
+          this.selectTitle = '未完成'
+          break
         case '已完成':
-          this.selectTitle = '已完成';
-          break;
+          this.selectTitle = '已完成'
+          break
         case '已取消':
-          this.selectTitle = '已取消';
-          break;
+          this.selectTitle = '已取消'
+          break
         default:
-          this.selectTitle = '未完成';
-          break;
+          this.selectTitle = '未完成'
+          break
       }
+      const titleCode = { '未完成': '1', '已完成': '2', '已取消': '3' }
+      this.$emit('tabevent', titleCode[this.selectTitle])
     },
-    jumpDetail() {
-      this.$router.push({ name: 'Detail' });
+    jumpDetail (ordeType, status, orderId) {
+      // 1充值，2提现
+      if (ordeType === 1) {
+        this.$router.push({
+          name: 'DetailRecharge',
+          query: {
+            orderid: orderId,
+            status: status
+          }
+        })
+      } else {
+        this.$router.push({
+          name: 'Detail',
+          query: {
+            orderid: orderId,
+            status: status
+          }
+        })
+      }
     }
   }
-};
+}
 </script>
+
 <style lang="less" scoped>
 @white: #ffffff;
 

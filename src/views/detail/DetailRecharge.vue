@@ -7,37 +7,37 @@
       <li class="li-tab-box">
         <div class="li-tab-text">充值</div>
         <div class="li-tab-time">
-          <template v-if="orderStatus==1">
+          <template v-if="orderStatus==2">
             <count-down endTime="1554622200000" :callback="callback(0)" endText="已经结束了" timeType='zh'></count-down>
           </template>
         </div>
-        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==1,'li-tab-red':orderStatus==3||orderStatus==4||orderStatus==5}">{{orderStatus|orderStatus}}</div>
+        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==2,'li-tab-red':orderStatus==4||orderStatus==3}">{{orderStatus|orderStatus}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
-        <div class="right strong">￥1000</div>
+        <div class="right strong">￥{{orderDetailData.order_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">积分</div>
-        <div class="right">100</div>
+        <div class="right">{{orderDetailData.order_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">下单时间</div>
-        <div class="right">2019 18:38:22</div>
+        <div class="right">{{orderDetailData.time_str}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">订单号</div>
         <div class="icon tag-read" :data-clipboard-text="1903181149045289796" @click="copy"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right">1903181149045289796</div>
+        <div class="right">{{orderDetailData.order_no}}</div>
       </li>
     </ul>
 
     <!-- 支付信息 -->
-    <ul class="wrapper" v-if="orderStatus == 1 || orderStatus == 2 || orderStatus == 5">
+    <ul class="wrapper" v-if="orderStatus == 3 || orderStatus == 2 || orderStatus == 5">
       <li class="li-tab-title">
         <div class="left" v-text="payText"></div>
         <div class="icon"></div>
-        <div @click="checkoutPay()" v-if="orderStatus == 1" class="right">切换支付方式</div>
+        <div @click="checkoutPay()" v-if="orderStatus == 2" class="right">切换支付方式</div>
       </li>
 
       <li class="li-item clearfix">
@@ -75,7 +75,7 @@
 
       <!--  -->
       <template>
-        <li class="li-item clearfix" v-if="orderStatus == 1">
+        <li class="li-item clearfix" v-if="orderStatus == 2">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
             <div class="icon"></div>
@@ -106,11 +106,11 @@
     </div>
      <!-- 手动取消提示 -->
     <div class="cancelTips" v-if="orderStatus==3 ||orderStatus==4 ">
-      <span v-if="orderStatus==3">您已手动取消该笔充值订单</span>
-      <span v-else-if="orderStatus==4">超时未付款，系统自动取消订单</span>
+      <span v-if="orderStatus==4">您已手动取消该笔充值订单</span>
+      <span v-else-if="orderStatus==8">超时未付款，系统自动取消订单</span>
     </div>
     <!-- 取消按钮 -->
-    <div class="cancel" v-if="orderStatus == 1">
+    <div class="cancel" v-if="orderStatus == 2">
       <span class="btn-pay">取消订单</span>
     </div>
     <!-- 付款方式弹框 -->
@@ -146,10 +146,10 @@
       </div>
     </van-popup>
     <!-- 确认按钮 -->
-    <div class="btn-pay-boxs2" v-if="orderStatus == 0 || orderStatus == 1">
-      <button class="btn-pay">{{orderStatus|btnStatus}}</button>
+    <div class="btn-pay-boxs2" v-if="orderStatus == 1 || orderStatus == 2">
+      <button @click="submit2()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 5}" v-else>
+    <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 3}" v-else>
       <button @click="submit()" class="btn-pay" :class="{'appeal':appeal=='1'}">{{orderStatus|btnStatus}}
         <span v-if="appeal=='1'">
           <template>
@@ -161,16 +161,17 @@
   </div>
 </template>
 <script>
-import CommonHeader from 'common/header/Header';
-import CountDown from 'common/time/CountDown';
-import Clipboard from 'clipboard';
+import axios from 'axios'
+import CommonHeader from 'common/header/Header'
+import CountDown from 'common/time/CountDown'
+import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
     CommonHeader,
     CountDown
   },
-  data() {
+  data () {
     return {
       btnQRText: '查看',
       payText: '微信支付',
@@ -178,150 +179,220 @@ export default {
       bodyHeight: 0,
       navTitle: '订单详情',
       showQrcode: false,
-      orderStatus: '5',
+      orderStatus: '0',
       payway: '1', // 1微信，2支付宝，3银行卡
       appeal: '0', // 点击申诉之后变为1
       show: false,
       checked: true,
-      radio: '1'
-    };
+      radio: '1',
+      order_no: '',
+      orderDetailData: {}
+    }
   },
-  mounted() {
+  created () {
+    this.orderStatus = this.$route.query.status
+    this.order_no = this.$route.query.orderid
+    this.getOrderData()
+  },
+  mounted () {
   },
   methods: {
-    openQrcode() {
-      this.showQrcode = !this.showQrcode;
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看';
+    // 获取订单信息
+    getOrderData () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': this.order_no,
+        'third_user_id': '1'
+      }
+      console.log(data, 123)
+      const url = 'http://order.service.168mi.cn/api/order/payDetail'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          console.log(res, 123)
+          if (res.code === '10000') {
+            this.orderDetailData = res.data.list.order_detail
+            this.payway = res.data.list.pay_type
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
     },
-    callback() {
+    // 取消订单
+    cancelOrder () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': this.order_no,
+        'third_user_id': '1'
+      }
+      const url = 'http://order.service.168mi.cn/api/order/cancelRechangeOrder'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          console.log(res, 123)
+          if (res.code === '10000') {
+            this.getOrderData()
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
     },
-    copy() {
-      var clipboard = new Clipboard('.tag-read');
+    submit2 () {
+      this.orderStatus = this.orderStatus.toString()
+      if (this.orderStatus === '1') {
+        this.cancelOrder()
+      } else {}
+    },
+    openQrcode () {
+      this.showQrcode = !this.showQrcode
+      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
+    },
+    callback () {
+    },
+    copy () {
+      var clipboard = new Clipboard('.tag-read')
       clipboard.on('success', e => {
-        alert('复制成功');
-        clipboard.destroy();
-      });
+        alert('复制成功')
+        clipboard.destroy()
+      })
       clipboard.on('error', e => {
-        console.log('该浏览器不支持自动复制');
-        clipboard.destroy();
-      });
+        console.log('该浏览器不支持自动复制')
+        clipboard.destroy()
+      })
     },
-    submit() {
-      if (this.orderStatus === '5') {
-        this.appeal = '1';
+    submit () {
+      if (this.orderStatus === '3') {
+        this.appeal = '1'
       } else {
-        this.$router.push({ name: '/' });
+        this.$router.push({ name: '/' })
       }
     },
-    checkoutPay() {
-      this.show = !this.show;
+    checkoutPay () {
+      this.show = !this.show
     },
-    payChange(name) {
-      console.log(name);
-      this.payway = name;
+    payChange (name) {
+      this.payway = name
       if (name === '2') {
-        this.payText = '支付宝支付';
-        this.payText2 = '支付宝账号';
+        this.payText = '支付宝支付'
+        this.payText2 = '支付宝账号'
       } else if (name === '3') {
-        this.payText = '银行卡支付';
+        this.payText = '银行卡支付'
       }
     }
   },
   filters: {
-    btnStatus: function(value) {
-      if (value === '0') {
-        value = '取消订单';
-      } else if (value === '1') {
-        value = '我已完成付款';
-      } else if (value === '5') {
-        value = '申诉';
-      } else {
-        value = '返回';
-      }
-      return value;
-    },
-    orderStatus: function(value) {
-      if (value === '0') {
-        value = '已提交';
-      } else if (value === '1') {
-        value = '待付款';
+    btnStatus: function (value) {
+      value = value.toString()
+      if (value === '1') {
+        value = '取消订单'
       } else if (value === '2') {
-        value = '已完成';
-      } else if (value === '5') {
-        value = '未到账';
+        value = '我已完成付款'
       } else if (value === '3') {
-        value = '已取消';
+        value = '申诉'
       } else {
-        value = '已取消';
+        value = '返回'
       }
-      return value;
+      return value
     },
-    tipStatus1: function(value) {
-      if (value === '0') {
-        value = '1、我们已接收您的充值订单，并正在为您匹配卖方。';
-      } else if (value === '1') {
-        value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。';
+    orderStatus: function (value) {
+      value = value.toString()
+      if (value === '1') {
+        value = '已提交'
       } else if (value === '2') {
-        value = '1、该笔充值已完成，如没有充值到账请联系***核实。';
-      } else if (value === '4') {
-        value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。';
+        value = '待付款'
+      } else if (value === '5') {
+        value = '已完成'
       } else if (value === '3') {
-        value = '1、您已手动关闭了该订单交易';
+        value = '未到账'
+      } else if (value === '8') {
+        value = '已取消'
       } else {
-        value = '';
+        value = '已取消'
       }
-      return value;
+      return value
     },
-    tipStatus2: function(value) {
-      if (value === '0') {
-        value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。';
-      } else if (value === '1') {
-        value = '2、转账成功后请点击下方“我已完成付款”按钮。';
+    tipStatus1: function (value) {
+      value = value.toString()
+      if (value === '1') {
+        value = '1、我们已接收您的充值订单，并正在为您匹配卖方。'
+      } else if (value === '2') {
+        value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。'
+      } else if (value === '5') {
+        value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
       } else if (value === '3') {
-        value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。';
+        value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。'
       } else if (value === '4') {
-        value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉';
+        value = '1、您已手动关闭了该订单交易'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     },
-    tipStatus3: function(value) {
-      if (value === '0') {
-        value = '3、成功完单笔充值订单后才可发起下一笔充值。';
-      } else if (value === '1') {
-        value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。';
-      } else {
-        value = '';
-      }
-      return value;
-    },
-    tipStatus4: function(value) {
+    tipStatus2: function (value) {
+      value = value.toString()
       if (value === '1') {
-        value = '4、请尽量保留转账截图，作为纠纷时证据。';
+        value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。'
+      } else if (value === '2') {
+        value = '2、转账成功后请点击下方“我已完成付款”按钮。'
+      } else if (value === '4') {
+        value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。'
+      } else if (value === '4') {
+        value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     },
-    tipStatus5: function(value) {
+    tipStatus3: function (value) {
+      value = value.toString()
       if (value === '1') {
-        value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。';
+        value = '3、成功完单笔充值订单后才可发起下一笔充值。'
+      } else if (value === '2') {
+        value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
     },
-    tipStatus6: function(value) {
-      if (value === '1') {
-        value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。';
+    tipStatus4: function (value) {
+      value = value.toString()
+      if (value === '2') {
+        value = '4、请尽量保留转账截图，作为纠纷时证据。'
       } else {
-        value = '';
+        value = ''
       }
-      return value;
+      return value
+    },
+    tipStatus5: function (value) {
+      value = value.toString()
+      if (value === '2') {
+        value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。'
+      } else {
+        value = ''
+      }
+      return value
+    },
+    tipStatus6: function (value) {
+      value = value.toString()
+      if (value === '2') {
+        value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。'
+      } else {
+        value = ''
+      }
+      return value
     }
   }
-};
+}
 </script>
 
 <style lang="less" >
