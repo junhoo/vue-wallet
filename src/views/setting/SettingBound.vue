@@ -131,7 +131,7 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-      axios.post(url + '', param)
+      axios.post(url, param)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
