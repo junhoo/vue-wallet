@@ -14,7 +14,6 @@ import 'vant/lib/index.css'
 const Vue = require('vue')
 Vue.use(Vant)
 Vue.use(Toast)
-Vue.use(Uploader)
 
 Vue.config.productionTip = false
 fastClick.attach(document.body)
