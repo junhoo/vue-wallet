@@ -2,11 +2,9 @@
   <div>
     <common-header :title="navTitle"></common-header>
     <main>
-      <router-link to="/setting/pay">
-        <div class="boxs boxs-pay" @click="jumpPayBound">
-          <div class="icon default">绑定/修改</div>
-        </div>
-      </router-link>
+      <div class="boxs boxs-pay" @click="jumpPayBound">
+        <div class="icon default">绑定/修改</div>
+      </div>
       <div class="boxs boxs-real" @click="jumpRealBound">
         <div class="icon blue">审核中</div>
       </div>
@@ -31,7 +29,7 @@ export default {
       this.$router.push({ path: '/setting/pay' })
     },
     jumpRealBound () {
-      this.$router.push({ name: 'SettingPay' })
+      this.$router.push({ path: '/setting/pay' })
     }
   }
 }
@@ -60,11 +58,10 @@ main {
   margin: 0 20px;
   .boxs {
     position: relative;
-    height: 202.5px;
-    padding: 20px 0px;
+    height: 191px;
+    margin-top: 49px;
     .icon {
       position: absolute;
-      top: 22px;
       right: 0;
       padding: 0 20px 0 34px;
       line-height: 48px;
