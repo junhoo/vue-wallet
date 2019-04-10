@@ -2,15 +2,15 @@
   <div>
     <common-header :title="navTitle"></common-header>
     <main>
-      <div class="boxs" @click="jumpPayBound">
+      <div class="boxs bank" @click="jumpPayBound('bank')">
         <div class="name">银行卡</div>
         <div class="text">立即绑定</div>
       </div>
-      <div class="boxs" @click="jumpPayBound">
+      <div class="boxs alipay" @click="jumpPayBound('alipay')">
         <div class="name">支付宝</div>
         <div class="text">立即绑定</div>
       </div>
-      <div class="boxs" @click="jumpPayBound">
+      <div class="boxs wechat" @click="jumpPayBound('wechat')">
         <div class="name">微信</div>
         <div class="text">立即绑定</div>
       </div>
@@ -32,8 +32,8 @@ export default {
     }
   },
   methods: {
-    jumpPayBound () {
-      this.$router.push({ name: 'SettingBound' })
+    jumpPayBound (type) {
+      this.$router.push({ path: '/setting/bound', query: { type, isbound: 'y' } })
     }
   }
 }
@@ -50,8 +50,6 @@ main {
     line-height: 144px;
     margin: 20px 0px;
     text-align: center;
-    background: url('~imgurl/bank_icon_active.png') center left 32px no-repeat;
-    background-size: 42px 37px;
     background-color: #F5F6FA;
     border-radius: 20px;
     .name {
@@ -67,6 +65,18 @@ main {
       background: url('~imgurl/arrow-right.png') no-repeat right 20px center;
       background-size: 16px 28px;
     }
+  }
+  .bank {
+    background: url('~imgurl/bank-icon.png') center left 32px no-repeat;
+    background-size: 42px 37px;
+  }
+  .alipay {
+    background: url('~imgurl/alipay-icon.png') center left 32px no-repeat;
+    background-size: 42px 37px;
+  }
+  .wechat {
+    background: url('~imgurl/wx-icon.png') center left 32px no-repeat;
+    background-size: 42px 37px;
   }
   p {
     padding: 0 18px;

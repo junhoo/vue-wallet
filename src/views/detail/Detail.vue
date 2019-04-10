@@ -357,7 +357,7 @@ export default {
       .right {
         width: 240px;
         color: #999999;
-        background: url('~imgurl/mine_more.png') no-repeat right 0 center;
+        background: url('~imgurl/arrow-right.png') no-repeat right 0 center;
         background-size: 16px 28px;
       }
     }
