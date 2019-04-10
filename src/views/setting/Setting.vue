@@ -29,7 +29,7 @@ export default {
       this.$router.push({ path: '/setting/pay' })
     },
     jumpRealBound () {
-      this.$router.push({ path: '/setting/pay' })
+      this.$router.push({ path: '/setting/settingCertification' })
     }
   }
 }
