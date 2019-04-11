@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'Setting',
@@ -27,7 +26,7 @@ export default {
     }
   },
   created () {
-    this.getUserMsg()
+    this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
   },
   methods: {
     jumpPayBound () {
@@ -35,36 +34,12 @@ export default {
     },
     jumpRealBound () {
       this.$router.push({
-        path: '/setting/settingCertification',
-        query: this.userCertifyMsg
+        path: '/setting/settingCertification'
       })
-    },
-    // 获取用户实名认证信息
-    getUserMsg () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
-      let url = 'http://user.service.168mi.cn'
-      axios.post(url + '/api/user/getUserInfo', data)
-        .then(res => {
-          res = res.data
-          if (res.code === '10000') {
-            this.userMsg = res.data.list
-          } else {
-            this.$toast(res.msg)
-          }
-        })
-        .catch(e => {
-          this.$toast('网络错误，不能访问')
-        })
     }
   },
   filters: {
     certistatusText: function (value) {
-      // value = value.toString()
       if (value === 0) {
         value = '未认证'
       } else if (value === 1) {

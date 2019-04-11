@@ -102,7 +102,7 @@ export default {
         font-size: 26px;
         .cancel_btn {
           width: 180px;
-          height: 70px;
+          line-height: 70px;
           background: #d7d7d7;
           border-radius: 8px;
         }
@@ -112,7 +112,7 @@ export default {
         color: #666;
         button {
           width: 180px;
-          height: 70px;
+          line-height: 70px;
           background:#0078ff;
           border-radius: 8px;
           color: #fff;

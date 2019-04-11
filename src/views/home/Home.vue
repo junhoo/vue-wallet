@@ -22,20 +22,20 @@
           </div>
           <p class="text">冻结{{headerInfo.freezing_amount}}</p>
           <button @click="hideMoney()">
-            <div class="hide-icon"></div>
+            <div class="hide-icon" :class="{'hide-eye': !moneyShow}"></div>
             <span class="hide-text">隐藏</span>
           </button>
         </div>
 
         <div class="down clearfix">
           <div class="down-default" :class="{'down-active': buttonVal === '充值'}">
-            <button @click="selectBtnType()">
+            <button @click="selectBtnType('充值')">
               <div class="btn-icon"></div>
               <div class="btn-text">充值</div>
             </button>
           </div>
           <div class="down-default" :class="{'down-active': buttonVal === '提现'}">
-            <button  @click="selectBtnType()">
+            <button  @click="selectBtnType('提现')">
               <div class="btn-icon"></div>
               <div class="btn-text">提现</div>
             </button>
@@ -60,9 +60,22 @@
         </div>
         <div class="main-mid">
           <div class="main-imgs">
-            <div class="item item-wx"></div>
-            <div class="item item-ali-no"></div>
-            <div class="item item-bank-no"></div>
+
+            <div
+                @click="selectIconType(2)"
+                class="item-wx-no"
+                :class="{'item-wx-active': selectIconVal === 2}">
+            </div>
+            <div
+                @click="selectIconType(1)"
+                class="item-ali-no"
+                :class="{'item-ali-active': selectIconVal === 1}">
+            </div>
+            <div
+                @click="selectIconType(3)"
+                class="item-bank-no"
+                :class="{'item-bank-active': selectIconVal === 3}">
+            </div>
           </div>
           <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
           <p v-show="buttonVal === '提现'">资产余额1000积分，<span>全部提现</span></p>
@@ -101,6 +114,7 @@ export default {
   name: 'Home',
   data () {
     return {
+      userMsg: {},
       timer: 0,
       keyword: '',
       visibleMoney: '',
@@ -111,6 +125,7 @@ export default {
       dialogText: '订单匹配中，请稍后...',
       orderState: '已提交',
       headerInfo: {},
+      selectIconVal: 2, // 1支付宝，2微信支付，3银行
       mainInfo: {
         state: '充值积分',
         text: ''
@@ -185,7 +200,8 @@ export default {
     },
 
     // 选择- 充值 / 提现
-    selectBtnType () {
+    selectBtnType (type) {
+      if (type === this.buttonVal) return
       this.buttonVal = this.buttonVal === '充值' ? '提现' : '充值'
       if (this.buttonVal === '充值') {
         this.mainInfo = {
@@ -201,8 +217,14 @@ export default {
       this.$refs.dialog.selectTab('未完成')
     },
 
+    selectIconType (type) {
+      this.selectIconVal = type
+    },
+
     // 验证窗口
     changeValue () {
+      // this.dialogOrderVal = !this.dialogOrderVal
+      // return
       const types = 'ss' // 付款-类型
       const inputs = this.keyword
       if (types === '') {
@@ -223,19 +245,6 @@ export default {
         if (this.buttonVal === '充值') {
           this.submitOrderA()
 
-          // this.timer = setInterval(() => {
-          //   if (this.timer === 3000) {
-          //     this.dialogText = '订单匹配成功，买家正在付款'
-          //   } else
-          //   if (this.timer === 8000) {
-          //     this.dialogText = '买家已付款，请你确认收款'
-          //     if (this.timer) {
-          //       clearTimeout(this.timer)
-          //     }
-          //   }
-          //   this.timer += 1000
-          // }, 2000)
-
         // 提交订单-提现
         } else {
           this.submitOrderB()
@@ -243,15 +252,17 @@ export default {
       }
     },
 
-    // 提交订单
+    // 提交订单-充值
     submitOrderA () {
+      console.log('提交订单-充值')
       this.postOrderData.order_amount = this.keyword
       const data = this.postOrderData
-      const url = 'http://order.service.168mi.cn'
+      const url = this.$api.order
       axios.post(url + '/api/order/recharge', data)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
+            console.log(res)
             this.dialogOrderVal = !this.dialogOrderVal
           } else {
             this.$toast(res.msg)
@@ -263,14 +274,18 @@ export default {
         })
     },
 
+    // 提交订单-提现
     submitOrderB () {
+      console.log('提交订单-提现')
+      this.postOrderData.pay_type = (this.selectIconVal).toString()
       this.postOrderData.order_amount = this.keyword
       const data = this.postOrderData
-      const url = 'http://order.service.168mi.cn'
-      axios.post(url + '/api/order/draw', data)
+      const url = this.$api.order + '/api/order/draw'
+      axios.post(url, data)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
+            console.log(res)
             this.dialogOrderVal = !this.dialogOrderVal
           } else {
             this.$toast(res.msg)
@@ -284,6 +299,7 @@ export default {
 
     // type = 1未完成, 2已完成, 3已取消
     onTabEvent (type) {
+      this.getHomeInfo() // 刷新首页
       this.getOrderInfo(type)
     },
 
@@ -307,7 +323,7 @@ export default {
         'limit': '10'
       }
       const name = this.buttonVal === '充值' ? 'getRechangeLists' : 'getDrawLists'
-      const url = 'http://order.service.168mi.cn'
+      const url = this.$api.order
       axios.post(url + '/api/order/' + name, data)
         .then(res => {
           res = res.data
@@ -356,7 +372,33 @@ export default {
       }
     },
     jumpSetPage () {
-      this.$router.push({ name: 'Setting' })
+      this.getUserMsg()
+      this.$router.push({
+        name: 'Setting'
+      })
+    },
+    // 获取用户信息
+    getUserMsg () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'third_user_id': '1'
+      }
+      let url = 'http://user.service.168mi.cn'
+      axios.post(url + '/api/user/getUserInfo', data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.userMsg = res.data.list
+            sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
     }
   }
 }
@@ -541,6 +583,9 @@ header {
           background-size: 100%;
           background-position: center;
         }
+        .hide-eye{
+          background: url('~imgurl/look2-icon.png') no-repeat;
+        }
       }
     }
     .down {
@@ -611,35 +656,43 @@ header {
       .main-imgs {
         display: flex;
         margin-top: 27px;
-        .item {
+        .item-wx-no {
           width:160px;
           height:54px;
           background-color: #0078FF;
           margin-left: 50px;
           border-radius: 10px;
-        }
-        .item-wx {
-          background: url('~imgurl/wx_icon_active.png') no-repeat right 0 center;
-          background-size: 100%
-        }
-        .item-ali {
-          background: url('~imgurl/ali_icon_active.png') no-repeat right 0 center;
-          background-size: 100%
-        }
-        .item-bank {
-          background: url('~imgurl/bank_icon_active.png') no-repeat right 0 center;
-          background-size: 100%
-        }
-        .item-wx-no {
           background: url('~imgurl/wx_icon_no.png') no-repeat right 0 center;
           background-size: 100%
         }
         .item-ali-no {
+          width:160px;
+          height:54px;
+          background-color: #0078FF;
+          margin-left: 50px;
+          border-radius: 10px;
           background: url('~imgurl/ali_icon_no.png') no-repeat right 0 center;
           background-size: 100%
         }
         .item-bank-no {
+          width:160px;
+          height:54px;
+          background-color: #0078FF;
+          margin-left: 50px;
+          border-radius: 10px;
           background: url('~imgurl/bank_icon_no.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-wx-active {
+          background: url('~imgurl/wx_icon_active.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-ali-active {
+          background: url('~imgurl/ali_icon_active.png') no-repeat right 0 center;
+          background-size: 100%
+        }
+        .item-bank-active {
+          background: url('~imgurl/bank_icon_active.png') no-repeat right 0 center;
           background-size: 100%
         }
       }

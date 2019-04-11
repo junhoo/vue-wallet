@@ -53,37 +53,55 @@
       <p class="blank"></p>
       <div class="upload">
         <p class="name">请上传收款二维码</p>
+        <div class="imgs">
+          <img
+              v-if="entryType === 'alipay' || entryType === 'wechat'"
+              class="img-up"
+              src="~imgurl/upload.png">
+          <img
+              v-else
+              class="img-down"
+              :src="qrcodeUrl">
+          <input type="file" @change="uploadFile($event)">
+        </div>
         <!-- <div class="btn">
           <van-uploader :after-read="onRead">
             <van-icon name="photograph"/>
           </van-uploader>
         </div> -->
-        <div class="imgs">
-          <input type="file" @change="uploadFile($event)">
-        </div>
       </div>
     </div>
 
     <footer>
       <button @click="boundBank()">确定</button>
     </footer>
+
+    <dialog-box
+                :show.sync='dialogBoxVal'
+                :dialog-option="dialogOption"
+                v-on:dialogboxEvent='onDialogBox'>
+      </dialog-box>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import DialogBox from 'common/dialog/Dialog'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'SettingBound',
   components: {
-    CommonHeader
+    CommonHeader,
+    DialogBox
   },
   data () {
     return {
       entryType: '',
       entryIsbound: '',
       navTitle: '设置',
+      qrcodeUrl: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1671789140,435698588&fm=26&gp=0.jpg',
       apiBank: {
+        'app-name': '',
         'merchant_type': '1', // 1 A端
         'merchant_code': '12345', // 商户渠道
         'third_user_id': '1', // 第三方平台
@@ -93,6 +111,7 @@ export default {
         'bank_no': '' // 银行卡号
       },
       apiAlipay: {
+        'app-name': '',
         'merchant_type': '1',
         'merchant_code': '12345',
         'alipay_name': '',
@@ -101,17 +120,27 @@ export default {
         'third_user_id': '1'
       },
       apiWechat: {
+        'app-name': '',
         'merchant_type': '1',
         'merchant_code': '12345',
         'wechat_name': '',
         'wechat_account': '',
         'wechat_rq_code': '',
         'third_user_id': '1'
+      },
+      dialogBoxVal: false, // 显示对话框
+      dialogOption: {
+        title: '提示',
+        text: '为确保交易顺利，请确保如实填写信息。',
+        cancelButtonText: '修改',
+        confirmButtonText: '确认'
       }
     }
   },
   created () {
     this.entryType = this.$route.query.type
+    this.entryIsbound = this.$route.query.isbound
+    this.getListInfo(this.$route.query.type, this.$route.query.isbound)
   },
   methods: {
     // event上传图片
@@ -120,11 +149,8 @@ export default {
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
-      // let config = {
-      //   headers: {'Content-Type': 'multipart/form-data'}
-      // }
-      // ali_pay/20190410/1d87e8fb-e714-4e92-ab85-0736616a9acb.png
-      let url = 'http://user.service.168mi.cn'
+
+      let url = this.$api.user
       const entryType = this.$route.query.type
       if (entryType === 'wechat') {
         url += '/api/Upload/uploadWeChatPayFile'
@@ -160,34 +186,45 @@ export default {
     onRead (file) {
     },
 
-    boundBank () {
-      let data = null
-      let url = 'http://user.service.168mi.cn'
-      const entryType = this.$route.query.type
-
-      if (entryType === 'bank') {
-        console.log('绑定-银行卡', data)
-        data = this.apiBank
-        url += '/api/Bindpay/addBankPay'
-      } else if (entryType === 'wechat') {
-        console.log('绑定-微信', data)
-        data = this.apiWechat
-        url += '/api/Bindpay/addWeChatPay'
-      } else if (entryType === 'alipay') {
-        console.log('绑定-支付宝', data)
-        data = this.apiAlipay
-        url += '/api/Bindpay/addAliPay'
-      } else {
-        data = {}
+    // 获取绑定信息
+    getListInfo (type, isbound) {
+      if (isbound !== 'y') return
+      const data = {
+        'app-name': '',
+        'merchant_type': '1',
+        'merchant_code': '12345',
+        'third_user_id': '1'
       }
-
-      console.log(data)
+      let url = this.$api.user
+      if (type === 'bank') {
+        url += '/api/Bindpay/getBankLists'
+      } else if (type === 'alipay') {
+        url += '/api/Bindpay/getAliPayLists'
+      } else if (type === 'wechat') {
+        url += '/api/Bindpay/getWeChatLists'
+      }
       axios.post(url, data)
         .then(res => {
           res = res.data
-          console.log('绑定: ' + JSON.stringify(res))
+          console.log(res)
           if (res.code === '10000') {
-            this.$toast(res.msg)
+            const _info = res.data.list
+            if (type === 'bank') {
+              this.apiBank.bank_name = _info.bank_name
+              this.apiBank.bank_address = _info.bank_address
+              this.apiBank.bank_sub_branch = _info.bank_sub_branch
+              this.apiBank.bank_no = _info.bank_no
+            } else if (type === 'alipay') {
+              this.apiAlipay.alipay_name = _info.alipay_name
+              this.apiAlipay.alipay_account = _info.alipay_account
+              this.apiAlipay.alipay_rq_code = _info.alipay_rq_code
+              this.qrcodeUrl = _info.alipay_rq_code
+            } else if (type === 'wechat') {
+              this.apiWechat.wechat_name = _info.wechat_name
+              this.apiWechat.wechat_account = _info.wechat_account
+              this.apiWechat.wechat_rq_code = _info.wechat_rq_code
+              this.qrcodeUrl = res.data.list.wechat_rq_code
+            }
           } else {
             this.$toast(res.msg)
           }
@@ -197,6 +234,54 @@ export default {
           this.$toast('网络错误')
         })
     },
+
+    boundBank () {
+      this.dialogBoxVal = true
+    },
+
+    onDialogBox (res) {
+      const type = this.entryType
+      const isbound = this.entryIsbound
+      if (!res) return
+      let data = null
+      let url = this.$api.user
+      const entryType = type
+
+      if (entryType === 'bank') {
+        data = this.apiBank
+        url += isbound === 'y'
+          ? '/api/Bindpay/bankInfoUpdate'
+          : '/api/Bindpay/addBankPay'
+      } else if (entryType === 'wechat') {
+        data = this.apiWechat
+        url += isbound === 'y'
+          ? '/api/Bindpay/updateWeChatInfo'
+          : '/api/Bindpay/addWeChatPay'
+      } else if (entryType === 'alipay') {
+        data = this.apiAlipay
+        url += isbound === 'y'
+          ? '/api/Bindpay/updateAlipayInfo'
+          : '/api/Bindpay/addAliPay'
+      } else {
+        data = {}
+      }
+
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.$toast('保存成功', 1000)
+            this.$router.go(-1)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误')
+        })
+    },
+
     jumpPayBound () {
       this.$router.push({ name: 'SettingBound' })
     }
@@ -269,13 +354,23 @@ main {
       }
     }
     .imgs {
+      display: block;
       margin: 0 auto;
       margin-top: 74px;
       width: 288px;
       height: 288px;
-      background: url('~imgurl/upload.png') no-repeat;
-      background-size: 100%;
+      // background: url('~imgurl/upload.png') no-repeat;
+      // background-size: 100%;
+      .img-up {
+        width: 100%;
+      }
+      .img-down {
+        width: 288px;
+        height: 288px;
+        border: 1px solid #9FA9BA;
+      }
       input {
+        margin-top: -288px;
         width: 288px;
         height: 288px;
         opacity: 0;

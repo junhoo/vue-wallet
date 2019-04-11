@@ -4,7 +4,7 @@
     <div class="wrapper">
       <div class="inside">
         <div class="boxs">
-          <p class="boxs-state">{{text}}</p>
+          <p class="boxs-state">{{dialogText}}</p>{{payString}}
           <p class="boxs-text" v-show="stateA">收款账号：银行卡（0988）</p>
           <button class="look" v-show="stateB">查看</button>
           <button class="look" v-show="stateC">去确认收款</button>
@@ -31,9 +31,16 @@ export default {
   },
   data () {
     return {
+      dialogText: '',
       stateA: false, // 匹配中
       stateB: false, // 匹配成功
       stateC: false // 已付款
+    }
+  },
+  computed: {
+    payString () {
+      console.log('show', this.show)
+      return '222'
     }
   },
   methods: {

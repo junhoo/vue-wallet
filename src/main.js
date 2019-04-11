@@ -15,6 +15,7 @@ const Vue = require('vue')
 Vue.use(Vant)
 Vue.use(Toast)
 
+Vue.prototype.$api = JSON.parse(process.env.api)
 Vue.config.productionTip = false
 fastClick.attach(document.body)
 

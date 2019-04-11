@@ -6,7 +6,7 @@
         <div class="hint">实名认证</div>
         <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
         <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
-        <p v-if="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2" class="note0 note4">已提交审核，您仍然可以修改！</p>
+        <p v-if="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
         <div class="item">
           <div class="name">证件类型</div>
           <input readonly type="text" :value="pap">
@@ -25,7 +25,7 @@
         </div>
         <div class="item">
           <div class="name">证件号码</div>
-          <input v-model="userNo" type="number" placeholder="请输入证件号码">
+          <input v-model="userNo" type="text" placeholder="请输入证件号码">
         </div>
         <p v-if="userCertifyMsg.status != 1" class="note">注：请务必使用您本人的实名账户</p>
       </div>
@@ -35,31 +35,37 @@
           <div class="imgs">
             <template v-if="cardUrl1">
               <div class="mask">
-                <img :src="cardUrl1" alt="">
+                <img  ref="cardimg" :src="cardUrl21" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
-              <div>
+              <div v-if="firstUpload">
                 <img v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
                 <img v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
                 <img v-else src="~imgurl/card1-3.png" alt="">
               </div>
+              <div v-else>
+                <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
+              </div>
             </template>
-            <input class="inputpo1" type="file" @change="tirggerFile($event,1)">
+            <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
           </div>
           <div class="imgs">
             <template v-if="cardUrl2">
               <div class="mask">
-                <img :src="cardUrl2" alt="">
+                <img :src="cardUrl22" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
-              <div>
+              <div v-if="firstUpload">
                 <img v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
                 <img v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
                 <img v-else src="~imgurl/card2-3.png" alt="">
+              </div>
+              <div v-else>
+                <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
             </template>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
@@ -69,16 +75,19 @@
         <div class="upload">
           <div class="imgs">
             <template v-if="cardUrl3">
-              <div class="mask">
-                <img :src="cardUrl3" alt="">
+              <div class="mask mask1">
+                <img :src="cardUrl23" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
-              <div>
+              <div v-if="firstUpload">
                 <img v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
                 <img v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
                 <img v-else src="~imgurl/card3-3.png" alt="">
+              </div>
+              <div v-else>
+                <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
               </div>
             </template>
             <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
@@ -104,6 +113,7 @@ export default {
   },
   data () {
     return {
+      firstUpload: true,
       navTitle: '',
       pap: '身份证',
       chenckcard: 0,
@@ -114,6 +124,9 @@ export default {
       cardUrl1: '',
       cardUrl2: '',
       cardUrl3: '',
+      cardUrl21: '',
+      cardUrl22: '',
+      cardUrl23: '',
       userCertifyMsg: {}
     }
   },
@@ -134,9 +147,11 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === '10000') {
+            this.firstUpload = false
             this.userCertifyMsg = res.data.list
             this.userNo = res.data.list.credentials_no
             this.username = res.data.list.name
+            this.pap = res.data.list.credentials_type_str
           } else {
             this.$toast(res.msg)
           }
@@ -162,8 +177,22 @@ export default {
     },
     // event上传图片
     tirggerFile (event, i) {
+      var that = this
       let file = event.target.files[0]
+      var reads = new FileReader()
       let param = new FormData()
+      reads.readAsDataURL(file)
+      reads.onload = function (e) {
+        if (i === 1) {
+          that.cardUrl21 = this.result
+        } else if (i === 2) {
+          that.cardUrl22 = this.result
+        } else {
+          that.cardUrl23 = this.result
+        }
+        console.log(that.cardUrl21, i)
+      }
+      console.log(this.cardUrl21, i)
       param.append('file', file, file.name)
       param.append('type', '1')
       let url = 'http://user.service.168mi.cn'
@@ -224,6 +253,10 @@ export default {
         return false
       }
       const url = 'http://user.service.168mi.cn'
+      var url1 = '/api/Authentication/addAuthentication'
+      if (!this.firstUpload) {
+        url1 = '/api/Authentication/updateAuthentication'
+      }
       const data = {
         'app-name': '123',
         'merchant_type': '1', // 1:A端
@@ -236,7 +269,7 @@ export default {
         'hold_certificates': this.cardUrl3, // 手持照
         'credentials_type': this.liActive
       }
-      axios.post(url + '/api/Authentication/addAuthentication', data)
+      axios.post(url + url1, data)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
@@ -359,18 +392,35 @@ export default {
             height: 100%;
             width: 310px;
             position: relative;
-            background-color: rgba(0, 0, 0, .4);
             i{
+              display: inline-block;
+              height: 100%;
+              width: 310px;
+              background-color: rgba(0, 0, 0, .4);
               position: absolute;
               top: 50%;
               left: 50%;
+              line-height: 240px;
               transform: translateX(-50%) translateY(-50%);
               font-size: 24px;
               color: #fff;
             }
+            img{
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .mask1{
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
           }
           img{
+            box-shadow: 0 0 20px -8px #666;
+          }
+          .img{
             width: 310px;
+            height: 240px;
             box-shadow: 0 0 20px -8px #666;
           }
           input{
