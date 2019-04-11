@@ -4,6 +4,7 @@ import DetailRecharge from '@/views/detail/DetailRecharge'
 // import Vue from 'vue'
 // import Router from 'vue-router'
 import Setting from '@/views/setting/Setting'
+import SettingCertification from '@/views/setting/SettingCertification'
 import SettingPay from '@/views/setting/SettingPay'
 import SettingBound from '@/views/setting/SettingBound'
 
@@ -32,6 +33,11 @@ export default new Router({
       path: '/setting',
       name: 'Setting',
       component: Setting
+    },
+    {
+      path: '/setting/SettingCertification',
+      name: 'SettingCertification',
+      component: SettingCertification
     },
     {
       path: '/setting/pay',

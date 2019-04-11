@@ -1,0 +1,413 @@
+<template>
+  <div class="wrapper">
+    <common-header :title="navTitle"></common-header>
+    <main>
+      <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
+        <div class="hint">实名认证</div>
+        <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
+        <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
+        <p v-if="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2" class="note0 note4">已提交审核，您仍然可以修改！</p>
+        <div class="item">
+          <div class="name">证件类型</div>
+          <input readonly type="text" :value="pap">
+          <div class="btn" @click="selectcard()"><i ></i></div>
+          <template v-if="chenckcard">
+              <ul>
+                <li @click="selecitem(1)" :class="{'liActive':liActive==1}">身份证</li>
+                <li @click="selecitem(2)" :class="{'liActive':liActive==2}">护照</li>
+                <li @click="selecitem(3)" :class="{'liActive':liActive==3}">港澳通行证</li>
+              </ul>
+          </template>
+        </div>
+        <div class="item">
+          <div class="name">真实姓名</div>
+          <input v-model="username" type="text" placeholder="请输入真实姓名">
+        </div>
+        <div class="item">
+          <div class="name">证件号码</div>
+          <input v-model="userNo" type="number" placeholder="请输入证件号码">
+        </div>
+        <p v-if="userCertifyMsg.status != 1" class="note">注：请务必使用您本人的实名账户</p>
+      </div>
+      <div v-if="userCertifyMsg.status != 1" class="bottom">
+        <p class="hint">上传{{pap}}照片</p>
+        <div class="upload">
+          <div class="imgs">
+            <template v-if="cardUrl1">
+              <div class="mask">
+                <img :src="cardUrl1" alt="">
+                <i>已上传</i>
+              </div>
+            </template>
+            <template v-else>
+              <div>
+                <img v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img v-else src="~imgurl/card1-3.png" alt="">
+              </div>
+            </template>
+            <input class="inputpo1" type="file" @change="tirggerFile($event,1)">
+          </div>
+          <div class="imgs">
+            <template v-if="cardUrl2">
+              <div class="mask">
+                <img :src="cardUrl2" alt="">
+                <i>已上传</i>
+              </div>
+            </template>
+            <template v-else>
+              <div>
+                <img v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                <img v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                <img v-else src="~imgurl/card2-3.png" alt="">
+              </div>
+            </template>
+            <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
+          </div>
+        </div>
+        <p class="hint">上传手持{{pap}}照片</p>
+        <div class="upload">
+          <div class="imgs">
+            <template v-if="cardUrl3">
+              <div class="mask">
+                <img :src="cardUrl3" alt="">
+                <i>已上传</i>
+              </div>
+            </template>
+            <template v-else>
+              <div>
+                <img v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                <img v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                <img v-else src="~imgurl/card3-3.png" alt="">
+              </div>
+            </template>
+            <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
+          </div>
+        </div>
+        <div class="note2">注：上传图片内证件号、姓名等信息应确保清晰；切不可修改或覆盖</div>
+      </div>
+    </main>
+    <footer>
+      <button v-if="userCertifyMsg.status != 1" @click="submit(0)">提交审核</button>
+      <button v-else @click="submit(1)">开始使用</button>
+    </footer>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+import CommonHeader from 'common/header/Header'
+export default {
+  name: 'SettingBound',
+  components: {
+    CommonHeader
+  },
+  data () {
+    return {
+      navTitle: '',
+      pap: '身份证',
+      chenckcard: 0,
+      status: 0,
+      liActive: 1,
+      username: '',
+      userNo: '',
+      cardUrl1: '',
+      cardUrl2: '',
+      cardUrl3: '',
+      userCertifyMsg: {}
+    }
+  },
+  created () {
+    this.getUserMsg()
+  },
+  methods: {
+    // 获取用户实名认证信息
+    getUserMsg () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'third_user_id': '1'
+      }
+      let url = 'http://user.service.168mi.cn'
+      axios.post(url + '/api/Authentication/getAuthenticationLists', data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.userCertifyMsg = res.data.list
+            this.userNo = res.data.list.credentials_no
+            this.username = res.data.list.name
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
+    },
+    // 选择证件类型
+    selectcard () {
+      this.chenckcard = !this.chenckcard
+    },
+    selecitem (idx) {
+      this.liActive = idx
+      if (idx === 1) {
+        this.pap = '身份证'
+      } else if (idx === 2) {
+        this.pap = '护照'
+      } else {
+        this.pap = '港澳通行证'
+      }
+      this.chenckcard = !this.chenckcard
+    },
+    // event上传图片
+    tirggerFile (event, i) {
+      let file = event.target.files[0]
+      let param = new FormData()
+      param.append('file', file, file.name)
+      param.append('type', '1')
+      let url = 'http://user.service.168mi.cn'
+      if (this.liActive === 1) {
+        url += '/api/Upload/uploadIdCardFile'
+      } else if (this.liActive === 2) {
+        url += '/api/Upload/uploadPassportFile'
+      } else {
+        url += '/api/Upload/uploadHMpassFile'
+      }
+      axios.post(url, param)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            const imgurl = res.data.list.url
+            if (imgurl) {
+              if (i === 1) {
+                this.cardUrl1 = imgurl
+              } else if (i === 2) {
+                this.cardUrl2 = imgurl
+              } else {
+                this.cardUrl3 = imgurl
+              }
+            } else {
+              this.$toast('上传路径消失~')
+            }
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误')
+        })
+    },
+    submit (ix) {
+      if (ix === 1) {
+        this.$router.go(-1)
+        return false
+      }
+      if (this.username === '') {
+        this.$toast('请填写真实姓名')
+        return false
+      }
+      if (this.userNo === '') {
+        this.$toast('请填写证件号码')
+        return false
+      }
+      if (this.cardUrl1 === '') {
+        this.$toast('请上传证件正面照')
+        return false
+      }
+      if (this.cardUrl2 === '') {
+        this.$toast('请上传证件背面照')
+        return false
+      }
+      if (this.cardUrl3 === '') {
+        this.$toast('请上传手持证件照')
+        return false
+      }
+      const url = 'http://user.service.168mi.cn'
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'third_user_id': '1',
+        'name': this.username,
+        'credentials_no': this.userNo,
+        'credentials_asurface': this.cardUrl1, // 正面照
+        'credentials_bsurface': this.cardUrl2, // 背面照
+        'hold_certificates': this.cardUrl3, // 手持照
+        'credentials_type': this.liActive
+      }
+      axios.post(url + '/api/Authentication/addAuthentication', data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.$toast(res.msg)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误')
+        })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+.wrapper{
+  main{
+    padding-top: 60px;
+    margin-bottom: 100px;
+    .hint{
+        font-size: 48px;
+        color: #6D778B;
+        font-weight: bold;
+        margin-bottom: 50px;
+      }
+    .topBorder{
+      border-bottom: none !important;
+    }
+    .top{
+      position: relative;
+      border-bottom: 12px solid #F4F4F4;
+      padding: 0 70px 24px 30px;
+      .note0{
+        font-size: 24px;
+        position: absolute;
+        top: 60px;
+      }
+      .note1{
+        color: #FF7777;
+      }
+      .note4{
+        color: #3B67E0;
+      }
+      .note3{
+        color: #4BC766;
+      }
+      .item{
+        position: relative;
+        .name{
+          font-size: 28px;
+          font-weight: bold;
+          color: #6D778B;
+          margin-bottom: 8px;
+        }
+        input{
+          width: 100%;
+          color: #6D778B;
+          font-size: 32px;
+          background-color: transparent;
+          border-bottom: 1px solid #E3E3E3;
+          padding: 24px 5px;
+          margin-bottom: 48px;
+          &::placeholder{
+            color: #9FA9BA;
+          }
+        }
+        .btn{
+          width: 100px;
+          height: 50px;
+          position: absolute;
+          bottom: 50px;
+          right: 10px;
+          text-align: right;
+          i{
+            display: inline-block;
+            width: 28px;
+            height: 16px;
+            background: url("~imgurl/todownarrow.png") center / 100% no-repeat;
+          }
+        }
+        ul{
+          background-color: #F3F4F7;
+          position: absolute;
+          top: 122px;
+          width: 100%;
+          z-index: 222;
+          li{
+            font-size: 32px;
+            color: #6D778B;
+            padding: 25px 18px;
+          }
+          .liActive{
+            background-color: #3B67E0;
+            color: #fff;
+          }
+        }
+      }
+      .note{
+        font-size: 24px;
+        color: #FFA55A;
+        font-weight: bold;
+      }
+    }
+    .bottom{
+      padding: 48px 30px 0;
+      .upload{
+        margin-bottom: 64px;
+        display: flex;
+        position: relative;
+        .imgs{
+          flex: 1;
+          text-align: center;
+          height: 240px;
+          &:first-of-type{
+            margin-right: 40px;
+          }
+          .mask{
+            height: 100%;
+            width: 310px;
+            position: relative;
+            background-color: rgba(0, 0, 0, .4);
+            i{
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translateX(-50%) translateY(-50%);
+              font-size: 24px;
+              color: #fff;
+            }
+          }
+          img{
+            width: 310px;
+            box-shadow: 0 0 20px -8px #666;
+          }
+          input{
+            position: absolute;
+            top: 0px;
+            width: 280px;
+            height: 230px;
+            opacity: 0;
+          }
+          .inputpo1{
+            left: 20px;
+          }
+          .inputpo2{
+            right: 20px;
+          }
+          .inputpo3{
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+      }
+      .note2{
+        font-size: 28px;
+        color: #9299A7;
+      }
+    }
+  }
+  footer{
+    padding: 0 65px 100px;
+    button{
+      width: 100%;
+      background-color: #3B67E0;
+      height: 88px;
+      border-radius: 4px;
+      font-size: 32px;
+      color: #fff;
+    }
+  }
+}
+</style>

@@ -26,9 +26,9 @@
             <div
                 class="li-tab-status"
                 :class="{
-                  'li-tab-orange': item.status === 2,
-                  'li-tab-blue': item.status === 1,
-                  'li-tab-red': item.status === 3 || item.status === 4
+                  'li-tab-orange': item.status === 2 || item.status === 7,
+                  'li-tab-blue': item.status === 1 || item.status === 5,
+                  'li-tab-red': item.status === 3 || item.status === 4 || item.status === 6
                 }"
             >{{item.status_text}}</div>
           </div>
