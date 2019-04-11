@@ -156,7 +156,7 @@ export default {
         'order_no': this.order_no,
         'third_user_id': '1'
       }
-      const url = 'http://order.service.168mi.cn/api/order/drawDetail'
+      const url = this.$api.order + '/api/order/drawDetail'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -181,7 +181,7 @@ export default {
         'order_no': this.order_no,
         'third_user_id': '1'
       }
-      const url = 'http://order.service.168mi.cn/api/order/cancelOrder'
+      const url = this.$api.order + '/api/order/cancelOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -205,7 +205,7 @@ export default {
         'order_no': this.order_no,
         'third_user_id': '1'
       }
-      const url = 'http://order.service.168mi.cn/api/order/confirmOrder'
+      const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data

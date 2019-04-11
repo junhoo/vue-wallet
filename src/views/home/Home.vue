@@ -6,7 +6,7 @@
       <div class="bars clearfix">
         <div class="left" @click="jumpSetPage()"><p>设置</p></div>
         <div class="title">资产</div>
-        <div class="right"><p>申诉</p></div>
+        <div class="right" @click="matchingOrder()"><p>申诉</p></div>
       </div>
 
       <div class="boxs">
@@ -80,7 +80,7 @@
           <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
           <p v-show="buttonVal === '提现'">资产余额1000积分，<span>全部提现</span></p>
         </div>
-        <button class="main-down" @click="changeValue()">提交订单</button>
+        <button class="main-down" @click="verifyWindow()">提交订单</button>
       </main>
 
       <div class="text-boxs">
@@ -93,7 +93,14 @@
 
       <!-- order -->
       <home-list ref="dialog" :list="orderList" v-on:tabevent='onTabEvent' ></home-list>
-      <dialog-order :show.sync='dialogOrderVal' :text='dialogText'></dialog-order>
+      <dialog-order
+                  :show.sync='dialogOrderVal'
+                  :state='dialogFlowVal'
+                  :types='buttonVal'
+                  :money='dialogFlowMoney'
+                  :account='dialogFlowAccount'
+                  v-on:dialogOrderEvent='onDialogOrder'>
+      </dialog-order>
       <dialog-box
                 :show.sync='dialogBoxVal'
                 :dialog-option="dialogOption"
@@ -116,13 +123,18 @@ export default {
     return {
       userMsg: {},
       timer: 0,
+      loopTimer: 0,
       keyword: '',
       visibleMoney: '',
       moneyShow: true, // 显示金额
       dialogBoxVal: false, // 显示对话框
       dialogOrderVal: false, // 显示
       buttonVal: '充值',
-      dialogText: '订单匹配中，请稍后...',
+      timeCount: 0,
+      dialogFlowVal: 1, // 1 匹配中 2 匹配成功 3 到账/已付款 4 收款
+      dialogFlowType: '充值',
+      dialogFlowMoney: '',
+      dialogFlowAccount: '',
       orderState: '已提交',
       headerInfo: {},
       selectIconVal: 2, // 1支付宝，2微信支付，3银行
@@ -164,13 +176,16 @@ export default {
       this.moneyShow = false
     }
   },
+  mounted () {
+    // this.selectBtnType('提现')
+  },
   methods: {
     getHomeInfo () {
       const data = {
         'app-name': 'app_name1',
         'uid': 1
       }
-      const url = 'http://wallet.service.168mi.cn'
+      const url = this.$api.wallet
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
           res = res.data
@@ -222,9 +237,7 @@ export default {
     },
 
     // 验证窗口
-    changeValue () {
-      // this.dialogOrderVal = !this.dialogOrderVal
-      // return
+    verifyWindow () {
       const types = 'ss' // 付款-类型
       const inputs = this.keyword
       if (types === '') {
@@ -243,50 +256,37 @@ export default {
       } else {
         // 提交订单-充值
         if (this.buttonVal === '充值') {
-          this.submitOrderA()
+          this.submitOrderMatch('充值')
 
         // 提交订单-提现
         } else {
-          this.submitOrderB()
+          this.submitOrderMatch('提现')
         }
       }
     },
 
     // 提交订单-充值
-    submitOrderA () {
-      console.log('提交订单-充值')
+    submitOrderMatch (type) {
+      console.log(type)
+      let url = this.$api.order
+      url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
       this.postOrderData.order_amount = this.keyword
       const data = this.postOrderData
-      const url = this.$api.order
-      axios.post(url + '/api/order/recharge', data)
-        .then(res => {
-          res = res.data
-          if (res.code === '10000') {
-            console.log(res)
-            this.dialogOrderVal = !this.dialogOrderVal
-          } else {
-            this.$toast(res.msg)
-          }
-        })
-        .catch(e => {
-          console.log(e)
-          this.$toast('网络错误')
-        })
-    },
-
-    // 提交订单-提现
-    submitOrderB () {
-      console.log('提交订单-提现')
-      this.postOrderData.pay_type = (this.selectIconVal).toString()
-      this.postOrderData.order_amount = this.keyword
-      const data = this.postOrderData
-      const url = this.$api.order + '/api/order/draw'
       axios.post(url, data)
         .then(res => {
           res = res.data
+          console.log('提交订单', res)
           if (res.code === '10000') {
-            console.log(res)
-            this.dialogOrderVal = !this.dialogOrderVal
+            // list: {
+            // match: false
+            // order_no: "8850961554953057"
+            // res: true }
+            const matchs = res.data.list.match
+            const orderNo = res.data.list.order_no
+            sessionStorage.setItem('match', matchs)
+            sessionStorage.setItem('matchOrderNo', orderNo)
+            this.matchingOrder()
+            // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
           } else {
             this.$toast(res.msg)
           }
@@ -308,6 +308,41 @@ export default {
         // 点击去实名认证
       } else {
         // 点击去绑定支付
+      }
+    },
+
+    onDialogOrder (type) {
+      console.log(type)
+      if (type === '查看') {
+        const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
+        clearInterval(this.loopTimer)
+        const ordeType = this.buttonVal === '充值' ? 1 : 2
+        this.jumpDetail(ordeType, 1, orderNo) // 1 已提交
+      }
+      if (type === '收款') {
+        this.finishOrder()
+      }
+      this.dialogFlowVal = 1 // 重置 匹配中...
+    },
+
+    jumpDetail (ordeType, status, orderId) {
+      // 1充值，2提现
+      if (ordeType === 1) {
+        this.$router.push({
+          name: 'DetailRecharge',
+          query: {
+            orderid: orderId,
+            status: status
+          }
+        })
+      } else {
+        this.$router.push({
+          name: 'Detail',
+          query: {
+            orderid: orderId,
+            status: status
+          }
+        })
       }
     },
 
@@ -363,6 +398,7 @@ export default {
           this.$toast('网络错误')
         })
     },
+
     hideMoney () {
       this.moneyShow = !this.moneyShow
       if (this.moneyShow) {
@@ -371,6 +407,7 @@ export default {
         localStorage.setItem('visibleMoney', false)
       }
     },
+
     jumpSetPage () {
       this.getUserMsg()
       this.$router.push({

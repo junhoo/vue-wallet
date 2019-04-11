@@ -55,7 +55,7 @@
         <p class="name">请上传收款二维码</p>
         <div class="imgs">
           <img
-              v-if="entryType === 'alipay' || entryType === 'wechat'"
+              v-if="entryIsbound === 'n'"
               class="img-up"
               src="~imgurl/upload.png">
           <img
@@ -99,7 +99,7 @@ export default {
       entryType: '',
       entryIsbound: '',
       navTitle: '设置',
-      qrcodeUrl: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1671789140,435698588&fm=26&gp=0.jpg',
+      qrcodeUrl: '', // https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1671789140,435698588&fm=26&gp=0.jpg
       apiBank: {
         'app-name': '',
         'merchant_type': '1', // 1 A端
@@ -145,6 +145,7 @@ export default {
   methods: {
     // event上传图片
     uploadFile (event) {
+      console.log(111)
       let file = event.target.files[0]
       let param = new FormData()
       param.append('file', file, file.name)
@@ -370,6 +371,7 @@ main {
         border: 1px solid #9FA9BA;
       }
       input {
+        border: 1px red solid;
         margin-top: -288px;
         width: 288px;
         height: 288px;
@@ -382,9 +384,9 @@ main {
 
 footer {
   position: relative;
+  margin-top: 90px;
   button {
-    position: fixed;
-    bottom: 70px;
+    position: absolute;
     left: 50%;
     transform: translateX(-50%);
     width: 620px;
