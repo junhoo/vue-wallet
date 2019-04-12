@@ -93,14 +93,14 @@
 
       <!-- order -->
       <home-list ref="dialog" :list="orderList" v-on:tabevent='onTabEvent' ></home-list>
-      <dialog-order
+      <!-- <dialog-order
                   :show.sync='dialogOrderVal'
                   :state='dialogFlowVal'
-                  :types='buttonVal'
+                  :types='dialogBtnType'
                   :money='dialogFlowMoney'
                   :account='dialogFlowAccount'
                   v-on:dialogOrderEvent='onDialogOrder'>
-      </dialog-order>
+      </dialog-order> -->
       <dialog-box
                 :show.sync='dialogBoxVal'
                 :dialog-option="dialogOption"
@@ -114,24 +114,26 @@
 <script>
 import axios from 'axios'
 import HomeList from './components/List'
-import DialogOrder from 'common/order_dialog/Dialog'
+// import DialogOrder from 'common/order_dialog/Dialog'
 import DialogBox from 'common/dialog/Dialog'
 // import { encrypt, decrypt } from '@/assets/utils.js'
 export default {
   name: 'Home',
   data () {
     return {
-      timer: 0,
-      loopTimer: 0,
+      timer: null,
+      loopTimer: null,
+      loopAutoTimer: null,
       keyword: '',
       visibleMoney: '',
       moneyShow: true, // 显示金额
       dialogBoxVal: false, // 显示对话框
-      dialogOrderVal: false, // 显示
       buttonVal: '充值',
-      timeCount: 0,
+      loopCount: 0,
+      loopAutoCount: 0,
+      dialogOrderVal: false, // 显示
+      dialogBtnType: '',
       dialogFlowVal: 1, // 1 匹配中 2 匹配成功 3 到账/已付款 4 收款
-      dialogFlowType: '充值',
       dialogFlowMoney: '',
       dialogFlowAccount: '',
       orderState: '已提交',
@@ -154,12 +156,13 @@ export default {
         text: '请先完成实名认证再进行交易',
         cancelButtonText: '取消',
         confirmButtonText: '去实名'
-      }
+      },
+      connectionFailCount: 0
     }
   },
   components: {
     DialogBox,
-    DialogOrder,
+    // DialogOrder,
     HomeList
   },
   created () {
@@ -171,12 +174,15 @@ export default {
 
     this.getHomeInfo()
     this.getOrderInfo('1')
+    this.loopCount = parseInt(localStorage.getItem('loopConfirmCount'))
+    this.loopAutoCount = parseInt(localStorage.getItem('loopFinishCount'))
+    this.loopAutoOrder()
     if (!JSON.parse(localStorage.getItem('visibleMoney'))) {
       this.moneyShow = false
     }
   },
-  mounted () {
-    // this.selectBtnType('提现')
+  beforeDestroy () {
+    // clearInterval(this.loopAutoTimer)
   },
   methods: {
     getHomeInfo () {
@@ -188,8 +194,8 @@ export default {
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
           res = res.data
-          console.log(res.code)
-          console.log(res)
+          // console.log(res.code)
+          // console.log(res)
           if (res.code === '10000') {
             const _obj = res.data.list
             // "id": 7,
@@ -218,7 +224,9 @@ export default {
     // 选择- 充值 / 提现
     selectBtnType (type) {
       if (type === this.buttonVal) return
-      this.buttonVal = this.buttonVal === '充值' ? '提现' : '充值'
+      const btnval = this.buttonVal === '充值' ? '提现' : '充值'
+      this.buttonVal = btnval
+      this.dialogBtnType = btnval
       if (this.buttonVal === '充值') {
         this.mainInfo = {
           state: '充值积分',
@@ -268,14 +276,15 @@ export default {
 
     // 提交订单-充值
     submitOrderMatch (type) {
-      console.log(type)
+      localStorage.setItem('dialogBtnType', type)
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
       this.postOrderData.order_amount = this.keyword
+      this.postOrderData.choice_pay_type = '1,2'
       const data = this.postOrderData
       axios.post(url, data)
         .then(res => {
-          console.log('提交订单', res)
+          console.log(`${type}-提交订单`, res)
           res = res.data
           if (res.code === '10000') {
             // list: {
@@ -284,8 +293,8 @@ export default {
             // res: true }
             const matchs = res.data.list.match
             const orderNo = res.data.list.order_no
-            sessionStorage.setItem('match', matchs)
-            sessionStorage.setItem('matchOrderNo', orderNo)
+            localStorage.setItem('matchOrderState', matchs)
+            localStorage.setItem('matchOrderNo', orderNo)
             this.matchingOrder()
             // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
           } else {
@@ -444,76 +453,64 @@ export default {
     },
 
     matchingOrder () {
-      this.dialogFlowType = this.buttonVal
       this.dialogOrderVal = !this.dialogOrderVal
+      this.$bus.emit('openDialog', 'open')
 
-      // if (this.dialogFlowType === '充值') {
-      //   let timer = setInterval(() => {
-      //     count += 1000
-      //     if (count >= 4000) {
-      //       this.timeCount = 0
-      //       clearInterval(timer)
-      //     } else {
-      //       console.log('定时 ' + count)
-      //       if (count === 1000) {
-      //         this.dialogFlowVal = 2
-      //       }
-      //       if (count === 2000) {
-      //         this.dialogFlowVal = 3
-      //       }
-      //     }
-      //   }, 1000)
-      // } else {
-      // }
       console.log(this.buttonVal)
       console.log('1 匹配中...')
-      const match = JSON.parse(sessionStorage.getItem('match'))
+      const match = JSON.parse(sessionStorage.getItem('matchOrderState'))
       console.log('match: ' + match)
       if (this.timer) {
         clearTimeout(this.timer)
       }
-      this.timer = setTimeout(() => {
-        if (this.dialogOrderVal === false) {
-          this.dialogOrderVal = true
-        }
-        if (match) {
-          console.log('2 匹配成功')
-          this.dialogFlowVal = 2 // 匹配成功
-          this.loopOrderDetail()
-        }
-      }, 2000)
+      // this.timer = setTimeout(() => {
+      //   if (this.dialogOrderVal === false) {
+      //     this.dialogOrderVal = true
+      //   }
+      //   if (match) {
+      //     console.log('2 匹配成功')
+      //     this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
+      //     localStorage.setItem('openLoopConfirm', '1')
+      //     this.loopOrderDetail()
+      //   }
+      // }, 2000)
+      this.dialogFlowVal = 4
     },
 
     loopOrderDetail () {
-      console.log('=== loop ===')
-      let count = this.timeCount
-      // let timer = setInterval(() => {
+      // console.log('=== 开始自动收款 ===')
+      if (localStorage.getItem('openLoopConfirm') !== '1') return
       this.loopTimer = setInterval(() => {
-        count += 1000
-        if (count >= 120000) { // 两分钟关闭
-          this.timeCount = 0
+        this.loopCount += 5000
+        localStorage.setItem('loopConfirmCount', this.loopCount)
+
+        if (this.connectionFailCount === 2) { // 两次服务器连接失败结束
           clearInterval(this.loopTimer)
-        } else {
-          if (this.dialogFlowVal === 3) {
-            console.log('3 充值到账')
-            console.log('============================')
-            console.log('停止loop')
-            this.getHomeInfo()
-            this.timeCount = 0
+        }
+
+        if (this.dialogFlowVal === 3) {
+          console.log('3 充值到账')
+          console.log('============================')
+          console.log('继续 loop 对方有无付款')
+          this.getHomeInfo()
+          localStorage.setItem('openLoopConfirm', '0')
+          // localStorage.setItem('loopConfirmCount', '0')
+          if (this.buttonVal === '充值') {
             clearInterval(this.loopTimer)
           }
-          this.getOrderData()
-
-          // if (count === 6000 && match && this.dialogFlowType === '提现') {
-          //   this.dialogFlowVal = 4
-          // }
         }
+        this.getOrderData()
+
+        // if (count === 6000 && match && this.dialogFlowType === '提现') {
+        //   this.dialogFlowVal = 4
+        // }
+        // }
       }, 5000)
     },
 
     // 获取订单信息
     getOrderData () {
-      const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
+      const orderNo = sessionStorage.getItem('matchOrderNo')
       const data = {
         'app-name': '123',
         'merchant_type': '1', // 1:A端
@@ -531,39 +528,68 @@ export default {
             if (this.buttonVal === '充值') {
               _data = _data.order_detail
             }
-            let value = _data.pay_type // 1 ali 2 wei 3 bank
-            if (value === 1) {
-              value = '支付宝'
-            } else if (value === 2) {
-              value = '微信'
-            } else {
-              value = '银行卡'
-            }
-            this.dialogFlowAccount = value
+            let value = _data.pay_type
+            const orderAcc = ['', '支付宝', '微信', '银行卡']
+            this.dialogFlowAccount = orderAcc[value]
             this.dialogFlowMoney = _data.order_amount
-            const status = _data.status // 5 已完成 6已匹配 7 待确认 8 自动取消
+            const status = _data.status
+
             if (this.dialogOrderVal === false) {
               this.dialogOrderVal = true
+              this.$bus.emit('openDialog', 'open')
             }
-            console.log('返回订单状态' + status)
-            if (status === 5) {
-              this.dialogFlowVal = 3 // 到账 / 已付款
+
+            const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认']
+            const stateName = stateCode[status - 1]
+            console.log('返回订单状态: ' + stateName)
+            // if (status === 5) { // 后台查询-订单已完成-更新窗口
+
+            if (stateName === '待确认') { // 7
+              this.dialogFlowVal = 3
+              localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
+              // localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+              this.loopAutoOrder()
               clearInterval(this.loopTimer)
-            // sessionStorage.setItem('match', false)
             }
-            console.log(this.dialogFlowVal)
+            console.log('2是匹配成功: ' + this.dialogFlowVal)
+            // if (stateName === '已完成') { // 5
+            //   clearInterval(this.loopTimer)
+            // }
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          this.connectionFailCount += 1
+          this.$toast('服务连接匹配失败~', 1500)
         })
+    },
+
+    loopAutoOrder () {
+      // console.log('=== 开始自动收款 ===')
+      // if (localStorage.getItem('openLoopFinish') !== '1') return
+      this.loopAutoTimer = setInterval(() => {
+        this.loopAutoCount += 2000
+        localStorage.setItem('loopFinishCount', this.loopAutoCount)
+
+        if (this.loopAutoCount >= 7200000) { // 两小时
+          this.finishOrder()
+          if (this.dialogOrderVal === false) {
+            this.dialogOrderVal = true
+            this.$bus.emit('openDialog', 'open')
+          }
+          this.dialogFlowVal = 4
+          // localStorage.setItem('openLoopFinish', '0')
+          // localStorage.setItem('loopFinishCount', '0')
+          clearInterval(this.loopAutoTimer)
+        }
+      }, 5000)
     },
 
     // 确认收款
     finishOrder () {
-      const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
+      const orderNo = localStorage.getItem('matchOrderNo')
+      // localStorage.setItem('matchOrderNo', '')
       const data = {
         'app-name': '123',
         'merchant_type': '1', // 1:A端
@@ -571,6 +597,8 @@ export default {
         'order_no': orderNo,
         'third_user_id': '1'
       }
+      console.log('确认收款')
+      console.log(data)
       const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
         .then(res => {
@@ -834,6 +862,7 @@ header {
         line-height: 91px;
         text-align: right;
         font-size: 30px;
+        padding-right: 5px;
       }
     }
     .main-mid {

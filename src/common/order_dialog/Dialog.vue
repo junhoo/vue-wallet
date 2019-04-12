@@ -3,16 +3,25 @@
     <div class="mask"></div>
     <div class="wrapper">
       <div class="inside">
-        <transition name="fades">
-          <div class="top-bg" v-show="state !== 4"></div>
-        </transition>
+        <!-- <transition name="fades"> -->
+        <div class="top-bg" v-show="state !== 4"></div>
+        <!-- </transition> -->
         <div class="boxs" :class="{'boxs-border-4': state === 4}">
           <p class="boxs-state">{{dialogText}}</p>
           <template v-if="types === '充值'">
+            {{1111}}
             <button class="look" v-show="state === 2">立即付款</button>
             <button class="look" v-show="state === 3">查看</button>
+            <p class="boxs-padding-4" v-show="state === 4">收款账号: {{account}} (0988)</p>
+            <p class="boxs-text" v-show="state === 4">金额<span>￥{{money}}</span></p>
+            <button
+              class="look"
+              :class="{'boxs-margin-4': state === 4}"
+              v-show="state === 4"
+              @click="closeDiv('查看')">查看</button>
           </template>
           <template v-else>
+            {{2222}}
             <button class="look" v-show="state === 2" @click="closeDiv('查看')">查看</button>
             <p class="boxs-text" v-show="state === 3">收款账号：银行卡（0988）</p>
             <button class="look" v-show="state === 3" @click="closeDiv('收款')">去确认收款</button>

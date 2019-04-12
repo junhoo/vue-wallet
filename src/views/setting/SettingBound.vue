@@ -54,15 +54,22 @@
       <div class="upload">
         <p class="name">请上传收款二维码</p>
         <div class="imgs">
-          <img
-              v-if="entryIsbound === 'n'"
-              class="img-up"
-              src="~imgurl/upload.png">
-          <img
-              v-else
-              class="img-down"
-              :src="qrcodeUrl">
-          <input type="file" @change="uploadFile($event)">
+          <!-- <p class="img"><img :src="getObjectURL(value)"><a class="close" @click="delImg(key)">×</a></p> -->
+          <template v-if="entryIsbound === 'n'">
+            <img
+                class="img-up"
+                src="~imgurl/upload.png">
+          </template>
+          <template v-else>
+            <img v-if="preview !== ''"
+                class="img-down"
+                :src="preview">
+            <img
+                v-else
+                class="img-down"
+                :src="qrcodeUrl">
+            <input type="file" @change="uploadFile($event)">
+          </template>
         </div>
         <!-- <div class="btn">
           <van-uploader :after-read="onRead">
@@ -96,6 +103,7 @@ export default {
   },
   data () {
     return {
+      preview: '',
       entryType: '',
       entryIsbound: '',
       navTitle: '设置',
@@ -145,11 +153,17 @@ export default {
   methods: {
     // event上传图片
     uploadFile (event) {
-      console.log(111)
       let file = event.target.files[0]
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
+
+      var reads = new FileReader()
+      reads.readAsDataURL(file)
+      let self = this
+      reads.onload = function (e) {
+        self.preview = this.result
+      }
 
       let url = this.$api.user
       const entryType = this.$route.query.type
@@ -234,6 +248,18 @@ export default {
           console.log(e)
           this.$toast('网络错误')
         })
+    },
+
+    getObjectURL (file) {
+      var url = null
+      if (window.createObjectURL !== undefined) {
+        url = window.createObjectURL(file)
+      } else if (window.URL !== undefined) {
+        url = window.URL.createObjectURL(file)
+      } else if (window.webkitURL !== undefined) {
+        url = window.webkitURL.createObjectURL(file)
+      }
+      return url
     },
 
     boundBank () {
@@ -364,6 +390,7 @@ main {
       // background-size: 100%;
       .img-up {
         width: 100%;
+        height: 100%;
       }
       .img-down {
         width: 288px;
