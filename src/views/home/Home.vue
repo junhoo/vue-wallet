@@ -22,7 +22,7 @@
           </div>
           <p class="text">冻结{{headerInfo.freezing_amount}}</p>
           <button @click="hideMoney()">
-            <div class="hide-icon"></div>
+            <div class="hide-icon" :class="{'hide-eye': !moneyShow}"></div>
             <span class="hide-text">隐藏</span>
           </button>
         </div>
@@ -414,6 +414,33 @@ export default {
 
     jumpSetPage () {
       this.$router.push({ name: 'Setting' })
+      this.getUserMsg()
+      this.$router.push({
+        name: 'Setting'
+      })
+    },
+    // 获取用户信息
+    getUserMsg () {
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'third_user_id': '1'
+      }
+      let url = 'http://user.service.168mi.cn'
+      axios.post(url + '/api/user/getUserInfo', data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            this.userMsg = res.data.list
+            sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
     },
 
     matchingOrder () {
@@ -741,6 +768,9 @@ header {
           background: url('~imgurl/look-icon.png') no-repeat;
           background-size: 100%;
           background-position: center;
+        }
+        .hide-eye {
+          background: url('~imgurl/look2-icon.png') no-repeat;
         }
       }
     }
