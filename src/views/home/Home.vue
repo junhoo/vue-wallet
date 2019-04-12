@@ -22,7 +22,7 @@
           </div>
           <p class="text">冻结{{headerInfo.freezing_amount}}</p>
           <button @click="hideMoney()">
-            <div class="hide-icon" :class="{'hide-eye': !moneyShow}"></div>
+            <div class="hide-icon"></div>
             <span class="hide-text">隐藏</span>
           </button>
         </div>
@@ -121,7 +121,6 @@ export default {
   name: 'Home',
   data () {
     return {
-      userMsg: {},
       timer: 0,
       loopTimer: 0,
       keyword: '',
@@ -189,6 +188,8 @@ export default {
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
           res = res.data
+          console.log(res.code)
+          console.log(res)
           if (res.code === '10000') {
             const _obj = res.data.list
             // "id": 7,
@@ -274,8 +275,8 @@ export default {
       const data = this.postOrderData
       axios.post(url, data)
         .then(res => {
-          res = res.data
           console.log('提交订单', res)
+          res = res.data
           if (res.code === '10000') {
             // list: {
             // match: false
@@ -321,6 +322,9 @@ export default {
       }
       if (type === '收款') {
         this.finishOrder()
+      }
+      if (type === 'close') {
+        // 刷新订单数据
       }
       this.dialogFlowVal = 1 // 重置 匹配中...
     },
@@ -409,26 +413,144 @@ export default {
     },
 
     jumpSetPage () {
-      this.getUserMsg()
-      this.$router.push({
-        name: 'Setting'
-      })
+      this.$router.push({ name: 'Setting' })
     },
-    // 获取用户信息
-    getUserMsg () {
+
+    matchingOrder () {
+      this.dialogFlowType = this.buttonVal
+      this.dialogOrderVal = !this.dialogOrderVal
+
+      // if (this.dialogFlowType === '充值') {
+      //   let timer = setInterval(() => {
+      //     count += 1000
+      //     if (count >= 4000) {
+      //       this.timeCount = 0
+      //       clearInterval(timer)
+      //     } else {
+      //       console.log('定时 ' + count)
+      //       if (count === 1000) {
+      //         this.dialogFlowVal = 2
+      //       }
+      //       if (count === 2000) {
+      //         this.dialogFlowVal = 3
+      //       }
+      //     }
+      //   }, 1000)
+      // } else {
+      // }
+      console.log(this.buttonVal)
+      console.log('1 匹配中...')
+      const match = JSON.parse(sessionStorage.getItem('match'))
+      console.log('match: ' + match)
+      if (this.timer) {
+        clearTimeout(this.timer)
+      }
+      this.timer = setTimeout(() => {
+        if (this.dialogOrderVal === false) {
+          this.dialogOrderVal = true
+        }
+        if (match) {
+          console.log('2 匹配成功')
+          this.dialogFlowVal = 2 // 匹配成功
+          this.loopOrderDetail()
+        }
+      }, 2000)
+    },
+
+    loopOrderDetail () {
+      console.log('=== loop ===')
+      let count = this.timeCount
+      // let timer = setInterval(() => {
+      this.loopTimer = setInterval(() => {
+        count += 1000
+        if (count >= 120000) { // 两分钟关闭
+          this.timeCount = 0
+          clearInterval(this.loopTimer)
+        } else {
+          if (this.dialogFlowVal === 3) {
+            console.log('3 充值到账')
+            console.log('============================')
+            console.log('停止loop')
+            this.getHomeInfo()
+            this.timeCount = 0
+            clearInterval(this.loopTimer)
+          }
+          this.getOrderData()
+
+          // if (count === 6000 && match && this.dialogFlowType === '提现') {
+          //   this.dialogFlowVal = 4
+          // }
+        }
+      }, 5000)
+    },
+
+    // 获取订单信息
+    getOrderData () {
+      const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
       const data = {
         'app-name': '123',
         'merchant_type': '1', // 1:A端
         'merchant_code': '12345',
+        'order_no': orderNo,
         'third_user_id': '1'
       }
-      let url = 'http://user.service.168mi.cn'
-      axios.post(url + '/api/user/getUserInfo', data)
+      const path = this.buttonVal === '充值' ? 'payDetail' : 'drawDetail'
+      const url = this.$api.order + '/api/order/' + path
+      axios.post(url, data)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
-            this.userMsg = res.data.list
-            sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
+            let _data = res.data.list
+            if (this.buttonVal === '充值') {
+              _data = _data.order_detail
+            }
+            let value = _data.pay_type // 1 ali 2 wei 3 bank
+            if (value === 1) {
+              value = '支付宝'
+            } else if (value === 2) {
+              value = '微信'
+            } else {
+              value = '银行卡'
+            }
+            this.dialogFlowAccount = value
+            this.dialogFlowMoney = _data.order_amount
+            const status = _data.status // 5 已完成 6已匹配 7 待确认 8 自动取消
+            if (this.dialogOrderVal === false) {
+              this.dialogOrderVal = true
+            }
+            console.log('返回订单状态' + status)
+            if (status === 5) {
+              this.dialogFlowVal = 3 // 到账 / 已付款
+              clearInterval(this.loopTimer)
+            // sessionStorage.setItem('match', false)
+            }
+            console.log(this.dialogFlowVal)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
+    },
+
+    // 确认收款
+    finishOrder () {
+      const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': orderNo,
+        'third_user_id': '1'
+      }
+      const url = this.$api.order + '/api/order/confirmOrder'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            const type = this.buttonVal === '充值' ? '1' : '2'
+            this.getOrderInfo(type)
           } else {
             this.$toast(res.msg)
           }
@@ -619,9 +741,6 @@ header {
           background: url('~imgurl/look-icon.png') no-repeat;
           background-size: 100%;
           background-position: center;
-        }
-        .hide-eye{
-          background: url('~imgurl/look2-icon.png') no-repeat;
         }
       }
     }
