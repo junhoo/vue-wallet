@@ -35,7 +35,7 @@ export default {
       alipay: '',
       wechat: '',
       userMsg: {},
-      boundState: false
+      boundState: {}
     }
   },
   created () {

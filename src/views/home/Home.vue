@@ -64,17 +64,17 @@
             <div
                 @click="selectIconType(2)"
                 class="item-wx-no"
-                :class="{'item-wx-active': selectIconVal === 2}">
+                :class="{'item-wx-active': selectIconVal2}">
             </div>
             <div
                 @click="selectIconType(1)"
                 class="item-ali-no"
-                :class="{'item-ali-active': selectIconVal === 1}">
+                :class="{'item-ali-active': selectIconVal1}">
             </div>
             <div
                 @click="selectIconType(3)"
                 class="item-bank-no"
-                :class="{'item-bank-active': selectIconVal === 3}">
+                :class="{'item-bank-active': selectIconVal3}">
             </div>
           </div>
           <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
@@ -136,7 +136,9 @@ export default {
       dialogFlowAccount: '',
       orderState: '已提交',
       headerInfo: {},
-      selectIconVal: 2, // 1支付宝，2微信支付，3银行
+      selectIconVal1: false, // 1支付宝，2微信支付，3银行
+      selectIconVal2: false, // 1支付宝，2微信支付，3银行
+      selectIconVal3: false, // 1支付宝，2微信支付，3银行
       mainInfo: {
         state: '充值积分',
         text: ''
@@ -146,7 +148,7 @@ export default {
         'app-name': '123',
         'merchant_type': '1', // 1:A端 2:B端
         'merchant_code': '12345',
-        'pay_type': '1', // 1支付宝，2微信支付，3银行
+        'choice_pay_type': '', // 1支付宝，2微信支付，3银行
         'third_user_id': '1'
       },
       dialogOption: {
@@ -154,7 +156,10 @@ export default {
         text: '请先完成实名认证再进行交易',
         cancelButtonText: '取消',
         confirmButtonText: '去实名'
-      }
+      },
+      userMsg: {},
+      boundState: {},
+      pay_typeOld: ''
     }
   },
   components: {
@@ -168,15 +173,12 @@ export default {
     // let a = encrypt(name)
     // // 解密
     // let b = decrypt(a)
-
+    this.getUserMsg()
     this.getHomeInfo()
     this.getOrderInfo('1')
     if (!JSON.parse(localStorage.getItem('visibleMoney'))) {
       this.moneyShow = false
     }
-  },
-  mounted () {
-    // this.selectBtnType('提现')
   },
   methods: {
     getHomeInfo () {
@@ -188,22 +190,8 @@ export default {
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
           res = res.data
-          console.log(res.code)
-          console.log(res)
           if (res.code === '10000') {
             const _obj = res.data.list
-            // "id": 7,
-            // "user_id": 1,
-            // "order_number": "",
-            // "operating_amount": "1.00", // 盈利
-            // "freezing_amount": "1.00", // 冻结
-            // "wallet_type": 0,
-            // "operation_type": 1,
-            // "remarks_info": "测试数据",
-            // "amount_income": "1.00",
-            // "add_time": 1554361663,
-            // "add_date": "2019-04-04 15:07:43",
-            // "operation_type_str": "充值"
             this.headerInfo = _obj
           } else {
             this.$toast(res.msg)
@@ -232,21 +220,62 @@ export default {
       }
       this.$refs.dialog.selectTab('未完成')
     },
-
-    selectIconType (type) {
-      this.selectIconVal = type
+    // 默认支付方式
+    payTypeStr () {
+      var TStr = this.postOrderData.choice_pay_type
+      if (this.selectIconVal1) {
+        TStr = TStr.replace('1', '')
+        TStr = '1'
+      }
+      if (this.selectIconVal2) {
+        TStr = TStr.replace('2', '')
+        TStr += '2'
+      }
+      if (this.selectIconVal3) {
+        TStr = TStr.replace('3', '')
+        TStr += '3'
+      }
+      // this.pay_typeOld = TStr
+      console.log(TStr)
+      if (TStr.length === 3) {
+        TStr = TStr.slice(0, 1) + ',' + TStr.slice(1)
+        TStr = TStr.slice(0, 3) + ',' + TStr.slice(3)
+      } else if (TStr.length === 2) {
+        TStr = TStr.slice(0, 1) + ',' + TStr.slice(1)
+      }
+      this.postOrderData.choice_pay_type = TStr
     },
-
-    // 验证窗口
+    // 支付按钮的显示
+    selectIconType (type) {
+      if (type === 1) {
+        if (!this.boundState.ali_pay) {
+          this.$toast('支付宝未绑定，请先绑定！')
+          return false
+        }
+        this.selectIconVal1 = !this.selectIconVal1
+      } else if (type === 2) {
+        if (!this.boundState.bank_pay) {
+          this.$toast('微信未绑定，请先绑定！')
+          return false
+        }
+        this.selectIconVal2 = !this.selectIconVal2
+      } else {
+        if (!this.boundState.wechat_pay) {
+          this.$toast('银行卡未绑定，请先绑定！')
+          return false
+        }
+        this.selectIconVal3 = !this.selectIconVal3
+      }
+    },
+    // 验证窗口 提交订单
     verifyWindow () {
-      const types = 'ss' // 付款-类型
       const inputs = this.keyword
-      if (types === '') {
+      if (this.userMsg.is_realname !== 1) {
         this.dialogOption = {
           title: '提示',
-          text: '未绑定该支付方式，是否为去绑定？',
+          text: '请先完成实名认证再进行交易',
           cancelButtonText: '取消',
-          confirmButtonText: '去绑定'
+          confirmButtonText: '去实名'
         }
         this.dialogBoxVal = true
       } else if (inputs === '') {
@@ -266,22 +295,19 @@ export default {
       }
     },
 
-    // 提交订单-充值
+    // 提交订单-充值/提现
     submitOrderMatch (type) {
-      console.log(type)
+      this.payTypeStr()
+      console.log(this.postOrderData.choice_pay_type, 'asdf')
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
       this.postOrderData.order_amount = this.keyword
       const data = this.postOrderData
       axios.post(url, data)
         .then(res => {
-          console.log('提交订单', res)
+          this.postOrderData.choice_pay_type = ''
           res = res.data
           if (res.code === '10000') {
-            // list: {
-            // match: false
-            // order_no: "8850961554953057"
-            // res: true }
             const matchs = res.data.list.match
             const orderNo = res.data.list.order_no
             sessionStorage.setItem('match', matchs)
@@ -305,8 +331,11 @@ export default {
     },
 
     onDialogBox (type) {
-      if (this.dialogOption.confirmButtonText === '去实名') {
+      if (type) {
         // 点击去实名认证
+        this.$router.push({
+          path: '/setting/settingCertification'
+        })
       } else {
         // 点击去绑定支付
       }
@@ -369,25 +398,6 @@ export default {
           if (res.code === '10000') {
             const _list = res.data.list.list
             const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认']
-
-            // 测试数据
-            // const _mock = {
-            //   'user_id': 7241671554258922, // 用户user_id
-            //   'status': 1, // A端订单状态 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6已匹配 7 待确认
-            //   'seller_status': 0, // 'B端订单状态   1 已接单 2 待付款 3 未到账 4 待确认 5 已完成 6 已取消'
-            //   'buyer_id': 0, //  买入id
-            //   'seller_id': 7241671554258922, // 提交用户id
-            //   'order_amount': '100.00', // 提现金额
-            //   'order_no': 2615981554295497, // 订单号
-            //   'pay_type': 1, // 支付方式1支付宝，2微信支付，3银行
-            //   'order_type': 2, // 订单充值类别 1 充值 2提现
-            //   'add_time': 1554295497, // 时间戳
-            //   'pay_prove_pic': null, // 支付凭证
-            //   'add_time_str': '2019-04-03 20:44:57' // 时间
-            // }
-            // _list.push(_mock)
-            // 测试数据
-
             _list.forEach(i => {
               i.title_type = this.buttonVal
               i.status_text = stateCode[i.status - 1]
@@ -414,7 +424,6 @@ export default {
 
     jumpSetPage () {
       this.$router.push({ name: 'Setting' })
-      this.getUserMsg()
       this.$router.push({
         name: 'Setting'
       })
@@ -433,7 +442,12 @@ export default {
           res = res.data
           if (res.code === '10000') {
             this.userMsg = res.data.list
+            this.boundState = this.userMsg.pay_info
+            this.selectIconVal1 = this.boundState.ali_pay
+            this.selectIconVal2 = this.boundState.bank_pay
+            this.selectIconVal3 = this.boundState.wechat_pay
             sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
+            this.payTypeStr()
           } else {
             this.$toast(res.msg)
           }
@@ -829,11 +843,11 @@ header {
       input {
         display: inline-block;
         width: 500px;
-        float: right;
         height: 91px;
         line-height: 91px;
         text-align: right;
         font-size: 30px;
+        background-color: inherit;
       }
     }
     .main-mid {
