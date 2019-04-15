@@ -33,7 +33,7 @@
     </ul>
 
     <!-- 支付信息 -->
-    <ul class="wrapper" v-if="orderStatus == 3 || orderStatus == 2 || orderStatus == 6 || orderStatus == 5">
+    <ul class="wrapper" v-if="orderStatus == 3 || orderStatus == 2 || orderStatus == 6 || orderStatus == 5 || orderStatus == 7">
       <li class="li-tab-title">
         <div class="left" v-text="payText"></div>
         <div class="icon"></div>
@@ -98,7 +98,7 @@
       </li>
     </ul>
     <!-- 提示 -->
-    <div class="text-boxs" v-if="orderStatus!=5">
+    <div class="text-boxs">
       <p class="hint">提示：</p>
       <div>
         <p>{{orderStatus|tipStatus1}}</p>
@@ -385,11 +385,9 @@ export default {
         value = '已提交'
       } else if (value === '2' || value === '6') {
         value = '待付款'
-      } else if (value === '7') {
-        value = '待确认'
-      } else if (value === '5') {
+      }else if (value === '5') {
         value = '已完成'
-      } else if (value === '3') {
+      } else if (value === '3' || value === '7') {
         value = '未到账'
       } else if (value === '8') {
         value = '已取消'
@@ -410,6 +408,8 @@ export default {
         value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。'
       } else if (value === '4') {
         value = '1、您已手动关闭了该订单交易'
+      } else if (value === '5' || value === '7') {
+        value = '1、我们已通知卖方确认消息，稍后片刻充值即可到账'
       } else {
         value = ''
       }
@@ -425,6 +425,8 @@ export default {
         value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。'
       } else if (value === '4') {
         value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉'
+      } else if (value === '5' || value === '7') {
+        value = '2、10分钟后未收到卖方确认您可以向我们进行申诉处理。'
       } else {
         value = ''
       }
