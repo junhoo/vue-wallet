@@ -69,6 +69,9 @@ export default {
         const ordeType = this.buttonVal === '充值' ? 1 : 2
         this.jumpDetail(ordeType, 1, orderNo) // 1 已提交
       }
+      if (type === '付款') {
+        this.finishOrder()
+      }
       if (type === '收款') {
         this.finishOrder()
       }
@@ -78,6 +81,7 @@ export default {
       this.dialogFlowVal = 1 // 重置 匹配中...
     },
 
+    // 查看详情
     jumpDetail (ordeType, status, orderId) {
       // 1充值，2提现
       if (ordeType === 1) {
@@ -97,6 +101,35 @@ export default {
           }
         })
       }
+    },
+
+    // 确认收款
+    finishOrder () {
+      const orderNo = localStorage.getItem('matchOrderNo')
+      // localStorage.setItem('matchOrderNo', '')
+      const data = {
+        'app-name': '123',
+        'merchant_type': '1', // 1:A端
+        'merchant_code': '12345',
+        'order_no': orderNo,
+        'third_user_id': '1'
+      }
+      console.log('home-确认收款')
+      console.log(data)
+      const url = this.$api.order + '/api/order/confirmOrder'
+      axios.post(url, data)
+        .then(res => {
+          res = res.data
+          if (res.code === '10000') {
+            const type = this.buttonVal === '充值' ? '1' : '2'
+            this.getOrderInfo(type)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
+        })
     },
 
     getSocketUrl () {

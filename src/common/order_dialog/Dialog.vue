@@ -7,11 +7,10 @@
         <div class="top-bg" v-show="state !== 4"></div>
         <!-- </transition> -->
         <div class="boxs" :class="{'boxs-border-4': state === 4}">
-          <p class="boxs-state">{{dialogText}}</p>
+          <p class="boxs-state" v-text="text"></p>
           <template v-if="types === '充值'">
-            {{1111}}
-            <button class="look" v-show="state === 2">立即付款</button>
-            <button class="look" v-show="state === 3">查看</button>
+            <button class="look" v-show="state === 2" @click="closeDiv('付款')">立即付款</button>
+            <button class="look" v-show="state === 3" @click="closeDiv('查看')">查看</button>
             <p class="boxs-padding-4" v-show="state === 4">收款账号: {{account}} (0988)</p>
             <p class="boxs-text" v-show="state === 4">金额<span>￥{{money}}</span></p>
             <button
@@ -21,7 +20,6 @@
               @click="closeDiv('查看')">查看</button>
           </template>
           <template v-else>
-            {{2222}}
             <button class="look" v-show="state === 2" @click="closeDiv('查看')">查看</button>
             <p class="boxs-text" v-show="state === 3">收款账号：银行卡（0988）</p>
             <button class="look" v-show="state === 3" @click="closeDiv('收款')">去确认收款</button>
@@ -49,31 +47,83 @@ export default {
     show: {
       type: Boolean,
       default: false
-    },
-    state: { // 1 匹配中 2 匹配成功 3 到账/已付款 4 收款
-      type: Number,
-      default: 1
-    },
-    types: {
-      type: String,
-      default: ''
-    },
-    money: {
-      type: String,
-      default: ''
-    },
-    account: {
-      type: String,
-      default: ''
+    }
+    // state: { // 1 匹配中 2 匹配成功 3 到账/已付款 4 收款
+    //   type: Number,
+    //   default: 1
+    // },
+    // types: {
+    //   type: String,
+    //   default: ''
+    // },
+    // money: {
+    //   type: String,
+    //   default: ''
+    // },
+    // account: {
+    //   type: String,
+    //   default: ''
+    // }
+  },
+  data () {
+    return {
+      state: 1,
+      types: '',
+      money: '',
+      account: '',
+      text: ''
     }
   },
   mounted () {
-    this.state = 1
+    try {
+      const _obj = JSON.parse(localStorage.getItem('dialogOrder'))
+      this.state = _obj.dialogFlowVal
+      this.money = _obj.dialogFlowMoney
+      this.account = _obj.dialogFlowAccount
+    } catch (error) {
+      console.log('dialog：none')
+    }
+    // this.types = _obj.dialogBtnType
+    // this.state = 1
+    this.types = localStorage.getItem('dialogBtnType')
+    // console.log('弹窗拿到', this.state)
+    this.dialogText()
   },
-  computed: {
+  // computed: {
+  //   dialogText () {
+  //     let text = ''
+  //     if (this.types === '充值') {
+  //       if (this.state === 1) {
+  //         text = '订单匹配中，请稍后'
+  //       } else if (this.state === 2) {
+  //         text = '订单匹配成功，请10分钟内付款'
+  //       } else if (this.state === 3) {
+  //         text = '有一笔充值到账，积分+' + this.money
+  //       }
+  //     } else {
+  //       // 提现
+  //       if (this.state === 1) {
+  //         text = '订单匹配中，请稍后'
+  //       } else if (this.state === 2) {
+  //         text = '订单匹配成功，买家正在付款'
+  //       } else if (this.state === 3) {
+  //         text = '买方已付款，请你确认收款'
+  //       } else if (this.state === 4) {
+  //         text = '超时自动交易成功'
+  //       }
+  //     }
+  //     return text
+  //   },
+  //   payString () {
+  //     const val = this.state
+  //     return val
+  //   }
+  // },
+  methods: {
     dialogText () {
       let text = ''
       if (this.types === '充值') {
+        // console.log('types-充值')
         if (this.state === 1) {
           text = '订单匹配中，请稍后'
         } else if (this.state === 2) {
@@ -93,14 +143,8 @@ export default {
           text = '超时自动交易成功'
         }
       }
-      return text
+      this.text = text
     },
-    payString () {
-      const val = this.state
-      return val
-    }
-  },
-  methods: {
     closeDiv (type) {
       this.$emit('update:show', false) // 触发 input 事件，并传入新值
       this.$emit('dialogOrderEvent', type)

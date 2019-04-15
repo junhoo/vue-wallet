@@ -284,8 +284,9 @@ export default {
       const data = this.postOrderData
       axios.post(url, data)
         .then(res => {
-          console.log(`${type}-提交订单`, res)
+          console.log(`1. ${type}-提交订单`, res)
           res = res.data
+          this.matchingOrder() // 测试后删掉
           if (res.code === '10000') {
             // list: {
             // match: false
@@ -321,22 +322,22 @@ export default {
       }
     },
 
-    onDialogOrder (type) {
-      console.log(type)
-      if (type === '查看') {
-        const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
-        clearInterval(this.loopTimer)
-        const ordeType = this.buttonVal === '充值' ? 1 : 2
-        this.jumpDetail(ordeType, 1, orderNo) // 1 已提交
-      }
-      if (type === '收款') {
-        this.finishOrder()
-      }
-      if (type === 'close') {
-        // 刷新订单数据
-      }
-      this.dialogFlowVal = 1 // 重置 匹配中...
-    },
+    // onDialogOrder (type) {
+    //   console.log(type)
+    //   if (type === '查看') {
+    //     const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
+    //     clearInterval(this.loopTimer)
+    //     const ordeType = this.buttonVal === '充值' ? 1 : 2
+    //     this.jumpDetail(ordeType, 1, orderNo) // 1 已提交
+    //   }
+    //   if (type === '收款') {
+    //     this.finishOrder()
+    //   }
+    //   if (type === 'close') {
+    //     // 刷新订单数据
+    //   }
+    //   this.dialogFlowVal = 1 // 重置 匹配中...
+    // },
 
     jumpDetail (ordeType, status, orderId) {
       // 1充值，2提现
@@ -454,31 +455,35 @@ export default {
 
     matchingOrder () {
       this.dialogOrderVal = !this.dialogOrderVal
-      this.$bus.emit('openDialog', 'open')
 
       console.log(this.buttonVal)
-      console.log('1 匹配中...')
-      const match = JSON.parse(sessionStorage.getItem('matchOrderState'))
+      console.log('2. 匹配中...')
+      let match = JSON.parse(sessionStorage.getItem('matchOrderState'))
       console.log('match: ' + match)
+      match = true
+
       if (this.timer) {
         clearTimeout(this.timer)
       }
-      // this.timer = setTimeout(() => {
-      //   if (this.dialogOrderVal === false) {
-      //     this.dialogOrderVal = true
-      //   }
-      //   if (match) {
-      //     console.log('2 匹配成功')
-      //     this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
-      //     localStorage.setItem('openLoopConfirm', '1')
-      //     this.loopOrderDetail()
-      //   }
-      // }, 2000)
-      this.dialogFlowVal = 4
+      this.timer = setTimeout(() => {
+        if (match) {
+          console.log('3. 匹配成功')
+          this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
+          this.setDialogStorage()
+          localStorage.setItem('openLoopConfirm', '1')
+          this.loopOrderDetail()
+        }
+        console.log(this.dialogOrderVal)
+        // if (this.dialogOrderVal === false) {
+        this.dialogOrderVal = true
+        this.$bus.emit('openDialog', 'open')
+        // }
+      }, 2000)
+      // this.dialogFlowVal = 4
     },
 
     loopOrderDetail () {
-      // console.log('=== 开始自动收款 ===')
+      console.log('4. 监听对方付款')
       if (localStorage.getItem('openLoopConfirm') !== '1') return
       this.loopTimer = setInterval(() => {
         this.loopCount += 5000
@@ -489,7 +494,7 @@ export default {
         }
 
         if (this.dialogFlowVal === 3) {
-          console.log('3 充值到账')
+          console.log('5. 对方充值到账')
           console.log('============================')
           console.log('继续 loop 对方有无付款')
           this.getHomeInfo()
@@ -499,7 +504,8 @@ export default {
             clearInterval(this.loopTimer)
           }
         }
-        this.getOrderData()
+        // this.getOrderData()
+        this.setDialogStorage()
 
         // if (count === 6000 && match && this.dialogFlowType === '提现') {
         //   this.dialogFlowVal = 4
@@ -546,8 +552,11 @@ export default {
 
             if (stateName === '待确认') { // 7
               this.dialogFlowVal = 3
+              this.updateDialogStorage(this.dialogFlowVal)
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
               // localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+              const endTime = new Date().getTime() + 7200000
+              localStorage.setItem('loopEndTime', endTime)
               this.loopAutoOrder()
               clearInterval(this.loopTimer)
             }
@@ -566,19 +575,29 @@ export default {
     },
 
     loopAutoOrder () {
-      // console.log('=== 开始自动收款 ===')
+      console.log('===home-开始自动收款 ===')
+      if (localStorage.getItem('dialogBtnType') !== '提现') return
       // if (localStorage.getItem('openLoopFinish') !== '1') return
       this.loopAutoTimer = setInterval(() => {
         this.loopAutoCount += 2000
         localStorage.setItem('loopFinishCount', this.loopAutoCount)
 
-        if (this.loopAutoCount >= 7200000) { // 两小时
+        // const TWO_HOURS_END = 7200000 // 设置+两小时毫秒值
+        const TWO_HOURS_END = localStorage.getItem('loopEndTime')
+        // if (this.loopAutoCount >= TWO_HOURS_END) { // 当前时间 > 两小时
+        const curTime = new Date().getTime()
+        if (curTime >= TWO_HOURS_END) { // 当前时间 > 两小时
           this.finishOrder()
+
+          this.dialogFlowVal = 4
+          this.updateDialogStorage(this.dialogFlowVal)
+
           if (this.dialogOrderVal === false) {
             this.dialogOrderVal = true
             this.$bus.emit('openDialog', 'open')
+            // const _obj = JSON.parse(localStorage.getItem('dialogOrder'))
+            // _obj.
           }
-          this.dialogFlowVal = 4
           // localStorage.setItem('openLoopFinish', '0')
           // localStorage.setItem('loopFinishCount', '0')
           clearInterval(this.loopAutoTimer)
@@ -597,7 +616,7 @@ export default {
         'order_no': orderNo,
         'third_user_id': '1'
       }
-      console.log('确认收款')
+      console.log('home-确认收款')
       console.log(data)
       const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
@@ -613,6 +632,22 @@ export default {
         .catch(e => {
           this.$toast('网络错误，不能访问')
         })
+    },
+
+    setDialogStorage () {
+      const _obj = {
+        dialogFlowVal: this.dialogFlowVal,
+        // dialogBtnType: this.dialogBtnType,
+        dialogFlowMoney: this.dialogFlowMoney,
+        dialogFlowAccount: this.dialogFlowAccount
+      }
+      localStorage.setItem('dialogOrder', JSON.stringify(_obj))
+    },
+
+    updateDialogStorage (value) {
+      const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
+      _dialog.dialogFlowVal = value
+      localStorage.setItem('dialogOrder', JSON.stringify(_dialog))
     }
   }
 }
