@@ -43,17 +43,17 @@
       <li class="li-item clearfix">
         <div class="left">收款人</div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right" v-if="payway == 1">{{payType.ali_pay.alipay_name}}</div>
-        <div class="right" v-else-if="payway == 2">{{payType.wechat_pay.wechat_name}}</div>
-        <div class="right" v-else>{{payType.bank_pay.bank_name}}</div>
+        <!-- payType.ali_pay. -->
+        <div class="right" v-show="payway == 1">{{ali_pay.alipay_name}}</div>
+        <div class="right" v-show="payway == 2">{{wechat_pay.wechat_name}}</div>
+        <div class="right" v-show="payway == 3">{{bank_pay.bank_name}}</div>
       </li>
-
        <!-- <li class="li-item clearfix" v-if="0"> -->
        <li class="li-item clearfix" v-if="payway != 3">
         <div class="left" v-text="payText2"></div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right" v-if="payway == 1">{{payType.ali_pay.alipay_account}}</div>
-        <div class="right" v-else>{{payType.wechat_pay.wechat_account}}</div>
+        <div class="right" v-if="payway == 1">{{ali_pay.alipay_account}}</div>
+        <div class="right" v-else>{{wechat_pay.wechat_account}}</div>
       </li>
 
       <!-- 银行卡 -->
@@ -61,19 +61,19 @@
         <li class="li-item clearfix">
           <div class="left">银行名称</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_address}}</div>
+          <div class="right">{{bank_pay.bank_address}}</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">支行名称</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_sub_branch}}</div>
+          <div class="right">{{bank_pay.bank_sub_branch}}</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">银行卡号</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_no}}</div>
+          <div class="right">{{bank_pay.bank_no}}</div>
         </li>
       </template>
 
@@ -83,8 +83,8 @@
         <li class="li-item clearfix" v-if="orderStatus == 2 || orderStatus == 6">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
-            <div class="icon" v-if="payway == 1"><img :src='payType.ali_pay.alipay_rq_code' alt=""></div>
-            <div class="icon" v-else><img :src='payType.wechat_pay.wechat_rq_code' alt=""></div>
+            <div class="icon" v-if="payway == 1"><img :src='ali_pay.alipay_rq_code' alt=""></div>
+            <div class="icon" v-else><img :src='wechat_pay.wechat_rq_code' alt=""></div>
             <div class="right" v-text="btnQRText"></div>
           </div>
         </li>
@@ -181,6 +181,12 @@ export default {
   },
   data () {
     return {
+      ali_pay: {},
+      bank_pay: {},
+      wechat_pay: {},
+      alipay_name: '',
+      wechat_name: '',
+      bank_name: '',
       btnQRText: '点击查看',
       payText: '微信支付',
       payText2: '微信账号',
@@ -189,7 +195,11 @@ export default {
       showQrcode: false,
       orderStatus: '0',
       payway: '1', // 1支付宝，2微信，3银行卡
-      payType: [],
+      payType: {
+        ali_pay: '',
+        bank_pay: '',
+        wechat_pay: ''
+      },
       appeal: '0', // 点击申诉之后变为1
       show: false,
       checked: true,
@@ -205,6 +215,13 @@ export default {
     this.orderStatus = this.$route.query.status
     this.order_no = this.$route.query.orderid
     this.getOrderData()
+  },
+  mounted () {
+    const payRadio = sessionStorage.getItem('payRadio')
+    if (payRadio === 'open') {
+      this.checkoutPay(1) // 1 2 3
+      sessionStorage.setItem('payRadio', '')
+    }
   },
   methods: {
     // 获取订单信息
@@ -223,6 +240,10 @@ export default {
           if (res.code === '10000') {
             this.orderDetailData = res.data.list.order_detail
             this.payType = res.data.list.pay_type
+
+            this.ali_pay = this.payType.ali_pay
+            this.wechat_pay = this.payType.wechat_pay
+            this.bank_pay = this.payType.bank_pay
             this.isPayTipe()
           } else {
             this.$toast(res.msg)

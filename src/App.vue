@@ -1,11 +1,12 @@
 <template>
   <div id='app'>
     <router-view/>
+    <!-- :types='dialogBtnType'-->
     <dialog-order
                 :show.sync='dialogOrderVal'
                 :state='dialogFlowVal'
-                :types='dialogBtnType'
                 :money='dialogFlowMoney'
+                :buttonType='dialogBtnType'
                 :account='dialogFlowAccount'
                 v-on:dialogOrderEvent='onDialogOrder'>
     </dialog-order>
@@ -46,6 +47,8 @@ export default {
             // console.log(params, 111)
             if (params === 'open') {
               this.dialogOrderVal = true
+              // const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
+              // this.dialogFlowVal = _dialog.dialogFlowVal
             } else {
               this.dialogOrderVal = false
             }
@@ -57,19 +60,27 @@ export default {
         if (this.dialogOrderVal === true) {
           this.$bus.off('openDialog')
         }
+        this.dialogBtnType = localStorage.getItem('dialogBtnType')
+        const _obj = JSON.parse(localStorage.getItem('dialogOrder'))
+        this.dialogFlowVal = parseInt(_obj.dialogFlowVal) || 1
+        this.dialogFlowMoney = _obj.dialogFlowMoney
+        this.dialogFlowAccount = _obj.dialogFlowAccount
       }, 500)
     },
 
     onDialogOrder (type) {
       console.log('app-onDialog' + type)
-      if (type === '查看') {
-        const orderNo = JSON.parse(sessionStorage.getItem('matchOrderNo'))
-        clearInterval(this.loopTimer)
-        const ordeType = this.buttonVal === '充值' ? 1 : 2
-        this.jumpDetail(ordeType, 1, orderNo) // 1 已提交
-      }
-      if (type === '付款') {
-        this.finishOrder()
+      if (type === '查看' || type === '付款') {
+        const orderNo = JSON.parse(localStorage.getItem('matchOrderNo'))
+        let stateVal = 1
+        if (type === '付款') {
+          stateVal = 2
+          sessionStorage.setItem('payRadio', 'open')
+        }
+        // clearInterval(this.loopTimer)
+        const buttonVal = localStorage.getItem('dialogBtnType')
+        const ordeType = buttonVal === '充值' ? 1 : 2
+        this.jumpDetail(ordeType, stateVal, orderNo) // 1 已提交
       }
       if (type === '收款') {
         this.finishOrder()
@@ -82,6 +93,7 @@ export default {
 
     // 查看详情
     jumpDetail (ordeType, status, orderId) {
+      console.log(ordeType, status, orderId)
       // 1充值，2提现
       if (ordeType === 1) {
         this.$router.push({
@@ -113,14 +125,15 @@ export default {
         'order_no': orderNo,
         'third_user_id': '1'
       }
-      console.log('home-确认收款')
+      console.log('app-确认收款')
       console.log(data)
       const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
           if (res.code === '10000') {
-            const type = this.buttonVal === '充值' ? '1' : '2'
+            const buttonVal = localStorage.getItem('dialogBtnType')
+            const type = buttonVal === '充值' ? '1' : '2'
             this.getOrderInfo(type)
           } else {
             this.$toast(res.msg)
