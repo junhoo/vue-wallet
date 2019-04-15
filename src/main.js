@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 // import Vue from 'vue'
 import App from './App'
+import VueBus from 'vue-bus'
 import router from './router'
 import fastClick from 'fastclick'
 import Toast from 'common/toast/index'
@@ -14,6 +15,7 @@ import 'vant/lib/index.css'
 const Vue = require('vue')
 Vue.use(Vant)
 Vue.use(Toast)
+Vue.use(VueBus)
 
 Vue.prototype.$api = JSON.parse(process.env.api)
 Vue.config.productionTip = false
