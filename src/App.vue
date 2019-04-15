@@ -24,7 +24,6 @@ export default {
     DialogOrder
   },
   created () {
-    console.log('app-created')
     // this.getSocketUrl()
     this.loop()
   },

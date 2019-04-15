@@ -33,11 +33,11 @@
     </ul>
 
     <!-- 支付信息 -->
-    <ul class="wrapper" v-if="orderStatus == 3 || orderStatus == 2 || orderStatus == 5">
+    <ul class="wrapper" v-if="orderStatus == 3 || orderStatus == 2 || orderStatus == 6 || orderStatus == 5 || orderStatus == 7">
       <li class="li-tab-title">
         <div class="left" v-text="payText"></div>
         <div class="icon"></div>
-        <div @click="checkoutPay(0)" v-if="orderStatus == 2" class="right">切换支付方式</div>
+        <div @click="checkoutPay(0)" v-if="orderStatus == 2 || orderStatus == 6" class="right">切换支付方式</div>
       </li>
 
       <li class="li-item clearfix">
@@ -80,7 +80,7 @@
       <!--  -->
       <!-- <template v-if="0"> -->
       <template v-if="payway != 3">
-        <li class="li-item clearfix" v-if="orderStatus == 2">
+        <li class="li-item clearfix" v-if="orderStatus == 2 || orderStatus == 6">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
             <div class="icon" v-if="payway == 1"><img :src='payType.ali_pay.alipay_rq_code' alt=""></div>
@@ -98,7 +98,7 @@
       </li>
     </ul>
     <!-- 提示 -->
-    <div class="text-boxs" v-if="orderStatus!=5">
+    <div class="text-boxs">
       <p class="hint">提示：</p>
       <div>
         <p>{{orderStatus|tipStatus1}}</p>
@@ -115,7 +115,7 @@
       <span v-else-if="orderStatus==8">超时未付款，系统自动取消订单</span>
     </div>
     <!-- 取消按钮 -->
-    <div class="cancel" v-if="orderStatus == 2">
+    <div class="cancel" v-if="orderStatus == 2 || orderStatus == 6">
       <span @click="cancelOrder()" class="btn-pay">取消订单</span>
     </div>
     <!-- 付款方式弹框 -->
@@ -154,7 +154,7 @@
       </div>
     </van-popup>
     <!-- 确认按钮 -->
-    <div class="btn-pay-boxs2" v-if="orderStatus == 1 || orderStatus == 2">
+    <div class="btn-pay-boxs2" v-if="orderStatus == 1 || orderStatus == 2 || orderStatus == 6">
       <button @click="submit2()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
     <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 3}" v-else>
@@ -316,7 +316,8 @@ export default {
         'merchant_type': '1', // 1:A端
         'merchant_code': '12345',
         'order_no': this.order_no,
-        'third_user_id': '1'
+        'third_user_id': '1',
+        'pay_type': this.payway
       }
       const url = 'http://order.service.168mi.cn/api/order/endRechangeOrder'
       axios.post(url, data)
@@ -369,7 +370,7 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '取消订单'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '我已完成付款'
       } else if (value === '3') {
         value = '申诉'
@@ -382,13 +383,11 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '已提交'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '待付款'
-      } else if (value === '7') {
-        value = '待确认'
       } else if (value === '5') {
         value = '已完成'
-      } else if (value === '3') {
+      } else if (value === '3' || value === '7') {
         value = '未到账'
       } else if (value === '8') {
         value = '已取消'
@@ -401,7 +400,7 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '1、我们已接收您的充值订单，并正在为您匹配卖方。'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '1、平台不支持自动扣款,请用您本人的账号向以上账户转账。'
       } else if (value === '5') {
         value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
@@ -409,6 +408,8 @@ export default {
         value = '1、由于你没有在系统规定时间内向卖方付款，因此系统自动取消您的充值订单。'
       } else if (value === '4') {
         value = '1、您已手动关闭了该订单交易'
+      } else if (value === '5' || value === '7') {
+        value = '1、我们已通知卖方确认消息，稍后片刻充值即可到账'
       } else {
         value = ''
       }
@@ -418,12 +419,14 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '2、当订单变更为代付款状态时，请您尽快向卖方付款，并点击“我已确认付款”。'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '2、转账成功后请点击下方“我已完成付款”按钮。'
       } else if (value === '4') {
         value = '2、如果您已经向买方付款，而误点了取消订单按钮请发起申诉。'
       } else if (value === '4') {
         value = '2、如果您已经像卖方付款，而没有点击“我已完成付款”按钮，请点击下方按钮进行申诉'
+      } else if (value === '5' || value === '7') {
+        value = '2、10分钟后未收到卖方确认您可以向我们进行申诉处理。'
       } else {
         value = ''
       }
@@ -433,7 +436,7 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '3、成功完单笔充值订单后才可发起下一笔充值。'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '3、成功转账后，待卖方确认完成，即可完成这笔充值。'
       } else {
         value = ''
@@ -442,7 +445,7 @@ export default {
     },
     tipStatus4: function (value) {
       value = value.toString()
-      if (value === '2') {
+      if (value === '2' || value === '6') {
         value = '4、请尽量保留转账截图，作为纠纷时证据。'
       } else {
         value = ''
@@ -451,7 +454,7 @@ export default {
     },
     tipStatus5: function (value) {
       value = value.toString()
-      if (value === '2') {
+      if (value === '2' || value === '6') {
         value = '5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。'
       } else {
         value = ''
@@ -460,7 +463,7 @@ export default {
     },
     tipStatus6: function (value) {
       value = value.toString()
-      if (value === '2') {
+      if (value === '2' || value === '6') {
         value = '6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。'
       } else {
         value = ''
