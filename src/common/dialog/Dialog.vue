@@ -5,12 +5,19 @@
       <div class="title">{{ modal.title }}</div>
       <div class="text">{{ modal.text }}</div>
       <div class="dialog_btn">
-        <div class="btn_common cancel_box" @click="cancel">
-          <button class="cancel_btn">{{ modal.cancelButtonText }}</button>
-        </div>
-        <div class="btn_common submit_box" @click="submit">
-          <button class="submit_btn">{{ modal.confirmButtonText }}</button>
-        </div>
+        <template v-if="modal.buttonCount === 1">
+          <div class="btn_common btn_common_max submit_box" @click="cancel">
+            <button class="submit_btn">{{ modal.cancelButtonText }}</button>
+          </div>
+        </template>
+        <template v-else>
+          <div class="btn_common cancel_box" @click="cancel">
+            <button class="cancel_btn">{{ modal.cancelButtonText }}</button>
+          </div>
+          <div class="btn_common submit_box" @click="submit">
+            <button class="submit_btn">{{ modal.confirmButtonText }}</button>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -34,7 +41,8 @@ export default {
           : '取消',
         confirmButtonText: options.confirmButtonText
           ? options.confirmButtonText
-          : '确定'
+          : '确定',
+        buttonCount: options.buttonCount
       }
     }
   },
@@ -81,7 +89,7 @@ export default {
       flex-direction: column;
       min-height: 120px;
       line-height: 2;
-      font-size: 29px;
+      font-size: 28px;
       padding: 0 30px;
       margin: 0 auto;
     }
@@ -96,6 +104,9 @@ export default {
         height: 98px;
         font-size: 30px;
         float: left;
+      }
+      .btn_common_max {
+        width: 99.9%;
       }
       .cancel_box {
         color: #666;

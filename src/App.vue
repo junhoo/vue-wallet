@@ -131,7 +131,7 @@ export default {
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             const buttonVal = localStorage.getItem('dialogBtnType')
             const type = buttonVal === '充值' ? '1' : '2'
             this.getOrderInfo(type)

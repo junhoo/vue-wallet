@@ -160,7 +160,7 @@ export default {
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.orderDetailData = res.data.list
             console.log(this.orderDetailData, '132')
             // this.payway = res.data.list.pay_type
@@ -186,7 +186,7 @@ export default {
         .then(res => {
           res = res.data
           console.log(res, 123)
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
@@ -209,7 +209,7 @@ export default {
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)

@@ -8,7 +8,7 @@
       <ul v-if="entryType === 'bank'">
         <li class="item">
           <div class="name">姓名</div>
-          <input type="text" placeholder="请出入您的姓名" v-model="apiBank.bank_name">
+          <input type="text" placeholder="请输入您的姓名" v-model="apiBank.bank_name">
         </li>
         <li class="item">
           <div class="name">银行卡号</div>
@@ -27,7 +27,7 @@
       <ul v-if="entryType === 'alipay'">
         <li class="item">
           <div class="name">姓名</div>
-          <input type="text" placeholder="请出入您的姓名" v-model="apiAlipay.alipay_name">
+          <input type="text" placeholder="请输入您的姓名" v-model="apiAlipay.alipay_name">
         </li>
         <li class="item">
           <div class="name">支付宝账号</div>
@@ -38,7 +38,7 @@
       <ul v-if="entryType === 'wechat'">
         <li class="item">
           <div class="name">姓名</div>
-          <input type="text" placeholder="请出入您的姓名" v-model="apiWechat.wechat_name">
+          <input type="text" placeholder="请输入您的姓名" v-model="apiWechat.wechat_name">
         </li>
         <li class="item">
           <div class="name">微信账号</div>
@@ -54,9 +54,12 @@
       <div class="upload">
         <p class="name">请上传收款二维码</p>
         <div class="imgs">
-          <!-- <p class="img"><img :src="getObjectURL(value)"><a class="close" @click="delImg(key)">×</a></p> -->
           <template v-if="entryIsbound === 'n'">
+            <img v-if="preview !== ''"
+                class="img-down"
+                :src="preview">
             <img
+                v-else
                 class="img-up"
                 src="~imgurl/upload.png">
           </template>
@@ -68,14 +71,9 @@
                 v-else
                 class="img-down"
                 :src="qrcodeUrl">
-            <input type="file" @change="uploadFile($event)">
           </template>
+          <input type="file" @change="uploadFile($event)">
         </div>
-        <!-- <div class="btn">
-          <van-uploader :after-read="onRead">
-            <van-icon name="photograph"/>
-          </van-uploader>
-        </div> -->
       </div>
     </div>
 
@@ -139,7 +137,7 @@ export default {
       dialogBoxVal: false, // 显示对话框
       dialogOption: {
         title: '提示',
-        text: '为确保交易顺利，请确保如实填写信息。',
+        text: '为确保交易顺利，请如实填写信息。',
         cancelButtonText: '修改',
         confirmButtonText: '确认'
       }
@@ -158,13 +156,6 @@ export default {
       param.append('file', file, file.name)
       param.append('type', '1')
 
-      var reads = new FileReader()
-      reads.readAsDataURL(file)
-      let self = this
-      reads.onload = function (e) {
-        self.preview = this.result
-      }
-
       let url = this.$api.user
       const entryType = this.$route.query.type
       if (entryType === 'wechat') {
@@ -175,7 +166,7 @@ export default {
       axios.post(url, param)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             const imgurl = res.data.list.url
             console.log(imgurl)
             if (imgurl) {
@@ -183,6 +174,12 @@ export default {
                 this.apiWechat.wechat_rq_code = imgurl
               } else {
                 this.apiAlipay.alipay_rq_code = imgurl
+              }
+              var reads = new FileReader()
+              reads.readAsDataURL(file)
+              let self = this
+              reads.onload = function (e) {
+                self.preview = this.result
               }
             } else {
               this.$toast('上传路径消失~')
@@ -195,10 +192,6 @@ export default {
           console.log(e)
           this.$toast('网络错误')
         })
-    },
-
-    // base64上传图片
-    onRead (file) {
     },
 
     // 获取绑定信息
@@ -221,8 +214,7 @@ export default {
       axios.post(url, data)
         .then(res => {
           res = res.data
-          console.log(res)
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             const _info = res.data.list
             if (type === 'bank') {
               this.apiBank.bank_name = _info.bank_name
@@ -250,19 +242,41 @@ export default {
         })
     },
 
-    getObjectURL (file) {
-      var url = null
-      if (window.createObjectURL !== undefined) {
-        url = window.createObjectURL(file)
-      } else if (window.URL !== undefined) {
-        url = window.URL.createObjectURL(file)
-      } else if (window.webkitURL !== undefined) {
-        url = window.webkitURL.createObjectURL(file)
-      }
-      return url
-    },
-
     boundBank () {
+      const type = this.entryType
+      const pool = {
+        'bank': this.apiBank,
+        'alipay': this.apiAlipay,
+        'wechat': this.apiWechat
+      }
+      const _obj = pool[type]
+      if (_obj[`${type}_name`] === '') {
+        this.$toast('请填写姓名')
+        return
+      }
+      if (type === 'alipay' || type === 'wechat') {
+        if (_obj[`${type}_account`] === '') {
+          this.$toast('请填写账号')
+          return
+        }
+        if (_obj[`${type}_rq_code`] === '') {
+          this.$toast('请上传二维码')
+          return
+        }
+      } else {
+        if (_obj[`${type}_no`] === '') {
+          this.$toast('请填写银行卡号')
+          return
+        }
+        if (_obj[`${type}_address`] === '') {
+          this.$toast('请填写开户银行')
+          return
+        }
+        if (_obj[`${type}_sub_branch`] === '') {
+          this.$toast('请填写开户支行')
+          return
+        }
+      }
       this.dialogBoxVal = true
     },
 
@@ -296,7 +310,7 @@ export default {
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.$toast('保存成功', 1000)
             this.$router.go(-1)
           } else {
