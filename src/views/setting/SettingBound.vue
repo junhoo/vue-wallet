@@ -110,9 +110,9 @@ export default {
       qrcodeUrl: '', // https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1671789140,435698588&fm=26&gp=0.jpg
       apiBank: {
         'app-name': '',
-        'merchant_type': '1', // 1 A端
-        'merchant_code': '12345', // 商户渠道
-        'third_user_id': '1', // 第三方平台
+        'merchant_type': '', // 1 A端
+        'merchant_code': '', // 商户渠道
+        'third_user_id': '', // 第三方平台
         'bank_name': '', // 银行名字
         'bank_address': '', // 开户银行
         'bank_sub_branch': '', // 开户支行
@@ -120,21 +120,21 @@ export default {
       },
       apiAlipay: {
         'app-name': '',
-        'merchant_type': '1',
-        'merchant_code': '12345',
+        'merchant_type': '',
+        'merchant_code': '',
         'alipay_name': '',
         'alipay_account': '',
         'alipay_rq_code': '',
-        'third_user_id': '1'
+        'third_user_id': ''
       },
       apiWechat: {
         'app-name': '',
-        'merchant_type': '1',
-        'merchant_code': '12345',
+        'merchant_type': '',
+        'merchant_code': '',
         'wechat_name': '',
         'wechat_account': '',
         'wechat_rq_code': '',
-        'third_user_id': '1'
+        'third_user_id': ''
       },
       dialogBoxVal: false, // 显示对话框
       dialogOption: {
@@ -325,16 +325,31 @@ export default {
 
       if (entryType === 'bank') {
         data = this.apiBank
+        data['app-name'] = this.postFormat['app-name']
+        data.merchant_code = this.postFormat.merchant_code
+        data.merchant_type = this.postFormat.merchant_type
+        data.third_user_id = this.postFormat.third_user_id
+
         url += isbound === 'y'
           ? '/api/Bindpay/bankInfoUpdate'
           : '/api/Bindpay/addBankPay'
       } else if (entryType === 'wechat') {
         data = this.apiWechat
+        data['app-name'] = this.postFormat['app-name']
+        data.merchant_code = this.postFormat.merchant_code
+        data.merchant_type = this.postFormat.merchant_type
+        data.third_user_id = this.postFormat.third_user_id
+
         url += isbound === 'y'
           ? '/api/Bindpay/updateWeChatInfo'
           : '/api/Bindpay/addWeChatPay'
       } else if (entryType === 'alipay') {
         data = this.apiAlipay
+        data['app-name'] = this.postFormat['app-name']
+        data.merchant_code = this.postFormat.merchant_code
+        data.merchant_type = this.postFormat.merchant_type
+        data.third_user_id = this.postFormat.third_user_id
+
         url += isbound === 'y'
           ? '/api/Bindpay/updateAlipayInfo'
           : '/api/Bindpay/addAliPay'
