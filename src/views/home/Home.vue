@@ -55,10 +55,10 @@
           <!-- onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"> -->
           <div class="input-box clearfix">
             <input type="text"
-                  @blur="xxx()"
                   v-model="keyword"
                   placeholder="请输入积分数量"
                   class="needsclick search"
+                  maxlength="7"
                   onKeyUp="value=value.replace(/[^\d]/g,'')">
           </div>
         </div>
@@ -81,7 +81,8 @@
                 :class="{'item-bank-active': selectIconVal3}">
             </div>
           </div>
-          <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
+          <!-- 额外扣除服务{{userMsg.rate * 100}}%，实际到账{{keyword}} -->
+          <p v-show="buttonVal === '充值'">付款金额：{{keyword}}</p>
           <p v-show="buttonVal === '提现'">资产余额{{headerInfo.operating_amount}}积分，<span>全部提现</span></p>
         </div>
         <button class="main-down" @click="verifyWindow()">提交订单</button>
@@ -131,7 +132,9 @@ export default {
       dialogFlowMoney: '',
       dialogFlowAccount: '',
       orderState: '已提交',
-      headerInfo: {},
+      headerInfo: {
+        operating_amount: 0
+      },
       selectIconVal1: false, // 1支付宝，2微信支付，3银行
       selectIconVal2: false, // 1支付宝，2微信支付，3银行
       selectIconVal3: false, // 1支付宝，2微信支付，3银行
@@ -148,7 +151,9 @@ export default {
         confirmButtonText: '去实名',
         buttonCount: 1
       },
-      userMsg: {},
+      userMsg: {
+        rate: 0
+      },
       boundState: {},
       pay_typeOld: '',
       connectionFailCount: 0
@@ -188,11 +193,6 @@ export default {
     }
   },
   methods: {
-    xxx () {
-      setTimeout(function () {
-      }, 10)
-    },
-
     autoLogin () {
       let data = this.postFormat
 

@@ -25,11 +25,14 @@ export default {
     DialogOrder
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     // this.getSocketUrl()
     this.loop()
   },
   data () {
     return {
+      postFormat: {},
       loopAutoTimer: null,
       dialogOrderVal: false, // 显示
       dialogBtnType: '',
@@ -118,13 +121,16 @@ export default {
     finishOrder () {
       const orderNo = localStorage.getItem('matchOrderNo')
       // localStorage.setItem('matchOrderNo', '')
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': orderNo,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': orderNo,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = orderNo
+
       console.log('app-确认收款')
       console.log(data)
       const url = this.$api.order + '/api/order/confirmOrder'
