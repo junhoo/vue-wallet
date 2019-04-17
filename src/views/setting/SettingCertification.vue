@@ -35,18 +35,18 @@
           <div class="imgs">
             <div v-show="cardUrl1 !== ''">
               <div class="mask">
-                <img  ref="cardimg" :class="[!istrue?'img-width':'img-height']" :src="cardUrl21" alt="">
+                <img  ref="cardimg" :class="[istrue ? 'img-width':'img-height']" :src="cardUrl21" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl1 === ''">
               <div v-if="firstUpload">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card1-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
+                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
               </div>
             </div>
             <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
@@ -54,18 +54,18 @@
           <div class="imgs">
             <div v-show="cardUrl2 !== ''">
               <div class="mask">
-                <img :src="cardUrl22" :class="[!istrue?'img-width':'img-height']" alt="">
+                <img :src="cardUrl22" :class="[istrue ? 'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl2 === ''">
               <div v-if="firstUpload">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card2-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card2-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
+                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
             </div>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
@@ -76,18 +76,18 @@
           <div class="imgs">
             <template v-if="cardUrl3">
               <div class="mask mask1">
-                <img :src="cardUrl23" :class="[!istrue?'img-width':'img-height']" alt="">
+                <img :src="cardUrl23" :class="[istrue ? 'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
               <div v-if="firstUpload">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
-                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card3-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card3-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
+                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
               </div>
             </template>
             <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
@@ -444,12 +444,12 @@ export default {
           }
           .mask{
             height: 263px;
-            width: 310px;
+            width: 280px;
             position: relative;
             i{
               display: inline-block;
               height: 100%;
-              width: 310px;
+              width: 280px;
               background-color: rgba(0, 0, 0, .4);
               position: absolute;
               top: 50%;
@@ -464,7 +464,7 @@ export default {
               // height: 260px;
             }
             .img-width{
-              width: 310px;
+              width: 280px;
             }
             .img-height{
               height: 260px;
@@ -484,7 +484,7 @@ export default {
             box-shadow: 0 0 20px -8px #d2d2d2;
           }
           .img-width{
-              width: 310px;
+              width: 280px;
           }
           .img-height{
             height: 260px;

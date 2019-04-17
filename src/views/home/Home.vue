@@ -13,7 +13,7 @@
         <div class="boxs-top">
           <div class="money-state-box">
             <div class="money-state-a" v-show="moneyShow">
-               {{headerInfo.operating_amount}}<span>积分</span>
+               {{headerInfo.amount_income}}<span>积分</span>
             </div>
             <div class="money-state-b" v-show="!moneyShow">
                <p class="hine-sum">****</p>
@@ -58,7 +58,7 @@
                   placeholder="请输入积分数量"
                   class="needsclick search"
                   maxlength="7"
-                  onKeyUp="value=value.replace(/[^\d]/g,'')"
+                  @input="handleInput"
                   onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
           </div>
         </div>
@@ -83,7 +83,7 @@
           </div>
           <!-- 额外扣除服务{{userMsg.rate * 100}}%，实际到账{{keyword}} -->
           <p v-show="buttonVal === '充值'">付款金额：{{keyword}}</p>
-          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.operating_amount}}积分，<span>全部提现</span></p>
+          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.amount_income}}积分，<span>全部提现</span></p>
         </div>
         <button class="main-down" @click="verifyWindow()">提交订单</button>
       </main>
@@ -133,7 +133,7 @@ export default {
       dialogFlowAccount: '',
       orderState: '已提交',
       headerInfo: {
-        operating_amount: 0
+        amount_income: 0
       },
       selectIconVal1: false, // 1支付宝，2微信支付，3银行
       selectIconVal2: false, // 1支付宝，2微信支付，3银行
@@ -378,7 +378,6 @@ export default {
           this.$toast('请输入充值数量')
         }
       } else if (!this.selectIconVal1 && !this.selectIconVal2 && !this.selectIconVal3) {
-        this.$toast('至少选择一种支付方式111')
       } else if (this.userMsg.is_realname === 0 || this.userMsg.is_realname === 2) { // 0未认证 1审核通过 2审核未通过 3审核中
         this.dialogOption = {
           title: '提示',
@@ -526,13 +525,24 @@ export default {
         .then(res => {
           res = res.data
           if (parseInt(res.code) === 10000) {
-            this.userMsg = res.data.list
-            this.boundState = this.userMsg.pay_info
+            const userInfo = res.data.list
+            this.userMsg = userInfo
+
+            const oldInfo = JSON.parse(sessionStorage.getItem('userMsg'))
+            if (userInfo.id !== oldInfo.id) { // 重置初始信息
+              localStorage.setItem('matchOrderNo', '')
+              localStorage.setItem('matchOrderState', '')
+              localStorage.setItem('openLoopConfirm', '0')
+              localStorage.setItem('openLoopFinish', '0')
+              localStorage.setItem('visibleMoney', true)
+            }
+
+            this.boundState = userInfo.pay_info
             this.selectIconVal1 = this.boundState.ali_pay
             this.selectIconVal2 = this.boundState.wechat_pay
             this.selectIconVal3 = this.boundState.bank_pay
             // log
-            sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
+            sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
             this.payTypeStr()
             this.getHomeInfo()
           } else {
@@ -568,6 +578,7 @@ export default {
           console.log('3. 匹配成功')
           localStorage.setItem('openLoopConfirm', '1')
           this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
+          this.getOrderInfo('1')
           this.updateDialogStorage('2')
           console.log('窗台步骤' + this.dialogFlowVal)
           this.loopOrderDetail()
@@ -753,6 +764,11 @@ export default {
       const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
       _dialog.dialogFlowVal = value
       localStorage.setItem('dialogOrder', JSON.stringify(_dialog))
+    },
+
+    handleInput (e) {
+      this.keyword = this.keyword.replace(/[^\d]/g, '')
+      this.keyword = this.keyword.replace('.', '')
     }
   }
 }
@@ -874,6 +890,8 @@ header {
         color: #2F2D2D;
         .money-state-a {
           line-height: 189px;
+          // padding-right: 146px;
+          // text-align: right;
           span {
             display: inline-block;
             color: #666666;

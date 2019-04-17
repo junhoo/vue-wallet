@@ -221,9 +221,13 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
+      console.log('请求')
+      console.log(param)
       axios.post(url, param)
         .then(res => {
           res = res.data
+          console.log('返回')
+          console.log(res)
           if (res.code === 10000) {
             const imgurl = res.data.list.url
             if (imgurl) {
