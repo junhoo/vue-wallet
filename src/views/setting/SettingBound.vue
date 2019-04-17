@@ -192,6 +192,7 @@ export default {
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
+      console.log(file, '1235454')
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
@@ -210,12 +211,15 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
+      console.log('请求')
+      console.log(param)
       axios.post(url, param)
         .then(res => {
           res = res.data
+          console.log('返回')
+          console.log(res)
           if (res.code === 10000) {
             const imgurl = res.data.list.url
-            console.log(111)
             console.log(imgurl)
             if (imgurl) {
               if (entryType === 'wechat') {
@@ -223,7 +227,6 @@ export default {
               } else {
                 this.apiAlipay.alipay_rq_code = imgurl
               }
-              console.log(111)
               console.log(self.preview)
             } else {
               this.$toast('上传路径消失~')

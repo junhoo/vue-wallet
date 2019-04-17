@@ -11,18 +11,16 @@ import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'lib-flexible/flexible'
 // import Vant from 'vant'
-import { Popup, RadioGroup, Radio, Uploader } from 'vant'
+import { Popup, RadioGroup, Radio } from 'vant'
 // import 'vant/lib/index.css'
 import 'vant/lib/popup/style'
 import 'vant/lib/radio-group/style'
 import 'vant/lib/radio/style'
-import 'vant/lib/uploader/style'
 
 const Vue = require('vue')
 Vue.use(Popup)
 Vue.use(RadioGroup)
 Vue.use(Radio)
-Vue.use(Uploader)
 
 Vue.use(Toast)
 Vue.use(VueBus)

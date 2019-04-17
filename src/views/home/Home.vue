@@ -58,7 +58,7 @@
                   placeholder="请输入积分数量"
                   class="needsclick search"
                   maxlength="7"
-                  onKeyUp="value=value.replace(/[^\d]/g,'')"
+                  @input="handleInput"
                   onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
           </div>
         </div>
@@ -372,13 +372,14 @@ export default {
         this.hintHasOrder()
         return
       }
-
       if (inputs === '') {
         var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/
         if (!exp.test(inputs)) {
           this.$toast('请输入充值数量')
         }
-      } else if (this.userMsg.is_realname !== 1) { // 0未认证 1审核通过 2审核未通过 3审核中
+      } else if (!this.selectIconVal1 && !this.selectIconVal2 && !this.selectIconVal3) {
+        this.$toast('至少选择一种支付方式')
+      } else if (this.userMsg.is_realname === 0 || this.userMsg.is_realname === 2) { // 0未认证 1审核通过 2审核未通过 3审核中
         this.dialogOption = {
           title: '提示',
           text: '请先完成实名认证再进行交易',
@@ -519,25 +520,30 @@ export default {
     },
     // 获取用户信息
     getUserMsg () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'third_user_id': '1'
-      // }
       let data = this.postFormat
       let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
           res = res.data
           if (parseInt(res.code) === 10000) {
-            this.userMsg = res.data.list
-            this.boundState = this.userMsg.pay_info
+            const userInfo = res.data.list
+            this.userMsg = userInfo
+
+            const oldInfo = JSON.parse(sessionStorage.getItem('userMsg'))
+            if (userInfo.id !== oldInfo.id) { // 重置初始信息
+              localStorage.setItem('matchOrderNo', '')
+              localStorage.setItem('matchOrderState', '')
+              localStorage.setItem('openLoopConfirm', '0')
+              localStorage.setItem('openLoopFinish', '0')
+              localStorage.setItem('visibleMoney', true)
+            }
+
+            this.boundState = userInfo.pay_info
             this.selectIconVal1 = this.boundState.ali_pay
             this.selectIconVal2 = this.boundState.wechat_pay
             this.selectIconVal3 = this.boundState.bank_pay
             // log
-            sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
+            sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
             this.payTypeStr()
             this.getHomeInfo()
           } else {
@@ -758,6 +764,11 @@ export default {
       const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
       _dialog.dialogFlowVal = value
       localStorage.setItem('dialogOrder', JSON.stringify(_dialog))
+    },
+
+    handleInput (e) {
+      this.keyword = this.keyword.replace(/[^\d]/g, '')
+      this.keyword = this.keyword.replace('.', '')
     }
   }
 }

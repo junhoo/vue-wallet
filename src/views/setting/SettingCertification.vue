@@ -33,41 +33,41 @@
         <p class="hint">上传{{pap}}照片</p>
         <div class="upload">
           <div class="imgs">
-            <template v-if="cardUrl1">
+            <div v-show="cardUrl1 !== ''">
               <div class="mask">
                 <img  ref="cardimg" :src="cardUrl21" alt="">
                 <i>已上传</i>
               </div>
-            </template>
-            <template v-else>
+            </div>
+            <div v-show="cardUrl1 === ''">
               <div v-if="firstUpload">
-                <img v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img v-else src="~imgurl/card1-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
                 <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
               </div>
-            </template>
+            </div>
             <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
           </div>
           <div class="imgs">
-            <template v-if="cardUrl2">
+            <div v-show="cardUrl2 !== ''">
               <div class="mask">
                 <img :src="cardUrl22" alt="">
                 <i>已上传</i>
               </div>
-            </template>
-            <template v-else>
+            </div>
+            <div v-show="cardUrl2 === ''">
               <div v-if="firstUpload">
-                <img v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
-                <img v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
-                <img v-else src="~imgurl/card2-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card2-3.png" alt="">
               </div>
               <div v-else>
                 <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
-            </template>
+            </div>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
           </div>
         </div>
@@ -82,9 +82,9 @@
             </template>
             <template v-else>
               <div v-if="firstUpload">
-                <img v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
-                <img v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
-                <img v-else src="~imgurl/card3-3.png" alt="">
+                <img class="img" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                <img class="img" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                <img class="img" v-else src="~imgurl/card3-3.png" alt="">
               </div>
               <div v-else>
                 <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
@@ -152,6 +152,10 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            if (res.data.list.length === 0) {
+              return false
+            }
+            console.log(res.data, 'ghj')
             this.firstUpload = false
             const _data = res.data.list
             this.userCertifyMsg = _data
@@ -320,7 +324,6 @@ export default {
             this.selectIconVal2 = this.boundState.bank_pay
             this.selectIconVal3 = this.boundState.wechat_pay
             sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
-            this.payTypeStr()
           } else {
             this.$toast(res.msg)
           }
@@ -386,7 +389,7 @@ export default {
           }
         }
         .btn{
-          width: 100px;
+          width: 50%;
           height: 50px;
           position: absolute;
           bottom: 50px;
@@ -431,12 +434,12 @@ export default {
         .imgs{
           flex: 1;
           text-align: center;
-          height: 240px;
+          height: 263px;
           &:first-of-type{
             margin-right: 40px;
           }
           .mask{
-            height: 100%;
+            height: 263px;
             width: 310px;
             position: relative;
             i{
@@ -453,12 +456,12 @@ export default {
               color: #fff;
             }
             img{
-              width: 100%;
-              height: 100%;
+              width: 310px;
+              height: 260px;
             }
           }
           .mask1{
-            position: absolute;
+            // position: absolute;
             left: 50%;
             transform: translateX(-50%);
           }
@@ -467,8 +470,8 @@ export default {
           }
           .img{
             width: 310px;
-            height: 240px;
-            box-shadow: 0 0 20px -8px #666;
+            height: 260px;
+            box-shadow: 0 0 20px -8px #d2d2d2;
           }
           input{
             position: absolute;

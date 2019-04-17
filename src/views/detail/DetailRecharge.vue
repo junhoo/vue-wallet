@@ -88,15 +88,15 @@
         <li class="li-item clearfix" v-if="orderStatus == 2 || orderStatus == 6">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
-            <div class="icon" v-show="payway == 1"><img :src='ali_pay.alipay_rq_code' alt=""></div>
-            <div class="icon" v-show="payway !== 1"><img :src='wechat_pay.wechat_rq_code' alt=""></div>
+            <!-- <div class="icon" v-show="payway == 1"><img :src='ali_pay.alipay_rq_code' alt=""></div> -->
+            <div class="icon"><img src='~imgurl/lookcode.png' alt=""></div>
             <div class="right" v-text="btnQRText"></div>
           </div>
         </li>
         <div id="qrcode" class="qrcode-img" ref="qrcode" v-show="showQrcode"></div>
       </template>
 
-      <li v-if="0" class="li-item clearfix">
+      <li class="li-item clearfix">
         <div class="left">付款时备注</div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
         <div class="right">1903181149045289796</div>
