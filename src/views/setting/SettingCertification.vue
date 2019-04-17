@@ -115,7 +115,7 @@ export default {
     return {
       postFormat: {},
       firstUpload: true,
-      navTitle: '',
+      navTitle: '设置',
       pap: '身份证',
       chenckcard: 0,
       status: 0,

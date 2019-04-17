@@ -11,7 +11,12 @@
             <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
           </template>
         </div>
-        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==7,'li-tab-red':orderStatus==6||orderStatus==4}">{{orderStatus|orderStatus}}</div>
+        <div
+            class="li-tab-status"
+            :class="{'li-tab-orange':orderStatus == 7,
+            'li-tab-red':orderStatus == 6 || orderStatus == 4}"
+            >{{orderStatus|orderStatus}}
+        </div>
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>

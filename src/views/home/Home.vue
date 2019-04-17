@@ -6,7 +6,7 @@
       <div class="bars clearfix">
         <div class="left" @click="jumpSetPage()"><p>设置</p></div>
         <div class="title">资产</div>
-        <div class="right" @click="matchingOrder()"><p>申诉</p></div>
+        <!-- <div class="right" @click="matchingOrder()"><p>申诉</p></div> -->
       </div>
 
       <div class="boxs">
@@ -49,14 +49,18 @@
 
       <!-- 中间-金额区 -->
       <main>
-        <div class="main-top">
-          <p v-show="buttonVal === '充值'">充值积分</p>
-          <p v-show="buttonVal === '提现'">提现积分</p>
-          <input type="text"
-                 v-model="keyword"
-                 placeholder="请输入积分数量"
-                 onKeyUp="value=value.replace(/[^\d]/g,'')"
-                 onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+        <div class="main-top clearfix">
+          <div v-show="buttonVal === '充值'" class="left-text">充值积分</div>
+          <div v-show="buttonVal === '提现'" class="left-text">提现积分</div>
+          <!-- onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"> -->
+          <div class="input-box clearfix">
+            <input type="text"
+                  @blur="xxx()"
+                  v-model="keyword"
+                  placeholder="请输入积分数量"
+                  class="needsclick search"
+                  onKeyUp="value=value.replace(/[^\d]/g,'')">
+          </div>
         </div>
         <div class="main-mid">
           <div class="main-imgs">
@@ -78,7 +82,7 @@
             </div>
           </div>
           <p v-show="buttonVal === '充值'">额外扣除服务10%，实际到账5000</p>
-          <p v-show="buttonVal === '提现'">资产余额1000积分，<span>全部提现</span></p>
+          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.operating_amount}}积分，<span>全部提现</span></p>
         </div>
         <button class="main-down" @click="verifyWindow()">提交订单</button>
       </main>
@@ -184,6 +188,11 @@ export default {
     }
   },
   methods: {
+    xxx () {
+      setTimeout(function () {
+      }, 10)
+    },
+
     autoLogin () {
       let data = this.postFormat
 
@@ -215,9 +224,10 @@ export default {
       //   'uid': 1
       // }
       let data = this.postFormat
-      data.uid = this.userMsg.id
+      // data.uid = this.userMsg.id
+      data.token = localStorage.getItem('randomcode')
 
-      const url = this.$api.wallet
+      const url = this.$api.user
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
           res = res.data
@@ -363,7 +373,12 @@ export default {
         return
       }
 
-      if (this.userMsg.is_realname !== 1) { // 0未认证 1审核通过 2审核未通过 3审核中
+      if (inputs === '') {
+        var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/
+        if (!exp.test(inputs)) {
+          this.$toast('请输入充值数量')
+        }
+      } else if (this.userMsg.is_realname !== 1) { // 0未认证 1审核通过 2审核未通过 3审核中
         this.dialogOption = {
           title: '提示',
           text: '请先完成实名认证再进行交易',
@@ -371,11 +386,6 @@ export default {
           confirmButtonText: '去实名'
         }
         this.dialogBoxVal = true
-      } else if (inputs === '') {
-        var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/
-        if (!exp.test(inputs)) {
-          this.$toast('请输入充值数量')
-        }
       } else {
         if (this.buttonVal === '充值') {
           this.submitOrderMatch('充值')
@@ -420,7 +430,7 @@ export default {
 
     // type = 1未完成, 2已完成, 3已取消
     onTabEvent (type) {
-      this.getHomeInfo() // 刷新首页
+      // this.getHomeInfo() // 刷新首页
       this.getOrderInfo(type)
     },
 
@@ -506,9 +516,6 @@ export default {
 
     jumpSetPage () {
       this.$router.push({ name: 'Setting' })
-      this.$router.push({
-        name: 'Setting'
-      })
     },
     // 获取用户信息
     getUserMsg () {
@@ -808,12 +815,6 @@ export default {
   margin-right: 2px;
 };
 
-.clearfix:after {
-    content: '';
-    display: block;
-    clear: both;
-}
-
 header {
   position: relative;
   box-sizing: border-box;
@@ -970,6 +971,12 @@ header {
   }
 }
 
+.clearfix:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
 .bg-wrapper {
   background: @bgColor;
   .blank {
@@ -986,22 +993,30 @@ header {
       height: 91px;
       margin: 0 21px;
       border-bottom: 2px solid #D4D4D4;
-      p {
+      .left-text {
         display: inline-block;
+        float: left;
         height: 91px;
         line-height: 91px;
         color: #384253;
         font-size: 32px;
       }
-      input {
+      .input-box {
         display: inline-block;
-        width: 500px;
-        height: 91px;
-        line-height: 91px;
-        text-align: right;
-        font-size: 30px;
-        background-color: inherit;
+        float: right;
+        width: 465px;
+        height: 61px;
+        line-height: 61px;
+        background: #f8f8f8;
+        padding: 15px;
         padding-right: 5px;
+        .search {
+          float: right;
+          text-align: right;
+          font-size: 30px;
+          background-color: inherit;
+          border: none;
+        }
       }
     }
     .main-mid {

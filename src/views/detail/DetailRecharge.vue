@@ -13,8 +13,8 @@
         </div>
         <div
             class="li-tab-status"
-            :class="{'li-tab-orange':orderStatus == 2 || orderStatus == 7,
-            'li-tab-red':orderStatus == 4 || orderStatus == 3 || orderStatus == 6}">
+            :class="{'li-tab-orange':orderStatus == 2 || orderStatus == 7 || orderStatus == 6,
+            'li-tab-red':orderStatus == 4 || orderStatus == 3}">
             {{orderStatus | orderStatus}}
         </div>
       </li>
