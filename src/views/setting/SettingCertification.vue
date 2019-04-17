@@ -6,7 +6,7 @@
         <div class="hint">实名认证</div>
         <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
         <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
-        <p v-if="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
+        <p v-if="userCertifyMsg.status == 0 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
         <div class="item">
           <div class="name">证件类型</div>
           <input readonly type="text" :value="pap">
@@ -113,6 +113,7 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
       firstUpload: true,
       navTitle: '',
       pap: '身份证',
@@ -131,27 +132,33 @@ export default {
     }
   },
   created () {
-    this.getUserMsg()
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
+    this.getUserInfo()
   },
   methods: {
     // 获取用户实名认证信息
-    getUserMsg () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
-      let url = 'http://user.service.168mi.cn'
+    getUserInfo () {
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+
+      let url = this.$api.user
       axios.post(url + '/api/Authentication/getAuthenticationLists', data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.firstUpload = false
-            this.userCertifyMsg = res.data.list
-            this.userNo = res.data.list.credentials_no
-            this.username = res.data.list.name
-            this.pap = res.data.list.credentials_type_str
+            const _data = res.data.list
+            this.userCertifyMsg = _data
+            this.userNo = _data.credentials_no
+            this.username = _data.name
+            this.pap = _data.credentials_type_str
+          } else if (res.code === '14003') {
           } else {
             this.$toast(res.msg)
           }
@@ -190,12 +197,12 @@ export default {
         } else {
           that.cardUrl23 = this.result
         }
-        console.log(that.cardUrl21, i)
+        // console.log(that.cardUrl21, i)
       }
-      console.log(this.cardUrl21, i)
+      // console.log(this.cardUrl21, i)
       param.append('file', file, file.name)
       param.append('type', '1')
-      let url = 'http://user.service.168mi.cn'
+      let url = this.$api.user
       if (this.liActive === 1) {
         url += '/api/Upload/uploadIdCardFile'
       } else if (this.liActive === 2) {
@@ -206,7 +213,7 @@ export default {
       axios.post(url, param)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             const imgurl = res.data.list.url
             if (imgurl) {
               if (i === 1) {
@@ -227,8 +234,8 @@ export default {
           this.$toast('网络错误')
         })
     },
-    submit (ix) {
-      if (ix === 1) {
+    submit (index) {
+      if (index === 1) {
         this.$router.go(-1)
         return false
       }
@@ -252,27 +259,36 @@ export default {
         this.$toast('请上传手持证件照')
         return false
       }
-      const url = 'http://user.service.168mi.cn'
+      const url = this.$api.user
       var url1 = '/api/Authentication/addAuthentication'
       if (!this.firstUpload) {
         url1 = '/api/Authentication/updateAuthentication'
       }
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1',
-        'name': this.username,
-        'credentials_no': this.userNo,
-        'credentials_asurface': this.cardUrl1, // 正面照
-        'credentials_bsurface': this.cardUrl2, // 背面照
-        'hold_certificates': this.cardUrl3, // 手持照
-        'credentials_type': this.liActive
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'name': this.username,
+      //   'credentials_no': this.userNo,
+      //   'credentials_asurface': this.cardUrl1, // 正面照
+      //   'credentials_bsurface': this.cardUrl2, // 背面照
+      //   'hold_certificates': this.cardUrl3, // 手持照
+      //   'credentials_type': this.liActive
+      // }
+      let data = this.postFormat
+      data.name = this.username
+      data.credentials_no = this.userNo
+      data.credentials_asurface = this.cardUrl1 // 正面照
+      data.credentials_bsurface = this.cardUrl2 // 背面照
+      data.hold_certificates = this.cardUrl3 // 手持照
+      data.credentials_type = this.liActive
+
       axios.post(url + url1, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
+            this.getUserMsg()
             this.$toast(res.msg)
           } else {
             this.$toast(res.msg)
@@ -280,6 +296,37 @@ export default {
         })
         .catch(e => {
           this.$toast('网络错误')
+        })
+    },
+
+    // 获取用户信息
+    getUserMsg () {
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+
+      let url = this.$api.user
+      axios.post(url + '/api/user/getUserInfo', data)
+        .then(res => {
+          res = res.data
+          if (res.code === 10000) {
+            this.userMsg = res.data.list
+            this.boundState = this.userMsg.pay_info
+            this.selectIconVal1 = this.boundState.ali_pay
+            this.selectIconVal2 = this.boundState.bank_pay
+            this.selectIconVal3 = this.boundState.wechat_pay
+            sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
+            this.payTypeStr()
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误4')
         })
     }
   }

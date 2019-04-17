@@ -6,7 +6,14 @@
         <div class="icon default">绑定/修改</div>
       </div>
       <div class="boxs boxs-real" @click="jumpRealBound">
-        <div class="icon blue" :class="{'red':userMsg.is_realname==2,'default':userMsg.is_realname==0,'green':userMsg.is_realname==1}">{{userMsg.is_realname | certistatusText}}</div>
+        <div
+          class="icon blue"
+          :class="{
+            'red':userMsg.is_realname == 2,
+            'default':userMsg.is_realname == 0,
+            'green':userMsg.is_realname == 1}">
+            {{userMsg.is_realname | certistatusText}}
+        </div>
        </div>
     </main>
   </div>

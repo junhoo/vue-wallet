@@ -8,10 +8,9 @@
         <!-- </transition> -->
         <div class="boxs" :class="{'boxs-border-4': state === 4}">
           <p class="boxs-state">{{dialogText}}</p>
-          <template v-if="types === '充值'">
-            {{1111}}
-            <button class="look" v-show="state === 2">立即付款</button>
-            <button class="look" v-show="state === 3">查看</button>
+          <template v-if="buttonType === '充值'">
+            <button class="look" v-show="state === 2" @click="closeDiv('付款')">立即付款</button>
+            <button class="look" v-show="state === 3" @click="closeDiv('查看')">查看</button>
             <p class="boxs-padding-4" v-show="state === 4">收款账号: {{account}} (0988)</p>
             <p class="boxs-text" v-show="state === 4">金额<span>￥{{money}}</span></p>
             <button
@@ -21,7 +20,6 @@
               @click="closeDiv('查看')">查看</button>
           </template>
           <template v-else>
-            {{2222}}
             <button class="look" v-show="state === 2" @click="closeDiv('查看')">查看</button>
             <p class="boxs-text" v-show="state === 3">收款账号：银行卡（0988）</p>
             <button class="look" v-show="state === 3" @click="closeDiv('收款')">去确认收款</button>
@@ -54,7 +52,7 @@ export default {
       type: Number,
       default: 1
     },
-    types: {
+    buttonType: {
       type: String,
       default: ''
     },
@@ -67,13 +65,20 @@ export default {
       default: ''
     }
   },
-  mounted () {
-    this.state = 1
+  data () {
+    return {
+      // buttonType: ''
+    }
+  },
+  created () {
+    // this.buttonType = localStorage.getItem('dialogBtnType')
   },
   computed: {
     dialogText () {
       let text = ''
-      if (this.types === '充值') {
+      const btnType = localStorage.getItem('dialogBtnType')
+      console.log(btnType + '33333')
+      if (btnType === '充值') {
         if (this.state === 1) {
           text = '订单匹配中，请稍后'
         } else if (this.state === 2) {
@@ -102,8 +107,13 @@ export default {
   },
   methods: {
     closeDiv (type) {
-      this.$emit('update:show', false) // 触发 input 事件，并传入新值
+      console.log('关闭窗口')
+      const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
+      _dialog.dialogFlowVal = 0
+      localStorage.setItem('dialogOrder', JSON.stringify(_dialog))
+      console.log(_dialog.dialogFlowVal)
       this.$emit('dialogOrderEvent', type)
+      this.$emit('update:show', false) // 触发 input 事件，并传入新值
     }
   }
 }

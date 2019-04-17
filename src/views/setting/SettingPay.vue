@@ -50,10 +50,10 @@ export default {
       this.wechat = this.boundState.wechat_pay ? '修改' : '立即绑定'
     },
     jumpPayBound (type) {
-      let isbound = '0'
-      isbound = this.bank === '修改' ? 'y' : 'n'
-      isbound = this.alipay === '修改' ? 'y' : 'n'
-      isbound = this.wechat === '修改' ? 'y' : 'n'
+      let isbound = 'n'
+      if (this[type] === '修改') {
+        isbound = 'y'
+      }
       this.$router.push({ path: '/setting/bound', query: { type, isbound } })
     }
   }

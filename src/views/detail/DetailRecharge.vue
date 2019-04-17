@@ -7,11 +7,16 @@
       <li class="li-tab-box">
         <div class="li-tab-text">充值</div>
         <div class="li-tab-time">
-          <template v-if="orderStatus==2">
-            <count-down endTime="1554622200000" :callback="callback(0)" endText="已经结束了" timeType='zh'></count-down>
+          <template v-if="orderStatus == 2 || orderStatus == 6">
+            <count-down :endTime="orderDetailData.res_time" :callback="callback(0)" endText="" timeType='zh'></count-down>
           </template>
         </div>
-        <div class="li-tab-status" :class="{'li-tab-orange':orderStatus==2,'li-tab-red':orderStatus==4||orderStatus==3}">{{orderStatus|orderStatus}}</div>
+        <div
+            class="li-tab-status"
+            :class="{'li-tab-orange':orderStatus == 2 || orderStatus == 7,
+            'li-tab-red':orderStatus == 4 || orderStatus == 3 || orderStatus == 6}">
+            {{orderStatus | orderStatus}}
+        </div>
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
@@ -43,48 +48,48 @@
       <li class="li-item clearfix">
         <div class="left">收款人</div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right" v-if="payway == 1">{{payType.ali_pay.alipay_name}}</div>
-        <div class="right" v-else-if="payway == 2">{{payType.wechat_pay.wechat_name}}</div>
-        <div class="right" v-else>{{payType.bank_pay.bank_name}}</div>
+        <!-- payType.ali_pay. -->
+        <div class="right" v-show="payway == 1">{{ali_pay.alipay_name}}</div>
+        <div class="right" v-show="payway == 2">{{wechat_pay.wechat_name}}</div>
+        <div class="right" v-show="payway == 3">{{bank_pay.bank_name}}</div>
       </li>
-
        <!-- <li class="li-item clearfix" v-if="0"> -->
-       <li class="li-item clearfix" v-if="payway != 3">
+       <li class="li-item clearfix" v-show="payway != 3">
         <div class="left" v-text="payText2"></div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-        <div class="right" v-if="payway == 1">{{payType.ali_pay.alipay_account}}</div>
-        <div class="right" v-else>{{payType.wechat_pay.wechat_account}}</div>
+        <div class="right" v-show="payway == 1">{{ali_pay.alipay_account}}</div>
+        <div class="right" v-show="payway !== 1">{{wechat_pay.wechat_account}}</div>
       </li>
 
       <!-- 银行卡 -->
-      <template v-if="payway == 3">
+      <template v-show="payway == 3">
         <li class="li-item clearfix">
           <div class="left">银行名称</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_address}}</div>
+          <div class="right">{{bank_pay.bank_address}}</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">支行名称</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_sub_branch}}</div>
+          <div class="right">{{bank_pay.bank_sub_branch}}</div>
         </li>
 
         <li class="li-item clearfix">
           <div class="left">银行卡号</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
-          <div class="right">{{payType.bank_pay.bank_no}}</div>
+          <div class="right">{{bank_pay.bank_no}}</div>
         </li>
       </template>
 
       <!--  -->
       <!-- <template v-if="0"> -->
-      <template v-if="payway != 3">
+      <template v-show="payway != 3">
         <li class="li-item clearfix" v-if="orderStatus == 2 || orderStatus == 6">
           <div class="left">收款二维码</div>
           <div @click="openQrcode()">
-            <div class="icon" v-if="payway == 1"><img :src='payType.ali_pay.alipay_rq_code' alt=""></div>
-            <div class="icon" v-else><img :src='payType.wechat_pay.wechat_rq_code' alt=""></div>
+            <div class="icon" v-show="payway == 1"><img :src='ali_pay.alipay_rq_code' alt=""></div>
+            <div class="icon" v-show="payway !== 1"><img :src='wechat_pay.wechat_rq_code' alt=""></div>
             <div class="right" v-text="btnQRText"></div>
           </div>
         </li>
@@ -133,7 +138,7 @@
             <div class="right"><van-radio name="1"></van-radio></div>
           </li>
 
-           <li class="li-item clearfix" v-if="iswx">
+          <li class="li-item clearfix" v-if="iswx">
             <div class="left"><img src="~imgurl/wx-icon.png" alt=""></div>
             <div class="left">微信</div>
             <div class="right"><van-radio name="2"></van-radio></div>
@@ -158,7 +163,7 @@
       <button @click="submit()" class="btn-pay" :class="{'appeal':appeal=='1'}">{{orderStatus|btnStatus}}
         <span v-if="appeal=='1'">
           <template>
-            <count-down endTime="1554624000000" :callback="callback(1)" endText="已经结束了" timeType='zh'></count-down>
+            <count-down :endTime="orderDetailData.res_time" :callback="callback(1)" endText="" timeType='zh'></count-down>
           </template>
         </span>
       </button>
@@ -178,6 +183,16 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
+      ali_pay: {
+        alipay_name: ''
+      },
+      bank_pay: {
+        bank_name: ''
+      },
+      wechat_pay: {
+        wechat_name: ''
+      },
       btnQRText: '点击查看',
       payText: '微信支付',
       payText2: '微信账号',
@@ -186,7 +201,7 @@ export default {
       showQrcode: false,
       orderStatus: '0',
       payway: '1', // 1支付宝，2微信，3银行卡
-      payType: [],
+      payType: {},
       appeal: '0', // 点击申诉之后变为1
       show: false,
       checked: true,
@@ -199,72 +214,91 @@ export default {
     }
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     this.orderStatus = this.$route.query.status
     this.order_no = this.$route.query.orderid
     this.getOrderData()
   },
+  mounted () {
+    const payRadio = sessionStorage.getItem('payRadio')
+    if (payRadio === 'open') {
+      this.checkoutPay(1) // 1 2 3
+      sessionStorage.setItem('payRadio', '')
+    }
+  },
   methods: {
     // 获取订单信息
     getOrderData () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = 'http://order.service.168mi.cn/api/order/payDetail'
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.orderDetailData = res.data.list.order_detail
-            this.payType = res.data.list.pay_type
+            const payType = res.data.list.pay_type
+            this.payType = payType
+            this.ali_pay = payType.ali_pay || {}
+            this.wechat_pay = payType.wechat_pay || {}
+            this.bank_pay = payType.bank_pay || {}
             this.isPayTipe()
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          console.log(e)
+          // this.$toast('网络错误，不能访问0')
         })
     },
     // 判断付款方式
     isPayTipe () {
-      if (this.payType.length === 0) {
-        return false
-      }
-      if (this.payType.indexOf('ali_pay') > -1) {
+      const str = JSON.stringify(this.payType)
+      if (str.includes('ali_pay')) {
         this.isAlipay = true
       }
-      if (this.payType.indexOf('wechat_pay') > -1) {
+      if (str.includes('wechat_pay')) {
         this.iswx = true
       }
-      if (this.payType.indexOf('bank_pay') > -1) {
+      if (str.includes('bank_pay')) {
         this.isbank = true
       }
+      return false
     },
     // 取消订单
     cancelOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = 'http://order.service.168mi.cn/api/order/cancelRechangeOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误，不能访问1')
         })
     },
     // 切换支付方式
@@ -285,49 +319,57 @@ export default {
       if (i === 0) {
         return false
       }
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1',
-        'pay_type': this.payway
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'pay_type': this.payway,
+      //   'order_no': this.order_no,
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+      data.pay_type = this.payway
+
       const url = 'http://order.service.168mi.cn/api/order/changePayType'
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误，不能访问2')
         })
     },
     // 我已完成付款
     finishOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1',
-        'pay_type': this.payway
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'order_no': this.order_no,
+      //   'pay_type': this.payway
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+      data.pay_type = this.payway
+
       const url = 'http://order.service.168mi.cn/api/order/endRechangeOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
-          if (res.code === '10000') {
+          if (res.code === 10000) {
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误，不能访问3')
         })
     },
     submit2 () {
@@ -382,7 +424,7 @@ export default {
         value = '已提交'
       } else if (value === '2' || value === '6') {
         value = '待付款'
-      }else if (value === '5') {
+      } else if (value === '5') {
         value = '已完成'
       } else if (value === '3' || value === '7') {
         value = '未到账'
