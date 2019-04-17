@@ -147,7 +147,7 @@ export default {
       // }
       let data = this.postFormat
 
-      let url = 'http://user.service.168mi.cn'
+      let url = this.$api.user
       axios.post(url + '/api/Authentication/getAuthenticationLists', data)
         .then(res => {
           res = res.data
@@ -202,7 +202,7 @@ export default {
       // console.log(this.cardUrl21, i)
       param.append('file', file, file.name)
       param.append('type', '1')
-      let url = 'http://user.service.168mi.cn'
+      let url = this.$api.user
       if (this.liActive === 1) {
         url += '/api/Upload/uploadIdCardFile'
       } else if (this.liActive === 2) {
@@ -259,7 +259,7 @@ export default {
         this.$toast('请上传手持证件照')
         return false
       }
-      const url = 'http://user.service.168mi.cn'
+      const url = this.$api.user
       var url1 = '/api/Authentication/addAuthentication'
       if (!this.firstUpload) {
         url1 = '/api/Authentication/updateAuthentication'
@@ -309,7 +309,7 @@ export default {
       // }
       let data = this.postFormat
 
-      let url = 'http://user.service.168mi.cn'
+      let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
           res = res.data

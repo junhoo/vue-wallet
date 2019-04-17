@@ -30,10 +30,10 @@
                   'li-tab-blue': item.status === 1 || item.status === 5,
                   'li-tab-red': item.status === 3 || item.status === 4 || item.status === 6
                 }"
-            >{{item.status_text}}</div>
+            >{{stateText(item.status_text)}}</div>
           </div>
 
-          <div class="li-money">
+          <div class="li-money">st
             <div class="left">金额</div>
             <div class="right">￥{{item.order_amount}}</div>
           </div>
@@ -71,6 +71,13 @@ export default {
     }
   },
   methods: {
+    stateText (str) {
+      let text = str
+      if (text === '已匹配') {
+        text = '待付款'
+      }
+      return text
+    },
     selectTab (title) {
       switch (title) {
         case '未完成':

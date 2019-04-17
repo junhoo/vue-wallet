@@ -173,7 +173,7 @@ export default {
     }
     this.postFormat = format
     sessionStorage.setItem('reqformat', JSON.stringify(format))
-    this.getUserMsg()
+    this.autoLogin()
     this.getOrderInfo('1')
 
     this.loopOrderDetail()
@@ -184,6 +184,31 @@ export default {
     }
   },
   methods: {
+    autoLogin () {
+      let data = this.postFormat
+
+      const url = this.$api.user
+      axios.post(url + '/api/login/auto_login', data)
+        .then(res => {
+          res = res.data
+          if (parseInt(res.code) === 10000) {
+            const _obj = res.data.list
+            if (typeof _obj === 'string') {
+              this.getUserMsg()
+              // token 8679Nhv6Un3dlCtgaHencsb0YZA9WN0CLbOXvy8Sf9pakR6SLRon617IlzRqrSXLN3aK7A
+              localStorage.setItem('randomcode', _obj)
+            } else {
+              this.$toast(res.msg)
+            }
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误1')
+        })
+    },
+
     getHomeInfo () {
       // const data = {
       //   'app-name': 'app_name1',
@@ -494,7 +519,7 @@ export default {
       //   'third_user_id': '1'
       // }
       let data = this.postFormat
-      let url = 'http://user.service.168mi.cn'
+      let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
           res = res.data
@@ -513,6 +538,7 @@ export default {
           }
         })
         .catch(e => {
+          console.log(e)
           this.$toast('网络错误4')
         })
     },
@@ -577,6 +603,7 @@ export default {
           this.getHomeInfo()
           this.getOrderInfo('1')
           localStorage.setItem('openLoopConfirm', '0')
+
           if (localStorage.getItem('dialogBtnType') === '提现') {
             const TWO_HOURS_END = 7200000
             const endTime = parseInt(new Date().getTime()) + TWO_HOURS_END
@@ -635,7 +662,7 @@ export default {
             // if (status === 5) { // 后台查询-订单已完成-更新窗口
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
-              this.dialogFlowVal = 3
+              this.dialogFlowVal = 2.1
               this.setDialogStorage(this.dialogFlowVal)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配

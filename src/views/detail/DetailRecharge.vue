@@ -422,10 +422,8 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '已提交'
-      } else if (value === '2') {
+      } else if (value === '2' || value === '6') {
         value = '待付款'
-      } else if (value === '6') {
-        value = '已匹配'
       } else if (value === '5') {
         value = '已完成'
       } else if (value === '3' || value === '7') {
