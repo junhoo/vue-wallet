@@ -387,6 +387,7 @@ export default {
             this.userNo = _data.credentials_no
             this.username = _data.name
             this.pap = _data.credentials_type_str
+            sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
           } else if (res.code === '14003') {
           } else {
             this.$toast(res.msg)
