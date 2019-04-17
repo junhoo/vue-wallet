@@ -185,6 +185,7 @@ export default {
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
+      console.log(file, '1235454')
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
@@ -201,7 +202,6 @@ export default {
           res = res.data
           if (res.code === 10000) {
             const imgurl = res.data.list.url
-            console.log(imgurl)
             if (imgurl) {
               if (entryType === 'wechat') {
                 this.apiWechat.wechat_rq_code = imgurl

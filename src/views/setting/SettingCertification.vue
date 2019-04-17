@@ -152,6 +152,10 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            if (res.data.list.length === 0) {
+              return false
+            }
+            console.log(res.data, 'ghj')
             this.firstUpload = false
             const _data = res.data.list
             this.userCertifyMsg = _data
@@ -468,7 +472,7 @@ export default {
           .img{
             width: 310px;
             height: 260px;
-            box-shadow: 0 0 20px -8px #666;
+            box-shadow: 0 0 20px -8px #d2d2d2;
           }
           input{
             position: absolute;
