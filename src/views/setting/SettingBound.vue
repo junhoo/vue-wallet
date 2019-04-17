@@ -361,7 +361,7 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
-            this.getUserInfo()
+            this.getUserMsg()
             this.$toast('保存成功', 1000)
             this.$router.go(-1)
           } else {
@@ -374,27 +374,22 @@ export default {
         })
     },
 
-    getUserInfo () {
+    getUserMsg () {
       let data = this.postFormat
+
       let url = this.$api.user
-      axios.post(url + '/api/Authentication/getAuthenticationLists', data)
+      axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
           res = res.data
           if (res.code === 10000) {
-            this.firstUpload = false
-            const _data = res.data.list
-            this.userCertifyMsg = _data
-            this.userNo = _data.credentials_no
-            this.username = _data.name
-            this.pap = _data.credentials_type_str
             sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
-          } else if (res.code === '14003') {
+            this.payTypeStr()
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          this.$toast('网络错误，不能访问')
+          this.$toast('网络错误4')
         })
     },
 
