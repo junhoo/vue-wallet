@@ -3,7 +3,7 @@
     <common-header :title="navTitle"></common-header>
     <main>
       <div class="boxs boxs-pay" @click="jumpPayBound">
-        <div class="icon default">绑定/修改</div>
+        <div v-show="hasBound" class="icon default">绑定/修改</div>
       </div>
       <div class="boxs boxs-real" @click="jumpRealBound">
         <div
@@ -34,6 +34,17 @@ export default {
   },
   created () {
     this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
+  },
+  computed: {
+    hasBound () {
+      const info = this.userMsg.pay_info
+      const hasList = [info.ali_pay, info.bank_pay, info.wechat_pay]
+      const lastList = hasList.filter(bol => bol === true)
+      if (lastList.length > 1) {
+        return true
+      }
+      return false
+    }
   },
   methods: {
     jumpPayBound () {
@@ -94,10 +105,12 @@ main {
       line-height: 48px;
       border-radius: 0px 16px 0px 48px;
       color: #fff;
-      background-color:#0078FF;
     }
     .default {
       background-color: #637280;
+    }
+    .blue {
+      background-color:#0078FF;
     }
     .green {
       background-color: #52C75A;
