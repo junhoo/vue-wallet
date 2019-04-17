@@ -57,6 +57,7 @@
           <template v-if="entryIsbound === 'n'">
             <img v-if="preview !== ''"
                 class="img-down"
+                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
@@ -66,13 +67,18 @@
           <template v-else>
             <img v-if="preview !== ''"
                 class="img-down"
+                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
                 class="img-down"
+                :class="[istrue?'img-width':'img-height']"
                 :src="qrcodeUrl">
           </template>
-          <input type="file" @change="uploadFile($event)">
+          <!-- <van-uploader class="xxx" :after-read="onRead">
+            <van-icon name="photograph" />
+          </van-uploader> -->
+          <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
     </div>
@@ -102,6 +108,7 @@ export default {
   },
   data () {
     return {
+      istrue: true,
       postFormat: {},
       preview: '',
       entryType: '',
@@ -182,6 +189,10 @@ export default {
     }
   },
   methods: {
+    onRead (file) {
+      console.log(file)
+    },
+
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
@@ -189,6 +200,19 @@ export default {
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
+
+      var reads = new FileReader()
+      reads.readAsDataURL(file)
+      let self = this
+      reads.onload = function (e) {
+        self.preview = this.result
+        let img = new Image()
+        img.src = e.target.result
+        img.onload = function () {
+          self.istrue = this.width > this.height
+          console.log(this.width > this.height)
+        }
+      }
 
       let url = this.$api.user
       const entryType = this.$route.query.type
@@ -207,12 +231,6 @@ export default {
                 this.apiWechat.wechat_rq_code = imgurl
               } else {
                 this.apiAlipay.alipay_rq_code = imgurl
-              }
-              var reads = new FileReader()
-              reads.readAsDataURL(file)
-              let self = this
-              reads.onload = function (e) {
-                self.preview = this.result
               }
             } else {
               this.$toast('上传路径消失~')
@@ -469,6 +487,7 @@ main {
       margin-top: 74px;
       width: 288px;
       height: 288px;
+      border: 1px solid #9FA9BA;
       // background: url('~imgurl/upload.png') no-repeat;
       // background-size: 100%;
       .img-up {
@@ -476,11 +495,17 @@ main {
         height: 100%;
       }
       .img-down {
-        width: 288px;
-        height: 288px;
+        // width: 288px;
+        // height: 288px;
         border: 1px solid #9FA9BA;
       }
-      input {
+      .img-width{
+        width: 288px;
+      }
+      .img-height{
+        height: 288px;
+      }
+      .img-file {
         border: 1px red solid;
         margin-top: -288px;
         width: 288px;

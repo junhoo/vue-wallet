@@ -13,8 +13,8 @@
         </div>
         <div
             class="li-tab-status"
-            :class="{'li-tab-orange':orderStatus == 7,
-            'li-tab-red':orderStatus == 6 || orderStatus == 4}"
+            :class="{'li-tab-orange':orderStatus == 7 || orderStatus == 3,
+            'li-tab-red':orderStatus == 6 || orderStatus == 2 || orderStatus == 4}"
             >{{orderStatus|orderStatus}}
         </div>
       </li>
@@ -100,7 +100,7 @@
       </li>
     </ul>
     <!-- 收款账号 -->
-    <div class="account" :class="{'account2': orderStatus==7}" v-if="orderStatus==5 || orderStatus==7">
+    <div class="account" :class="{'account2': orderStatus==7 || orderStatus==3}" v-if="orderStatus==5 || orderStatus==7 || orderStatus==3">
       <span>收款账号：{{orderDetailData.pay_type | payTypeText}}({{orderDetailData.account}})</span>
     </div>
     <!-- 手动取消提示 -->
@@ -121,7 +121,7 @@
     <div class="btn-pay-boxs" v-if="1">
       <button @click="submit()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="appeal" v-if="orderStatus==6"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
+    <div class="appeal" v-if="orderStatus==6 || orderStatus==2"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
   </div>
 </template>
 <script>
@@ -241,7 +241,7 @@ export default {
       if (this.orderStatus === '1') {
         this.cancelOrder()
         return false
-      } else if (this.orderStatus === '6') {
+      } else if (this.orderStatus === '6' || this.orderStatus === '2') {
         this.finishOrder()
       } else {
         this.$router.go(-1)
@@ -281,7 +281,7 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '取消订单'
-      } else if (value === '6') {
+      } else if (value === '7' || value === '3') {
         value = '确认收款'
       } else {
         value = '返回'
@@ -292,9 +292,9 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '已提交'
-      } else if (value === '7') {
+      } else if (value === '7' || value === '3') {
         value = '待确认'
-      } else if (value === '6') {
+      } else if (value === '6' || value === '2') {
         value = '已匹配'
       } else if (value === '5') {
         value = '已完成'
@@ -307,9 +307,9 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '1、我们已接收您的提现订单，并正在为您匹配买方。'
-      } else if (value === '7') {
+      } else if (value === '7' || value === '3') {
         value = '1、当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻。'
-      } else if (value === '6') {
+      } else if (value === '6' || value === '2') {
         value = '1、买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“我已确认收款”按钮。'
       } else if (value === '5') {
         value = '1、该笔充值已完成，如没有充值到账请联系***核实。'
@@ -322,9 +322,9 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '2、当订单变更为已匹配状态时，则表示已有买方正准备向你的订单付款。'
-      } else if (value === '7') {
+      } else if (value === '7' || value === '3') {
         value = '2、如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配。'
-      } else if (value === '6') {
+      } else if (value === '6' || value === '2') {
         value = '2、如果3分钟内未收到买方款项，请点击下方申诉按钮进行申诉。'
       } else {
         value = ''
@@ -335,9 +335,9 @@ export default {
       value = value.toString()
       if (value === '1') {
         value = '3、成功完单笔提现订单后才可发起下一笔提现。'
-      } else if (value === '7') {
+      } else if (value === '7' || value === '3') {
         value = '3、提现订单已匹配状态下，您不能取消操作。'
-      } else if (value === '6') {
+      } else if (value === '6' || value === '2') {
         value = '3、如果未收到买方支付的款项，请勿点击下方“我已确认收款”按钮，以免造成损失。'
       } else {
         value = ''

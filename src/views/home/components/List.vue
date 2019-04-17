@@ -145,7 +145,15 @@ export default {
         text-align: center;
         color: #0078FF;
         border-left: 2px solid #0078FF;
-        background: #ffffff
+        background: #ffffff;
+        &:first-of-type{
+          border-top-left-radius: 10px;
+          border-bottom-left-radius: 10px;
+        }
+        &:last-of-type{
+          border-top-right-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
       }
       .tabs-li-select {
         color: @white;

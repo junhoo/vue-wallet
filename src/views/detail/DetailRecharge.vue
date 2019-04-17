@@ -128,7 +128,7 @@
       <van-radio-group v-model="radio" :click="payChange(radio)">
         <ul class="wrapper">
           <li class="li-item clearfix">
-            <div class="left"><img src="~imgurl/toLeftarrow.png" alt=""></div>
+            <div class="left"><img class="leftImg" src="~imgurl/toLeftarrow.png" alt=""></div>
             <div class="center">选择付款方式</div>
           </li>
 
@@ -292,6 +292,7 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            this.$toast(res.msg)
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
@@ -644,13 +645,28 @@ export default {
     }
   .van-popup{
     .li-item{
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #f5f5f5;
       padding: 10px 0;
+      position: relative;
+      .van-radio__icon {
+          height: .9rem;
+          line-height: .9rem;
+          width: 100%;
+          position: absolute;
+          right: 0;
+          text-align: right;
+      }
       &:last-of-type{
         border: none;
       }
       .left{
         margin-right: 20px;
+        img{
+          width: .55rem
+        }
+        .leftImg{
+          width: .3rem
+        }
       }
     }
     .btn-pay-boxs{

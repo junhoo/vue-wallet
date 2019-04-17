@@ -35,18 +35,18 @@
           <div class="imgs">
             <div v-show="cardUrl1 !== ''">
               <div class="mask">
-                <img  ref="cardimg" :src="cardUrl21" alt="">
+                <img  ref="cardimg" :class="[!istrue?'img-width':'img-height']" :src="cardUrl21" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl1 === ''">
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card1-3.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
               </div>
             </div>
             <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
@@ -54,18 +54,18 @@
           <div class="imgs">
             <div v-show="cardUrl2 !== ''">
               <div class="mask">
-                <img :src="cardUrl22" alt="">
+                <img :src="cardUrl22" :class="[!istrue?'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl2 === ''">
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card2-3.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card2-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
             </div>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
@@ -76,18 +76,18 @@
           <div class="imgs">
             <template v-if="cardUrl3">
               <div class="mask mask1">
-                <img :src="cardUrl23" alt="">
+                <img :src="cardUrl23" :class="[!istrue?'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card3-3.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" v-else src="~imgurl/card3-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
+                <img class="img" :class="[istrue?'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
               </div>
             </template>
             <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
@@ -113,6 +113,7 @@ export default {
   },
   data () {
     return {
+      istrue: true,
       postFormat: {},
       firstUpload: true,
       navTitle: '设置',
@@ -155,7 +156,6 @@ export default {
             if (res.data.list.length === 0) {
               return false
             }
-            console.log(res.data, 'ghj')
             this.firstUpload = false
             const _data = res.data.list
             this.userCertifyMsg = _data
@@ -201,9 +201,13 @@ export default {
         } else {
           that.cardUrl23 = this.result
         }
-        // console.log(that.cardUrl21, i)
+        let img = new Image()
+        img.src = e.target.result
+        img.onload = function () {
+          self.istrue = this.width > this.height
+          console.log(this.width > this.height)
+        }
       }
-      // console.log(this.cardUrl21, i)
       param.append('file', file, file.name)
       param.append('type', '1')
       let url = this.$api.user
@@ -324,7 +328,6 @@ export default {
             this.selectIconVal2 = this.boundState.bank_pay
             this.selectIconVal3 = this.boundState.wechat_pay
             sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
-            this.payTypeStr()
           } else {
             this.$toast(res.msg)
           }
@@ -457,7 +460,13 @@ export default {
               color: #fff;
             }
             img{
+              // width: 310px;
+              // height: 260px;
+            }
+            .img-width{
               width: 310px;
+            }
+            .img-height{
               height: 260px;
             }
           }
@@ -470,9 +479,15 @@ export default {
             box-shadow: 0 0 20px -8px #666;
           }
           .img{
-            width: 310px;
-            height: 260px;
+            // width: 310px;
+            // height: 260px;
             box-shadow: 0 0 20px -8px #d2d2d2;
+          }
+          .img-width{
+              width: 310px;
+          }
+          .img-height{
+            height: 260px;
           }
           input{
             position: absolute;
