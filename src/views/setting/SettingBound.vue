@@ -72,7 +72,10 @@
                 class="img-down"
                 :src="qrcodeUrl">
           </template>
-          <input type="file" @change="uploadFile($event)">
+          <!-- <van-uploader class="xxx" :after-read="onRead">
+            <van-icon name="photograph" />
+          </van-uploader> -->
+          <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
     </div>
@@ -182,12 +185,23 @@ export default {
     }
   },
   methods: {
+    onRead (file) {
+      console.log(file)
+    },
+
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
+
+      var reads = new FileReader()
+      reads.readAsDataURL(file)
+      let self = this
+      reads.onload = function (e) {
+        self.preview = this.result
+      }
 
       let url = this.$api.user
       const entryType = this.$route.query.type
@@ -201,6 +215,7 @@ export default {
           res = res.data
           if (res.code === 10000) {
             const imgurl = res.data.list.url
+            console.log(111)
             console.log(imgurl)
             if (imgurl) {
               if (entryType === 'wechat') {
@@ -208,12 +223,8 @@ export default {
               } else {
                 this.apiAlipay.alipay_rq_code = imgurl
               }
-              var reads = new FileReader()
-              reads.readAsDataURL(file)
-              let self = this
-              reads.onload = function (e) {
-                self.preview = this.result
-              }
+              console.log(111)
+              console.log(self.preview)
             } else {
               this.$toast('上传路径消失~')
             }
@@ -480,7 +491,7 @@ main {
         height: 288px;
         border: 1px solid #9FA9BA;
       }
-      input {
+      .img-file {
         border: 1px red solid;
         margin-top: -288px;
         width: 288px;

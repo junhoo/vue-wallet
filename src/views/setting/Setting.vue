@@ -40,7 +40,7 @@ export default {
       const info = this.userMsg.pay_info
       const hasList = [info.ali_pay, info.bank_pay, info.wechat_pay]
       const lastList = hasList.filter(bol => bol === true)
-      if (lastList.length > 1) {
+      if (lastList.length >= 1) {
         return true
       }
       return false

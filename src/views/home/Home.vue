@@ -52,14 +52,14 @@
         <div class="main-top clearfix">
           <div v-show="buttonVal === '充值'" class="left-text">充值积分</div>
           <div v-show="buttonVal === '提现'" class="left-text">提现积分</div>
-          <!-- onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"> -->
           <div class="input-box clearfix">
             <input type="text"
                   v-model="keyword"
                   placeholder="请输入积分数量"
                   class="needsclick search"
                   maxlength="7"
-                  onKeyUp="value=value.replace(/[^\d]/g,'')">
+                  onKeyUp="value=value.replace(/[^\d]/g,'')"
+                  onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
           </div>
         </div>
         <div class="main-mid">
@@ -402,7 +402,7 @@ export default {
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
       this.postFormat.order_amount = this.keyword
-      this.postFormat.choice_pay_type = '1,2'
+      // this.postFormat.choice_pay_type = '1,2'
       const data = this.postFormat
       axios.post(url, data)
         .then(res => {
@@ -938,7 +938,13 @@ header {
           background-position: center;
         }
         .hide-eye {
+          width: 39px;
+          height: 28px;
+          position: absolute;
+          left: 21px;
+          top: 15px;
           background: url('~imgurl/look2-icon.png') no-repeat center;
+          background-size: 100%;
         }
       }
     }
