@@ -78,7 +78,8 @@
     </div>
 
     <footer>
-      <button @click="boundBank()">确定</button>
+      <button v-show="!hasData" class="buttons">确定</button>
+      <button v-show="hasData" class="buttons show-color" @click="boundBank()">确定</button>
     </footer>
 
     <dialog-box
@@ -150,6 +151,35 @@ export default {
     this.entryType = this.$route.query.type
     this.entryIsbound = this.$route.query.isbound
     this.getListInfo(this.$route.query.type, this.$route.query.isbound)
+  },
+  computed: {
+    hasData () {
+      if (this.entryType === 'bank') {
+        const pools = [this.apiBank.bank_name, this.apiBank.bank_no, this.apiBank.bank_address, this.apiBank.bank_sub_branch]
+        for (const item of pools) {
+          if (item === '') {
+            return false
+          }
+        }
+      }
+      if (this.entryType === 'alipay') {
+        const pools = [this.apiBank.alipay_name, this.apiBank.alipay_no, this.apiBank.alipay_address, this.apiBank.alipay_sub_branch]
+        for (const item of pools) {
+          if (item === '') {
+            return false
+          }
+        }
+      }
+      if (this.entryType === 'wechat') {
+        const pools = [this.apiWechat.wechat_name, this.apiWechat.wechat_no, this.apiWechat.wechat_address, this.apiWechat.wechat_sub_branch]
+        for (const item of pools) {
+          if (item === '') {
+            return false
+          }
+        }
+      }
+      return true
+    }
   },
   methods: {
     // event上传图片
@@ -316,6 +346,7 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            this.getUserInfo()
             this.$toast('保存成功', 1000)
             this.$router.go(-1)
           } else {
@@ -325,6 +356,29 @@ export default {
         .catch(e => {
           console.log(e)
           this.$toast('网络错误')
+        })
+    },
+
+    getUserInfo () {
+      let data = this.postFormat
+      let url = this.$api.user
+      axios.post(url + '/api/Authentication/getAuthenticationLists', data)
+        .then(res => {
+          res = res.data
+          if (res.code === 10000) {
+            this.firstUpload = false
+            const _data = res.data.list
+            this.userCertifyMsg = _data
+            this.userNo = _data.credentials_no
+            this.username = _data.name
+            this.pap = _data.credentials_type_str
+          } else if (res.code === '14003') {
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          this.$toast('网络错误，不能访问')
         })
     },
 
@@ -431,16 +485,19 @@ main {
 footer {
   position: relative;
   margin-top: 90px;
-  button {
+  .buttons {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     width: 620px;
     height: 88px;
-    background: #0078FF;
+    background: #E0E0E0;
     border-radius: 10px;
     font-size:32px;
     color: #ffffff;
+  }
+  .show-color {
+    background: #0078FF;
   }
 }
 </style>
