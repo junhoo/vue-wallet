@@ -362,8 +362,6 @@ export default {
           res = res.data
           if (res.code === 10000) {
             this.getUserMsg()
-            this.$toast('保存成功', 1000)
-            this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }
@@ -383,6 +381,8 @@ export default {
           res = res.data
           if (res.code === 10000) {
             sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
+            this.$toast('保存成功', 1000)
+            this.$router.go(-1)
             this.payTypeStr()
           } else {
             this.$toast(res.msg)

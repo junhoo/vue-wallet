@@ -38,7 +38,8 @@ export default {
       boundState: {}
     }
   },
-  created () {
+  mounted () {
+    console.log('设置页面')
     this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
     this.boundState = this.userMsg.pay_info
     this.getCheckPay()
