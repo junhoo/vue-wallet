@@ -127,22 +127,19 @@
             <div class="center">选择付款方式</div>
           </li>
 
-          <!-- <li class="li-item clearfix" v-if="isAlipay"> -->
-          <li class="li-item clearfix">
+          <li class="li-item clearfix" v-if="isAlipay">
             <div class="left"><img src="~imgurl/alipay-icon.png" alt=""></div>
             <div class="left">支付宝</div>
             <div class="right"><van-radio name="1"></van-radio></div>
           </li>
 
-           <!-- <li class="li-item clearfix" v-if="iswx"> -->
-          <li class="li-item clearfix">
+           <li class="li-item clearfix" v-if="iswx">
             <div class="left"><img src="~imgurl/wx-icon.png" alt=""></div>
             <div class="left">微信</div>
             <div class="right"><van-radio name="2"></van-radio></div>
           </li>
 
-          <!-- <li class="li-item clearfix" v-if="isbank"> -->
-          <li class="li-item clearfix">
+          <li class="li-item clearfix" v-if="isbank">
             <div class="left"><img src="~imgurl/bank-icon.png" alt=""></div>
             <div class="left">银行卡</div>
             <div class="right"><van-radio name="3"></van-radio></div>
