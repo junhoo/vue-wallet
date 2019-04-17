@@ -132,6 +132,7 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
       btnQRText: '查看',
       bodyHeight: 0,
       navTitle: '订单详情',
@@ -142,6 +143,8 @@ export default {
     }
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     this.orderStatus = this.$route.query.status
     this.order_no = this.$route.query.orderid
     this.getOrderData()
@@ -149,13 +152,16 @@ export default {
   methods: {
     // 获取订单信息
     getOrderData () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = this.$api.order + '/api/order/drawDetail'
       axios.post(url, data)
         .then(res => {
@@ -174,13 +180,16 @@ export default {
     },
     // 取消订单
     cancelOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = this.$api.order + '/api/order/cancelOrder'
       axios.post(url, data)
         .then(res => {
@@ -198,13 +207,16 @@ export default {
     },
     // 确认收款
     finishOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
         .then(res => {

@@ -101,6 +101,7 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
       preview: '',
       entryType: '',
       entryIsbound: '',
@@ -144,6 +145,8 @@ export default {
     }
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     this.entryType = this.$route.query.type
     this.entryIsbound = this.$route.query.isbound
     this.getListInfo(this.$route.query.type, this.$route.query.isbound)
@@ -197,12 +200,14 @@ export default {
     // 获取绑定信息
     getListInfo (type, isbound) {
       if (isbound !== 'y') return
-      const data = {
-        'app-name': '',
-        'merchant_type': '1',
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '',
+      //   'merchant_type': '1',
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+
       let url = this.$api.user
       if (type === 'bank') {
         url += '/api/Bindpay/getBankLists'

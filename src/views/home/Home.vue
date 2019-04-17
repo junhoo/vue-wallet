@@ -136,13 +136,7 @@ export default {
         text: ''
       },
       orderList: [],
-      postOrderData: {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端 2:B端
-        'merchant_code': '12345',
-        'choice_pay_type': '', // 1支付宝，2微信支付，3银行
-        'third_user_id': '1'
-      },
+      postFormat: {},
       dialogOption: {
         title: '提示',
         text: '请先完成实名认证再进行交易',
@@ -162,8 +156,24 @@ export default {
     HomeList
   },
   created () {
+    // const format = {
+    //   'app-name': '123',
+    //   'merchant_type': '1', // 1:A端 2:B端
+    //   'merchant_code': '12345',
+    //   'choice_pay_type': '', // 1支付宝，2微信支付，3银行
+    //   'third_user_id': '1'
+    // }
+    // ?app_name=123&merchant_type=1&merchant_code=12345&third_user_id=1
+    const format = {
+      'app-name': this.$route.query.app_name,
+      'merchant_type': this.$route.query.merchant_type, // 1:A端 2:B端
+      'merchant_code': this.$route.query.merchant_code,
+      'third_user_id': this.$route.query.third_user_id,
+      'choice_pay_type': ''
+    }
+    this.postFormat = format
+    sessionStorage.setItem('reqformat', JSON.stringify(format))
     this.getUserMsg()
-    this.getHomeInfo()
     this.getOrderInfo('1')
 
     this.loopOrderDetail()
@@ -175,10 +185,13 @@ export default {
   },
   methods: {
     getHomeInfo () {
-      const data = {
-        'app-name': 'app_name1',
-        'uid': 1
-      }
+      // const data = {
+      //   'app-name': 'app_name1',
+      //   'uid': 1
+      // }
+      let data = this.postFormat
+      data.uid = this.userMsg.id
+
       const url = this.$api.wallet
       axios.post(url + '/api/wallet/user_wallet', data)
         .then(res => {
@@ -217,7 +230,7 @@ export default {
 
     // 默认支付方式
     payTypeStr () {
-      var TStr = this.postOrderData.choice_pay_type
+      var TStr = this.postFormat.choice_pay_type
       if (this.selectIconVal1) {
         TStr = TStr.replace('1', '')
         TStr = '1'
@@ -236,7 +249,7 @@ export default {
       } else if (TStr.length === 2) {
         TStr = TStr.slice(0, 1) + ',' + TStr.slice(1)
       }
-      this.postOrderData.choice_pay_type = TStr
+      this.postFormat.choice_pay_type = TStr
     },
 
     // 支付按钮的显示
@@ -297,6 +310,16 @@ export default {
       this.dialogBoxVal = true
     },
 
+    hintHasOrder () {
+      this.dialogOption = {
+        title: '提示',
+        text: '请先完成当前订单，再提交新的订单',
+        cancelButtonText: '确认',
+        buttonCount: 1
+      }
+      this.dialogBoxVal = true
+    },
+
     // 验证窗口 提交订单
     verifyWindow () {
       const inputs = this.keyword
@@ -311,13 +334,7 @@ export default {
         return
       }
       if (localStorage.getItem('openLoopConfirm') === '1' || localStorage.getItem('openLoopFinish') === '1') {
-        this.dialogOption = {
-          title: '提示',
-          text: '请先完成当前订单，再提交新的订单',
-          cancelButtonText: '确认',
-          buttonCount: 1
-        }
-        this.dialogBoxVal = true
+        this.hintHasOrder()
         return
       }
 
@@ -349,18 +366,15 @@ export default {
       localStorage.setItem('dialogBtnType', type)
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
-      this.postOrderData.order_amount = this.keyword
-      this.postOrderData.choice_pay_type = '1,2'
-      const data = this.postOrderData
-      console.log(data)
+      this.postFormat.order_amount = this.keyword
+      this.postFormat.choice_pay_type = '1,2'
+      const data = this.postFormat
       axios.post(url, data)
         .then(res => {
-          console.log(`1. ${type}-提交订单`, res)
-          this.postOrderData.choice_pay_type = ''
+          console.log(`1. ${type}-提交订单`)
+          this.postFormat.choice_pay_type = ''
           res = res.data
-          console.log('匹配数据')
           console.log(res)
-          // this.matchingOrder() // 测试后删掉
           if (parseInt(res.code) === 10000) {
             const matchs = res.data.list.match
             const orderNo = res.data.list.order_no
@@ -368,6 +382,8 @@ export default {
             localStorage.setItem('matchOrderNo', orderNo)
             this.matchingOrder()
             // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
+          } else if (parseInt(res.code) === 15005) {
+            this.hintHasOrder()
           } else {
             this.$toast(res.msg)
           }
@@ -418,15 +434,20 @@ export default {
 
     // 获取充值订单列表
     getOrderInfo (type) {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'type': type, // 1未完成, 2已完成, 3已取消
-        'third_user_id': '1',
-        'page': '1',
-        'limit': '10'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'type': type, // 1未完成, 2已完成, 3已取消
+      //   'page': '1',
+      //   'limit': '10'
+      // }
+      let data = this.postFormat
+      data.type = type
+      data.page = '1'
+      data.limit = '100'
+
       const name = this.buttonVal === '充值' ? 'getRechangeLists' : 'getDrawLists'
       const url = this.$api.order
       axios.post(url + '/api/order/' + name, data)
@@ -466,12 +487,13 @@ export default {
     },
     // 获取用户信息
     getUserMsg () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
       let url = 'http://user.service.168mi.cn'
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
@@ -485,6 +507,7 @@ export default {
             // log
             sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
             this.payTypeStr()
+            this.getHomeInfo()
           } else {
             this.$toast(res.msg)
           }
@@ -502,7 +525,10 @@ export default {
       console.log(this.buttonVal)
       console.log('2. 匹配中...')
       // ???
-      let match = sessionStorage.getItem('matchOrderState')
+      let match = JSON.parse(localStorage.getItem('matchOrderState'))
+      if (typeof match === 'number') {
+        match = true
+      }
       console.log('match: ' + match)
       // match = true
 
@@ -572,13 +598,16 @@ export default {
     getOrderData () {
       console.log('5. 查看获取订单信息')
       const orderNo = localStorage.getItem('matchOrderNo')
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': orderNo,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': orderNo,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = orderNo
+
       const path = this.buttonVal === '充值' ? 'payDetail' : 'drawDetail'
       const url = this.$api.order + '/api/order/' + path
       axios.post(url, data)
@@ -655,13 +684,16 @@ export default {
     // 确认收款
     finishOrder () {
       const orderNo = localStorage.getItem('matchOrderNo')
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': orderNo,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': orderNo,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = orderNo
+
       console.log('home-确认收款')
       const url = this.$api.order + '/api/order/confirmOrder'
       axios.post(url, data)
@@ -799,6 +831,7 @@ header {
   }
   .boxs {
     position: absolute;
+    z-index: 999;
     top: 106px;
     left: 41px;
     right: 41px;
@@ -877,7 +910,7 @@ header {
           background-position: center;
         }
         .hide-eye {
-          background: url('~imgurl/look2-icon.png') no-repeat;
+          background: url('~imgurl/look2-icon.png') no-repeat center;
         }
       }
     }

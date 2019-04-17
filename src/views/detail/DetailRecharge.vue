@@ -183,6 +183,7 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
       ali_pay: {
         alipay_name: ''
       },
@@ -213,6 +214,8 @@ export default {
     }
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     this.orderStatus = this.$route.query.status
     this.order_no = this.$route.query.orderid
     this.getOrderData()
@@ -227,13 +230,16 @@ export default {
   methods: {
     // 获取订单信息
     getOrderData () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = 'http://order.service.168mi.cn/api/order/payDetail'
       axios.post(url, data)
         .then(res => {
@@ -271,13 +277,16 @@ export default {
     },
     // 取消订单
     cancelOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'order_no': this.order_no,
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+
       const url = 'http://order.service.168mi.cn/api/order/cancelRechangeOrder'
       axios.post(url, data)
         .then(res => {
@@ -310,14 +319,18 @@ export default {
       if (i === 0) {
         return false
       }
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1',
-        'pay_type': this.payway
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'pay_type': this.payway,
+      //   'order_no': this.order_no,
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+      data.pay_type = this.payway
+
       const url = 'http://order.service.168mi.cn/api/order/changePayType'
       axios.post(url, data)
         .then(res => {
@@ -333,14 +346,18 @@ export default {
     },
     // 我已完成付款
     finishOrder () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'order_no': this.order_no,
-        'third_user_id': '1',
-        'pay_type': this.payway
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'order_no': this.order_no,
+      //   'pay_type': this.payway
+      // }
+      let data = this.postFormat
+      data.order_no = this.order_no
+      data.pay_type = this.payway
+
       const url = 'http://order.service.168mi.cn/api/order/endRechangeOrder'
       axios.post(url, data)
         .then(res => {

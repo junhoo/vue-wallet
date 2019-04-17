@@ -37,12 +37,9 @@ export default {
     countdowm (timestamp, timetype) {
       let self = this
       let timer = setInterval(function () {
-        // let jiuTest = timestamp
-        // var createTime = (new Date('2019/04/03 11:30:00')).getTime() // 得到毫秒数
-
-        // 剩余时间 = 生成时间 - 当前时间
-        let nowTime = new Date()
-        let t = timestamp - nowTime.getTime()
+        // let nowTime = new Date()
+        // let t = timestamp - nowTime.getTime()
+        let t = timestamp
 
         if (t > 0) {
           let day = Math.floor(t / 86400000)

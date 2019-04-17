@@ -113,6 +113,7 @@ export default {
   },
   data () {
     return {
+      postFormat: {},
       firstUpload: true,
       navTitle: '',
       pap: '身份证',
@@ -131,17 +132,21 @@ export default {
     }
   },
   created () {
+    const format = sessionStorage.getItem('reqformat')
+    this.postFormat = JSON.parse(format)
     this.getUserInfo()
   },
   methods: {
     // 获取用户实名认证信息
     getUserInfo () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+
       let url = 'http://user.service.168mi.cn'
       axios.post(url + '/api/Authentication/getAuthenticationLists', data)
         .then(res => {
@@ -259,18 +264,26 @@ export default {
       if (!this.firstUpload) {
         url1 = '/api/Authentication/updateAuthentication'
       }
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1',
-        'name': this.username,
-        'credentials_no': this.userNo,
-        'credentials_asurface': this.cardUrl1, // 正面照
-        'credentials_bsurface': this.cardUrl2, // 背面照
-        'hold_certificates': this.cardUrl3, // 手持照
-        'credentials_type': this.liActive
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1',
+      //   'name': this.username,
+      //   'credentials_no': this.userNo,
+      //   'credentials_asurface': this.cardUrl1, // 正面照
+      //   'credentials_bsurface': this.cardUrl2, // 背面照
+      //   'hold_certificates': this.cardUrl3, // 手持照
+      //   'credentials_type': this.liActive
+      // }
+      let data = this.postFormat
+      data.name = this.username
+      data.credentials_no = this.userNo
+      data.credentials_asurface = this.cardUrl1 // 正面照
+      data.credentials_bsurface = this.cardUrl2 // 背面照
+      data.hold_certificates = this.cardUrl3 // 手持照
+      data.credentials_type = this.liActive
+
       axios.post(url + url1, data)
         .then(res => {
           res = res.data
@@ -288,12 +301,14 @@ export default {
 
     // 获取用户信息
     getUserMsg () {
-      const data = {
-        'app-name': '123',
-        'merchant_type': '1', // 1:A端
-        'merchant_code': '12345',
-        'third_user_id': '1'
-      }
+      // const data = {
+      //   'app-name': '123',
+      //   'merchant_type': '1', // 1:A端
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      let data = this.postFormat
+
       let url = 'http://user.service.168mi.cn'
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {
