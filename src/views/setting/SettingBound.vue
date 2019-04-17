@@ -361,13 +361,13 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            this.$toast('保存成功', 1500)
             this.getUserMsg()
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
-          console.log(e)
           this.$toast('网络错误')
         })
     },
@@ -381,14 +381,13 @@ export default {
           res = res.data
           if (res.code === 10000) {
             sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
-            this.$toast('保存成功', 1000)
             this.$router.go(-1)
-            this.payTypeStr()
           } else {
             this.$toast(res.msg)
           }
         })
         .catch(e => {
+          console.log(e)
           this.$toast('网络错误4')
         })
     },
