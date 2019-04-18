@@ -132,11 +132,13 @@
 <script>
 import axios from 'axios'
 import CommonHeader from 'common/header/Header'
+import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
+    DialogBox,
     CommonHeader,
     CountDown
   },
