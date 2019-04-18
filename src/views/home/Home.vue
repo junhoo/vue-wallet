@@ -124,7 +124,7 @@ export default {
       loopTimer: null,
       loopAutoTimer: null,
       keyword: '',
-      visibleMoney: '',
+      // visibleMoney: '1',
       moneyShow: true, // 显示金额
       dialogBoxVal: false, // 显示对话框
       loadingVal: false,
@@ -170,6 +170,11 @@ export default {
     HomeList
   },
   created () {
+    if (localStorage.getItem('visibleMoney') === '0') {
+      this.moneyShow = false
+    } else {
+      this.moneyShow = true
+    }
     // const format = {
     //   'app-name': '123',
     //   'merchant_type': '1', // 1:A端 2:B端
@@ -193,9 +198,6 @@ export default {
     this.loopOrderDetail()
     this.loopAutoOrder()
     this.setDialogStorage()
-    if (!JSON.parse(localStorage.getItem('visibleMoney'))) {
-      this.moneyShow = false
-    }
   },
   methods: {
     autoLogin () {
@@ -395,7 +397,7 @@ export default {
           this.submitOrderMatch('充值')
         } else {
           if (parseInt(this.headerInfo.amount_income) === 0) {
-            this.$toast('提现积分为0')
+            this.$toast('提现积分不能为0')
             return
           }
           if (this.keyword > parseInt(this.headerInfo.amount_income)) {
@@ -538,9 +540,9 @@ export default {
     hideMoney () {
       this.moneyShow = !this.moneyShow
       if (this.moneyShow) {
-        localStorage.setItem('visibleMoney', true)
+        localStorage.setItem('visibleMoney', '1')
       } else {
-        localStorage.setItem('visibleMoney', false)
+        localStorage.setItem('visibleMoney', '0')
       }
     },
 
@@ -561,12 +563,12 @@ export default {
             const oldInfo = sessionStorage.getItem('userMsg')
             if (oldInfo) {
               if (userInfo.id !== oldInfo.id) { // 切换用户-重置初始信息
-                this.moneyShow = false
+                // this.moneyShow = false
                 localStorage.setItem('matchOrderNo', '')
                 localStorage.setItem('matchOrderState', '')
                 localStorage.setItem('openLoopConfirm', '0')
                 localStorage.setItem('openLoopFinish', '0')
-                localStorage.setItem('visibleMoney', true)
+                localStorage.setItem('visibleMoney', '1')
               }
             }
 
