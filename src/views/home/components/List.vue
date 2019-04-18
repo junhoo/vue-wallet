@@ -31,7 +31,7 @@
                   'li-tab-blue': item.status === 1 || item.status === 5,
                   'li-tab-red': item.status === 3 || item.status === 4 || item.status === 7
                 }"
-            >{{stateText(item.status_text)}}</div>
+            >{{stateText(item)}}</div>
           </div>
 
           <div class="li-money">
@@ -82,16 +82,16 @@ export default {
     }
   },
   methods: {
-    resMoney (item) {
+    stateText (item) {
+      let text = item.status_text
       if (item.title_type === '充值') {
-        return item.order_amount
-      }
-      return item.real_amount
-    },
-    stateText (str) {
-      let text = str
-      if (text === '已匹配') {
-        text = '待付款'
+        if (text === '已匹配') { // 充值
+          text = '待付款'
+        }
+      } else {
+        if (text === '待付款') { // 充值
+          text = '已匹配'
+        }
       }
       if (text === '待确认') {
         text = '未到账'

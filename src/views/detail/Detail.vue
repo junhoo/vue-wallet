@@ -138,9 +138,9 @@ import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
+    DialogBox,
     CommonHeader,
-    CountDown,
-    DialogBox
+    CountDown
   },
   data () {
     return {
