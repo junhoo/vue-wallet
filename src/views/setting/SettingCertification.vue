@@ -35,18 +35,18 @@
           <div class="imgs">
             <div v-show="cardUrl1 !== ''">
               <div class="mask">
-                <img  ref="cardimg" :class="[istrue ? 'img-width':'img-height']" :src="cardUrl21" alt="">
+                <img  ref="cardimg" :class="[istrue1 ? 'img-width':'img-height']" :src="cardUrl21" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl1 === ''">
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card1-3.png" alt="">
+                <img class="img imgG" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img class="img imgG" v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
+                <img class="img" :class="[istrue1 ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
               </div>
             </div>
             <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
@@ -54,18 +54,18 @@
           <div class="imgs">
             <div v-show="cardUrl2 !== ''">
               <div class="mask">
-                <img :src="cardUrl22" :class="[istrue ? 'img-width':'img-height']" alt="">
+                <img :src="cardUrl22" :class="[istrue2 ? 'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </div>
             <div v-show="cardUrl2 === ''">
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card2-3.png" alt="">
+                <img class="img imgG" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                <img class="img imgG" v-else src="~imgurl/card2-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
+                <img class="img" :class="[istrue2 ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
             </div>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
@@ -76,18 +76,18 @@
           <div class="imgs">
             <template v-if="cardUrl3">
               <div class="mask mask1">
-                <img :src="cardUrl23" :class="[istrue ? 'img-width':'img-height']" alt="">
+                <img :src="cardUrl23" :class="[istrue3 ? 'img-width':'img-height']" alt="">
                 <i>已上传</i>
               </div>
             </template>
             <template v-else>
               <div v-if="firstUpload">
-                <img class="img" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
-                <img class="img" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
-                <img class="img" v-else src="~imgurl/card3-3.png" alt="">
+                <img class="img imgG" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                <img class="img imgG" v-else src="~imgurl/card3-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue ? 'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
+                <img class="img" :class="[istrue3 ? 'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
               </div>
             </template>
             <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
@@ -113,7 +113,6 @@ export default {
   },
   data () {
     return {
-      istrue: true,
       postFormat: {},
       firstUpload: true,
       navTitle: '设置',
@@ -129,6 +128,9 @@ export default {
       cardUrl21: '',
       cardUrl22: '',
       cardUrl23: '',
+      istrue1: true,
+      istrue2: true,
+      istrue3: true,
       userCertifyMsg: {}
     }
   },
@@ -196,16 +198,28 @@ export default {
       reads.onload = function (e) {
         if (i === 1) {
           that.cardUrl21 = this.result
+          let img = new Image()
+          img.src = e.target.result
+          img.onload = function () {
+            that.istrue1 = this.width > this.height
+            console.log(self.istrue)
+          }
         } else if (i === 2) {
           that.cardUrl22 = this.result
+          let img = new Image()
+          img.src = e.target.result
+          img.onload = function () {
+            that.istrue2 = this.width > this.height
+            console.log(self.istrue)
+          }
         } else {
           that.cardUrl23 = this.result
-        }
-        let img = new Image()
-        img.src = e.target.result
-        img.onload = function () {
-          self.istrue = this.width > this.height
-          console.log(this.width > this.height)
+          let img = new Image()
+          img.src = e.target.result
+          img.onload = function () {
+            that.istrue3 = this.width > this.height
+            console.log(self.istrue)
+          }
         }
       }
       param.append('file', file, file.name)
@@ -459,10 +473,6 @@ export default {
               font-size: 24px;
               color: #fff;
             }
-            img{
-              // width: 310px;
-              // height: 260px;
-            }
             .img-width{
               width: 280px;
             }
@@ -471,7 +481,6 @@ export default {
             }
           }
           .mask1{
-            // position: absolute;
             left: 50%;
             transform: translateX(-50%);
           }
@@ -479,9 +488,10 @@ export default {
             box-shadow: 0 0 20px -8px #666;
           }
           .img{
-            // width: 310px;
-            // height: 260px;
             box-shadow: 0 0 20px -8px #d2d2d2;
+          }
+          .imgG{
+            width: 280px;
           }
           .img-width{
               width: 280px;
