@@ -420,6 +420,9 @@ export default {
             localStorage.setItem('matchOrderState', matchs)
             localStorage.setItem('matchOrderNo', orderNo)
             this.getOrderInfo('1') // 提交刷新订单
+            if (localStorage.getItem('dialogBtnType') === '提现') {
+              this.getHomeInfo()
+            }
             this.matchingOrder()
             // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
           } else if (parseInt(res.code) === 15005) {

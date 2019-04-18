@@ -34,7 +34,7 @@
             >{{stateText(item.status_text)}}</div>
           </div>
 
-          <div class="li-money">st
+          <div class="li-money">
             <div class="left">金额</div>
             <div class="right">￥{{item.order_amount}}</div>
           </div>
