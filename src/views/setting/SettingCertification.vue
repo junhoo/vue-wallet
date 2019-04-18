@@ -312,6 +312,7 @@ export default {
           if (res.code === 10000) {
             this.getUserMsg()
             this.$toast(res.msg)
+            this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }
@@ -342,8 +343,6 @@ export default {
             this.selectIconVal2 = this.boundState.bank_pay
             this.selectIconVal3 = this.boundState.wechat_pay
             sessionStorage.setItem('userMsg', JSON.stringify(this.userMsg))
-            this.$toast('保存成功')
-            this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }
