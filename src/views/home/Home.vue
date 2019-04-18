@@ -394,6 +394,16 @@ export default {
         if (this.buttonVal === '充值') {
           this.submitOrderMatch('充值')
         } else {
+          if (parseInt(headerInfo.amount_income) < 10) {
+            this.keyword = 10
+            this.$toast('最小提现10积分')
+            return
+          }
+          if (parseInt(headerInfo.amount_income) > 50000) {
+            this.keyword = 50000
+            this.$toast('最大提现50000积分')
+            return
+          }
           this.submitOrderMatch('提现')
         }
       }
@@ -687,6 +697,8 @@ export default {
             console.log('返回订单状态: ' + stateName)
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
+              console.log('666666')
+              console.log(_data)
               this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
 
