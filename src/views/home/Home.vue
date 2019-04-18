@@ -434,7 +434,6 @@ export default {
           console.log(`1. ${type}-提交订单`)
           this.postFormat.choice_pay_type = ''
           res = res.data
-          console.log(res)
           if (parseInt(res.code) === 10000) {
             const matchs = res.data.list.match
             const orderNo = res.data.list.order_no
@@ -617,7 +616,7 @@ export default {
           console.log('3. 匹配成功')
           console.log('窗台步骤' + this.dialogFlowVal)
         }
-        localStorage.setItem('openLoopConfirm', '1')
+        localStorage.setItem('openLoopConfirm', '1') // 开启提示10分钟充值完成
         this.loopOrderDetail()
 
         // 触发弹窗
@@ -708,13 +707,18 @@ export default {
             console.log('返回订单状态: ' + stateName)
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
-              console.log('666666')
-              console.log(_data)
               this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
+              localStorage.setItem('matchOrderNo', _data.order_detail.order_no)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
-              localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+
+              // 充值不开启 自动收款 / 提现才开启
+              if (localStorage.getItem('dialogBtnType') === '充值') {
+                localStorage.setItem('openLoopFinish', '0')
+              } else {
+                localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+              }
             }
 
             if (stateName === '已完成') { // 后台-充值到账

@@ -79,6 +79,7 @@ export default {
         if (type === '付款') {
           stateVal = 2
           sessionStorage.setItem('payRadio', 'open')
+          localStorage.setItem('openLoopConfirm', '0') // 停止-弹出10分钟付款
         }
         // clearInterval(this.loopTimer)
         const buttonVal = localStorage.getItem('dialogBtnType')
