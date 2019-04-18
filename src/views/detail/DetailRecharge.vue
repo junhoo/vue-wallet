@@ -13,8 +13,8 @@
         </div>
         <div
             class="li-tab-status"
-            :class="{'li-tab-orange':orderStatus == 2 || orderStatus == 7 || orderStatus == 6,
-            'li-tab-red':orderStatus == 4 || orderStatus == 3}">
+            :class="{'li-tab-orange':orderStatus == 2 || orderStatus == 6,
+            'li-tab-red':orderStatus == 4 || orderStatus == 3 || orderStatus == 7}">
             {{orderStatus | orderStatus}}
         </div>
       </li>
@@ -158,7 +158,7 @@
     </div>
     <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 3}" v-else>
       <button @click="submit()" class="btn-pay" :class="{'appeal':appeal=='1'}">{{orderStatus|btnStatus}}
-        <span v-if="appeal=='1'">
+        <span v-show="appeal=='1'">
           <template>
             <count-down :endTime="orderDetailData.res_time" :callback="callback(1)" endText="" timeType='zh'></count-down>
           </template>
@@ -359,14 +359,6 @@ export default {
     },
     // 我已完成付款
     finishOrder () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'third_user_id': '1',
-      //   'order_no': this.order_no,
-      //   'pay_type': this.payway
-      // }
       let data = this.postFormat
       data.order_no = this.order_no
       data.pay_type = this.payway
@@ -412,10 +404,12 @@ export default {
       })
     },
     submit () {
-      if (this.orderStatus === '3') {
+      var value = this.orderStatus
+      value = value.toString()
+      if (value === '3' || value === '7') {
         this.appeal = '1'
       } else {
-        this.$router.push({ name: 'Home' })
+        this.$router.go(-1)
       }
     }
   },
@@ -426,7 +420,7 @@ export default {
         value = '取消订单'
       } else if (value === '2' || value === '6') {
         value = '我已完成付款'
-      } else if (value === '3') {
+      } else if (value === '3' || value === '7') {
         value = '申诉'
       } else {
         value = '返回'
