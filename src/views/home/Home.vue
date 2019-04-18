@@ -562,8 +562,6 @@ export default {
             const oldInfo = sessionStorage.getItem('userMsg')
             if (oldInfo) {
               if (userInfo.id !== oldInfo.id) { // 切换用户-重置初始信息
-                // this.moneyShow = false
-                // localStorage.setItem('matchOrderNo', '')
                 localStorage.setItem('matchOrderState', '')
                 localStorage.setItem('openLoopConfirm', '0')
                 localStorage.setItem('openLoopFinish', '0')
@@ -725,6 +723,7 @@ export default {
               this.dialogFlowVal = 3
               if (localStorage.getItem('dialogBtnType') === '充值') {
                 localStorage.setItem('openLoopFinish', '0')
+                clearInterval(this.loopTimer)
               }
               this.updateDialogStorage(this.dialogFlowVal)
             }
