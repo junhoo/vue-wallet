@@ -64,8 +64,13 @@ export default {
           this.$bus.off('openDialog')
         }
         this.dialogBtnType = localStorage.getItem('dialogBtnType')
-        const _obj = JSON.parse(localStorage.getItem('dialogOrder'))
-        this.dialogFlowVal = parseInt(_obj.dialogFlowVal) || 1
+        let _obj = localStorage.getItem('dialogOrder')
+        if (!_obj) {
+          _obj = 1
+        } else {
+          _obj = parseInt(_obj.dialogFlowVal)
+        }
+        this.dialogFlowVal = _obj
         this.dialogFlowMoney = _obj.dialogFlowMoney
         this.dialogFlowAccount = _obj.dialogFlowAccount
       }, 500)

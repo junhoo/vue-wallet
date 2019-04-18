@@ -16,6 +16,7 @@
     <div class="lists">
       <ul>
         <li
+            class="has-boxs"
             v-for="(item, index) in list"
             :key="index"
             @click="jumpDetail(item.order_type,item.status,item.order_no)">
@@ -43,8 +44,13 @@
             <div class="right">{{item.order_amount}}</div>
           </div>
         </li>
+        <li  v-show="!hasList" class="no-data">
+          <div class="icon"></div>
+          <p class="text">您还没有相关的订单</p>
+        </li>
       </ul>
     </div>
+
   </div>
 </template>
 
@@ -68,6 +74,11 @@ export default {
           title: '已取消'
         }
       ]
+    }
+  },
+  computed: {
+    hasList () {
+      return this.list.length
     }
   },
   methods: {
@@ -164,7 +175,7 @@ export default {
   .lists {
     position: relative;
     ul {
-      li {
+      .has-boxs {
         margin-top: 28px;
         padding-left: 20px;
         padding-right: 26px;
@@ -227,6 +238,21 @@ export default {
           margin-right: 26px;
           font-family:MicrosoftYaHei;
           font-weight:bold;
+        }
+      }
+      .no-data {
+        margin-top: 91px; // +28
+        text-align: center;
+        background: #f8f8f8;
+        .icon {
+          width: 100%;
+          height: 148px;
+          background: url('~imgurl/no_data.png') no-repeat center;
+          background-size: 80px 100px;
+        }
+        .text {
+          font-size: 24px;
+          line-height: 33px;
         }
       }
     }

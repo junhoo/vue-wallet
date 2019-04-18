@@ -227,6 +227,7 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            localStorage.setItem('openLoopFinish', '0')
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
@@ -241,7 +242,7 @@ export default {
       if (this.orderStatus === '1') {
         this.cancelOrder()
         return false
-      } else if (this.orderStatus === '6' || this.orderStatus === '2') {
+      } else if (this.orderStatus === '3' || this.orderStatus === '7') { // 2 6 已匹配 // 3 7
         this.finishOrder()
       } else {
         this.$router.go(-1)

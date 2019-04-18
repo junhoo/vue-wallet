@@ -104,6 +104,8 @@
                 v-on:dialogboxEvent='onDialogBox'>
       </dialog-box>
 
+      <common-loading :show.sync='loadingVal'></common-loading>
+
     </div>
   </div>
 </template>
@@ -112,6 +114,7 @@
 import axios from 'axios'
 import HomeList from './components/List'
 import DialogBox from 'common/dialog/Dialog'
+import CommonLoading from 'common/loading/Loading'
 export default {
   name: 'Home',
   data () {
@@ -124,6 +127,7 @@ export default {
       visibleMoney: '',
       moneyShow: true, // 显示金额
       dialogBoxVal: false, // 显示对话框
+      loadingVal: false,
       buttonVal: '充值',
       loopAutoCount: 0,
       dialogOrderVal: false, // 显示
@@ -162,6 +166,7 @@ export default {
   components: {
     DialogBox,
     // DialogOrder,
+    CommonLoading,
     HomeList
   },
   created () {
@@ -415,6 +420,7 @@ export default {
             const orderNo = res.data.list.order_no
             localStorage.setItem('matchOrderState', matchs)
             localStorage.setItem('matchOrderNo', orderNo)
+            this.getOrderInfo('1') // 提交刷新订单
             this.matchingOrder()
             // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
           } else if (parseInt(res.code) === 15005) {
@@ -469,6 +475,8 @@ export default {
 
     // 获取充值订单列表
     getOrderInfo (type) {
+      this.loadingVal = true
+      console.log('gettttt')
       // const data = {
       //   'app-name': '123',
       //   'merchant_type': '1', // 1:A端
@@ -499,8 +507,10 @@ export default {
           } else {
             this.$toast(res.msg)
           }
+          this.loadingVal = false
         })
         .catch(e => {
+          this.loadingVal = false
           this.$toast('网络错误3')
         })
     },
@@ -528,13 +538,16 @@ export default {
             const userInfo = res.data.list
             this.userMsg = userInfo
 
-            const oldInfo = JSON.parse(sessionStorage.getItem('userMsg'))
-            if (userInfo.id !== oldInfo.id) { // 重置初始信息
-              localStorage.setItem('matchOrderNo', '')
-              localStorage.setItem('matchOrderState', '')
-              localStorage.setItem('openLoopConfirm', '0')
-              localStorage.setItem('openLoopFinish', '0')
-              localStorage.setItem('visibleMoney', true)
+            const oldInfo = sessionStorage.getItem('userMsg')
+            if (oldInfo) {
+              if (userInfo.id !== oldInfo.id) { // 切换用户-重置初始信息
+                this.moneyShow = false
+                localStorage.setItem('matchOrderNo', '')
+                localStorage.setItem('matchOrderState', '')
+                localStorage.setItem('openLoopConfirm', '0')
+                localStorage.setItem('openLoopFinish', '0')
+                localStorage.setItem('visibleMoney', true)
+              }
             }
 
             this.boundState = userInfo.pay_info
@@ -578,7 +591,7 @@ export default {
           console.log('3. 匹配成功')
           localStorage.setItem('openLoopConfirm', '1')
           this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
-          this.getOrderInfo('1')
+          // this.getOrderInfo('1')
           this.updateDialogStorage('2')
           console.log('窗台步骤' + this.dialogFlowVal)
           this.loopOrderDetail()
@@ -684,6 +697,9 @@ export default {
 
             if (stateName === '已完成') { // 后台-充值到账
               this.dialogFlowVal = 3
+              if (localStorage.getItem('dialogBtnType') === '充值') {
+                localStorage.setItem('openLoopFinish', '0')
+              }
               this.updateDialogStorage(this.dialogFlowVal)
             }
           } else {
