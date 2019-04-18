@@ -20,11 +20,11 @@
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
-        <div class="right strong">￥{{orderDetailData.order_amount}}</div>
+        <div class="right strong">￥{{orderDetailData.real_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">积分</div>
-        <div class="right">{{orderDetailData.real_amount}}</div>
+        <div class="right">{{orderDetailData.order_amount}}</div>
       </li>
        <li class="li-item clearfix">
         <div class="left">费率</div>
