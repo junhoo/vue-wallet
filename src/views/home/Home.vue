@@ -381,6 +381,7 @@ export default {
           this.$toast('请输入充值数量')
         }
       } else if (!this.selectIconVal1 && !this.selectIconVal2 && !this.selectIconVal3) {
+        this.$toast('至少选择一种支付方式')
       } else if (this.userMsg.is_realname === 0 || this.userMsg.is_realname === 2) { // 0未认证 1审核通过 2审核未通过 3审核中
         this.dialogOption = {
           title: '提示',
@@ -474,7 +475,6 @@ export default {
     // 获取充值订单列表
     getOrderInfo (type) {
       this.loadingVal = true
-      console.log('gettttt')
       // const data = {
       //   'app-name': '123',
       //   'merchant_type': '1', // 1:A端
@@ -686,7 +686,7 @@ export default {
             // if (status === 5) { // 后台查询-订单已完成-更新窗口
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
-              this.dialogFlowVal = 2.1
+              this.dialogFlowVal = 2
               this.setDialogStorage(this.dialogFlowVal)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
@@ -822,7 +822,7 @@ export default {
   .btn-text {
     display: inline-block;
     margin-top: -1px;
-    width: 50px;
+    // width: 50px;
     line-height: 60px;
     float: left;
     text-align: left;
