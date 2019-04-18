@@ -563,7 +563,7 @@ export default {
             if (oldInfo) {
               if (userInfo.id !== oldInfo.id) { // 切换用户-重置初始信息
                 // this.moneyShow = false
-                localStorage.setItem('matchOrderNo', '')
+                // localStorage.setItem('matchOrderNo', '')
                 localStorage.setItem('matchOrderState', '')
                 localStorage.setItem('openLoopConfirm', '0')
                 localStorage.setItem('openLoopFinish', '0')
