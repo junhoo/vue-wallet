@@ -587,16 +587,19 @@ export default {
       if (this.timer) {
         clearTimeout(this.timer)
       }
+
       this.timer = setTimeout(() => {
-        if (match) {
-          console.log('3. 匹配成功')
-          localStorage.setItem('openLoopConfirm', '1')
-          this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
-          // this.getOrderInfo('1')
+        if (match) { // 进入查看匹配状态
+          this.dialogFlowVal = 2 // 匹配成功，请稍后
           this.updateDialogStorage('2')
+
+          console.log('3. 匹配成功')
           console.log('窗台步骤' + this.dialogFlowVal)
-          this.loopOrderDetail()
         }
+        localStorage.setItem('openLoopConfirm', '1')
+        this.loopOrderDetail()
+
+        // 触发弹窗
         console.log('窗口状态', this.dialogOrderVal)
         if (this.dialogOrderVal === false) {
           this.dialogOrderVal = true
@@ -608,11 +611,7 @@ export default {
 
     loopOrderDetail () {
       if (localStorage.getItem('openLoopConfirm') !== '1') return
-      if (localStorage.getItem('dialogBtnType') === '提现') {
-        console.log('4. 监听对方是否付款')
-      } else {
-        console.log('4. 监听是否充值到账')
-      }
+      console.log('4. 监听订单状态')
 
       this.getOrderData()
       this.loopTimer = setInterval(() => {
@@ -686,10 +685,9 @@ export default {
             const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认']
             const stateName = stateCode[status - 1]
             console.log('返回订单状态: ' + stateName)
-            // if (status === 5) { // 后台查询-订单已完成-更新窗口
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
-              this.dialogFlowVal = 2
+              this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
