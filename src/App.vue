@@ -141,6 +141,7 @@ export default {
             const buttonVal = localStorage.getItem('dialogBtnType')
             const type = buttonVal === '充值' ? '1' : '2'
             this.getOrderInfo(type)
+            this.$toast('成功')
           } else {
             this.$toast(res.msg)
           }

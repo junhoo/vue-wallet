@@ -36,7 +36,7 @@
 
           <div class="li-money">
             <div class="left">金额</div>
-            <div class="right">￥{{item.order_amount}}</div>
+            <div class="right">￥{{resMoney(item)}}</div>
           </div>
 
           <div class="li-money">
@@ -82,6 +82,12 @@ export default {
     }
   },
   methods: {
+    resMoney (item) {
+      if (item.title_type === '充值') {
+        return item.order_amount
+      }
+      return item.real_amount
+    },
     stateText (item) {
       let text = item.status_text
       if (item.title_type === '充值') {
