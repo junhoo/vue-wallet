@@ -83,7 +83,7 @@
           </div>
           <!-- 额外扣除服务{{userMsg.rate * 100}}%，实际到账{{keyword}} -->
           <p v-show="buttonVal === '充值'">付款金额：{{keyword}}</p>
-          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.amount_income}}积分，<span>全部提现</span></p>
+          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.amount_income}}积分，<span @click="allTx()">全部提现</span></p>
         </div>
         <button class="main-down" @click="verifyWindow()">提交订单</button>
       </main>
@@ -267,7 +267,6 @@ export default {
       }
       this.$refs.dialog.selectTab('未完成')
     },
-
     // 默认支付方式
     payTypeStr () {
       var TStr = this.postFormat.choice_pay_type
@@ -291,7 +290,6 @@ export default {
       }
       this.postFormat.choice_pay_type = TStr
     },
-
     // 支付按钮的显示
     selectIconType (type) {
       this.goBoundText = type
@@ -336,7 +334,6 @@ export default {
         this.selectIconVal3 = !this.selectIconVal3
       }
     },
-
     dialogHint (val = '') {
       const arr = ['支付宝', '微信', '银行卡']
       const type = arr[this.goBoundText - 1]
@@ -349,7 +346,6 @@ export default {
       }
       this.dialogBoxVal = true
     },
-
     hintHasOrder () {
       this.dialogOption = {
         title: '提示',
@@ -359,7 +355,9 @@ export default {
       }
       this.dialogBoxVal = true
     },
-
+    allTx () {
+      this.keyword = this.headerInfo.amount_income
+    },
     // 验证窗口 提交订单
     verifyWindow () {
       const inputs = this.keyword
@@ -843,7 +841,9 @@ export default {
 };
 
 header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   box-sizing: border-box;
   width: 100%;
   height: 303px;
@@ -1014,6 +1014,7 @@ header {
 
 .bg-wrapper {
   background: @bgColor;
+  padding-top: 4.05rem;
   .blank {
     height: 223px;
   }
