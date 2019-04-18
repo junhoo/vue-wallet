@@ -1,7 +1,7 @@
 const master = {
-  user: '',
-  order: '',
-  wallet: ''
+  user: 'http://user.service.19zf.in/',
+  order: 'http://order.service.19zf.in/',
+  wallet: 'http://wallet.service.19zf.in/'
 }
 
 const dev = {
