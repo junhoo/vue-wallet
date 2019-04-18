@@ -21,7 +21,7 @@
           </template>
           <template v-else>
             <button class="look" v-show="state === 2" @click="closeDiv('查看')">查看</button>
-            <p class="boxs-text" v-show="state === 3">收款账号：银行卡（0988）</p>
+            <p class="boxs-text" v-show="state === 3">收款账号：银行卡{{account}}</p>
             <button class="look" v-show="state === 3" @click="closeDiv('收款')">去确认收款</button>
             <p class="boxs-text" v-show="state === 3">2小时候自动确认收款<span>我要申诉</span></p>
 
