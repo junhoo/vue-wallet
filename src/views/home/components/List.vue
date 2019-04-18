@@ -27,9 +27,9 @@
             <div
                 class="li-tab-status"
                 :class="{
-                  'li-tab-orange': item.status === 2 || item.status === 7 || item.status === 6,
+                  'li-tab-orange': item.status === 2 || item.status === 6,
                   'li-tab-blue': item.status === 1 || item.status === 5,
-                  'li-tab-red': item.status === 3 || item.status === 4
+                  'li-tab-red': item.status === 3 || item.status === 4 || item.status === 7
                 }"
             >{{stateText(item.status_text)}}</div>
           </div>
@@ -86,6 +86,9 @@ export default {
       let text = str
       if (text === '已匹配') {
         text = '待付款'
+      }
+      if (text === '待确认') {
+        text = '未到账'
       }
       return text
     },

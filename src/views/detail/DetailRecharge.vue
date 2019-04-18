@@ -156,7 +156,7 @@
     <div class="btn-pay-boxs2" v-if="orderStatus == 1 || orderStatus == 2 || orderStatus == 6">
       <button @click="submit2()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="btn-pay-boxs" :class="{'padtop':orderStatus == 3}" v-else>
+    <div v-show="orderStatus != 3 && orderStatus != 7" class="btn-pay-boxs" :class="{'padtop':orderStatus == 3}" v-else>
       <button @click="submit()" class="btn-pay" :class="{'appeal':appeal=='1'}">{{orderStatus|btnStatus}}
         <span v-show="appeal=='1'">
           <template>

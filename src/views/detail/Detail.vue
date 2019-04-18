@@ -195,6 +195,11 @@ export default {
           this.$toast('网络错误，不能访问')
         })
     },
+    onDialogBox (bol) {
+      if (bol) {
+        this.cancelOrder()
+      }
+    },
     // 取消订单
     cancelOrder1 () {
       this.dialogBoxVal = true

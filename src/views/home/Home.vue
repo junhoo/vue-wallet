@@ -633,7 +633,7 @@ export default {
 
       this.getOrderData()
       this.loopTimer = setInterval(() => {
-        if (this.connectionFailCount >= 2) { // 两次服务器连接失败结束
+        if (this.connectionFailCount >= 10000) { // 两次服务器连接失败结束
           this.connectionFailCount = 0
           localStorage.setItem('openLoopConfirm', '0')
           clearInterval(this.loopTimer)
@@ -679,14 +679,14 @@ export default {
       let data = this.postFormat
       data.order_no = orderNo
 
-      const path = this.buttonVal === '充值' ? 'payDetail' : 'drawDetail'
+      const path = localStorage.getItem('dialogBtnType') === '充值' ? 'payDetail' : 'drawDetail'
       const url = this.$api.order + '/api/order/' + path
       axios.post(url, data)
         .then(res => {
           res = res.data
           if (parseInt(res.code) === 10000) {
             let _data = res.data.list
-            if (this.buttonVal === '充值') {
+            if (localStorage.getItem('dialogBtnType') === '充值') {
               _data = _data.order_detail
             }
             let value = _data.pay_type
@@ -707,7 +707,7 @@ export default {
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
               this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
-              localStorage.setItem('matchOrderNo', _data.order_detail.order_no)
+              // localStorage.setItem('matchOrderNo', _data.order_detail.order_no)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
 
@@ -721,11 +721,16 @@ export default {
 
             if (stateName === '已完成') { // 后台-充值到账
               this.dialogFlowVal = 3
+              this.updateDialogStorage(this.dialogFlowVal)
               if (localStorage.getItem('dialogBtnType') === '充值') {
+                this.dialogOrderVal = true
+                this.$bus.emit('openDialog', 'open')
+
+                this.getHomeInfo()
+                this.getOrderInfo('1')
                 localStorage.setItem('openLoopFinish', '0')
                 clearInterval(this.loopTimer)
               }
-              this.updateDialogStorage(this.dialogFlowVal)
             }
           } else {
             this.$toast(res.msg)
@@ -733,7 +738,8 @@ export default {
         })
         .catch(e => {
           this.connectionFailCount += 1
-          this.$toast('服务连接匹配失败~', 1500)
+          console.log(e)
+          // this.$toast('服务连接匹配失败~', 1500)
         })
     },
 
@@ -781,7 +787,7 @@ export default {
         .then(res => {
           res = res.data
           if (parseInt(res.code) === 10000) {
-            const type = this.buttonVal === '充值' ? '1' : '2'
+            const type = localStorage.getItem('dialogBtnType') === '充值' ? '1' : '2'
             this.getOrderInfo(type)
           } else {
             this.$toast(res.msg)
