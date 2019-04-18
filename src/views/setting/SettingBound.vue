@@ -72,7 +72,7 @@
             <img
                 v-else
                 class="img-down"
-                :class="[istrue?'img-width':'img-height']"
+                :class="[isWidth?'img-width':'img-height']"
                 :src="qrcodeUrl">
           </template>
           <!-- <van-uploader class="xxx" :after-read="onRead">
@@ -186,21 +186,21 @@ export default {
         }
       }
       return true
+    },
+    isWidth () {
+      return this.istrue
     }
   },
   methods: {
     onRead (file) {
       console.log(file)
     },
-
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
-      console.log(file, '1235454')
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
-
       var reads = new FileReader()
       reads.readAsDataURL(file)
       let self = this
@@ -213,7 +213,6 @@ export default {
           console.log(this.width > this.height)
         }
       }
-
       let url = this.$api.user
       const entryType = this.$route.query.type
       if (entryType === 'wechat') {
@@ -221,13 +220,9 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-      console.log('请求')
-      console.log(param)
       axios.post(url, param)
         .then(res => {
           res = res.data
-          console.log('返回')
-          console.log(res)
           if (res.code === 10000) {
             const imgurl = res.data.list.url
             if (imgurl) {
@@ -273,6 +268,7 @@ export default {
           res = res.data
           if (res.code === 10000) {
             const _info = res.data.list
+            this.istrue = JSON.parse(sessionStorage.getItem('istrue'))
             if (type === 'bank') {
               this.apiBank.bank_name = _info.bank_name
               this.apiBank.bank_address = _info.bank_address
@@ -298,7 +294,7 @@ export default {
           this.$toast('网络错误')
         })
     },
-
+    // 确定绑定
     boundBank () {
       const type = this.entryType
       const pool = {
@@ -378,11 +374,11 @@ export default {
       } else {
         data = {}
       }
-
       axios.post(url, data)
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            sessionStorage.setItem('istrue', JSON.stringify(this.istrue))
             this.$toast('保存成功', 1500)
             this.getUserMsg()
           } else {
@@ -396,7 +392,6 @@ export default {
 
     getUserMsg () {
       let data = this.postFormat
-
       let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {

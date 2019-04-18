@@ -53,7 +53,6 @@
         <div class="right" v-show="payway == 2">{{wechat_pay.wechat_name}}</div>
         <div class="right" v-show="payway == 3">{{bank_pay.bank_name}}</div>
       </li>
-       <!-- <li class="li-item clearfix" v-if="0"> -->
        <li class="li-item clearfix" v-show="payway != 3">
         <div class="left" v-text="payText2"></div>
         <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
@@ -62,9 +61,9 @@
       </li>
 
       <!-- 银行卡 -->
-      <template v-show="payway == 3">
+      <div v-show="payway == 3">
         <li class="li-item clearfix">
-          <div class="left">银行名称</div>
+          <div class="left">银行名称{{payway}}</div>
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
           <div class="right">{{bank_pay.bank_address}}</div>
         </li>
@@ -80,10 +79,8 @@
           <div class="icon"><img src="~imgurl/copy-icon.png" alt=""></div>
           <div class="right">{{bank_pay.bank_no}}</div>
         </li>
-      </template>
+      </div>
 
-      <!--  -->
-      <!-- <template v-if="0"> -->
       <template v-show="payway != 3">
         <li class="li-item clearfix" v-if="orderStatus == 2 || orderStatus == 6">
           <div class="left">收款二维码</div>
@@ -121,7 +118,7 @@
     </div>
     <!-- 取消按钮 -->
     <div class="cancel" v-if="orderStatus == 2 || orderStatus == 6">
-      <span @click="cancelOrder()" class="btn-pay">取消订单</span>
+      <span @click="cancelOrder1()" class="btn-pay">取消订单</span>
     </div>
     <!-- 付款方式弹框 -->
     <van-popup v-model="show" position="bottom">
@@ -168,21 +165,35 @@
         </span>
       </button>
     </div>
+    <dialog-box
+              :show.sync='dialogBoxVal'
+              :dialog-option="dialogOption"
+              v-on:dialogboxEvent='onDialogBox'>
+    </dialog-box>
   </div>
 </template>
 <script>
 import axios from 'axios'
 import CommonHeader from 'common/header/Header'
+import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
+    DialogBox,
     CommonHeader,
     CountDown
   },
   data () {
     return {
+      dialogBoxVal: false, // 显示对话框
+      dialogOption: {
+        title: '提示',
+        text: '每天手动或超时取消订单超过3次，将被禁止交易24小时',
+        cancelButtonText: '继续交易',
+        confirmButtonText: '取消订单'
+      },
       postFormat: {},
       ali_pay: {
         alipay_name: ''
@@ -275,18 +286,18 @@ export default {
       }
       return false
     },
+    onDialogBox (bol) {
+      if (bol) {
+        this.cancelOrder()
+      }
+    },
     // 取消订单
+    cancelOrder1 () {
+      this.dialogBoxVal = true
+    },
     cancelOrder () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'order_no': this.order_no,
-      //   'third_user_id': '1'
-      // }
       let data = this.postFormat
       data.order_no = this.order_no
-
       const url = 'http://order.service.168mi.cn/api/order/cancelRechangeOrder'
       axios.post(url, data)
         .then(res => {
@@ -295,6 +306,7 @@ export default {
             this.$toast(res.msg)
             this.$router.go(-1)
           } else {
+            this.dialogBoxVal = false
             this.$toast(res.msg)
           }
         })
@@ -377,7 +389,7 @@ export default {
     submit2 () {
       this.orderStatus = this.orderStatus.toString()
       if (this.orderStatus === '1') {
-        this.cancelOrder()
+        this.cancelOrder1()
       } else {
         this.finishOrder()
       }
@@ -391,7 +403,7 @@ export default {
     copy () {
       var clipboard = new Clipboard('.tag-read')
       clipboard.on('success', e => {
-        alert('复制成功')
+        this.$toast('复制成功')
         clipboard.destroy()
       })
       clipboard.on('error', e => {

@@ -41,9 +41,9 @@
             </div>
             <div v-show="cardUrl1 === ''">
               <div v-if="firstUpload">
-                <img class="img imgG" v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img class="img imgG" v-else src="~imgurl/card1-3.png" alt="">
+                <img class="img imgG"  v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                <img class="img imgG"  v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                <img class="img imgG"  v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
                 <img class="img" :class="[istrue1 ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
@@ -155,6 +155,9 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            this.istrue1 = JSON.parse(sessionStorage.getItem('istrue1'))
+            this.istrue2 = JSON.parse(sessionStorage.getItem('istrue2'))
+            this.istrue3 = JSON.parse(sessionStorage.getItem('istrue3'))
             if (res.data.list.length === 0) {
               return false
             }
@@ -310,6 +313,9 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
+            sessionStorage.setItem('istrue1', JSON.stringify(this.istrue1))
+            sessionStorage.setItem('istrue2', JSON.stringify(this.istrue2))
+            sessionStorage.setItem('istrue3', JSON.stringify(this.istrue3))
             this.getUserMsg()
             this.$toast(res.msg)
           } else {
@@ -323,14 +329,7 @@ export default {
 
     // 获取用户信息
     getUserMsg () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'third_user_id': '1'
-      // }
       let data = this.postFormat
-
       let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {

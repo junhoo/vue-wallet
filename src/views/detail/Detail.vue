@@ -122,6 +122,11 @@
       <button @click="submit()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
     <div class="appeal" v-if="orderStatus==6 || orderStatus==2"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
+    <dialog-box
+              :show.sync='dialogBoxVal'
+              :dialog-option="dialogOption"
+              v-on:dialogboxEvent='onDialogBox'>
+    </dialog-box>
   </div>
 </template>
 <script>
@@ -137,6 +142,13 @@ export default {
   },
   data () {
     return {
+      dialogBoxVal: false, // 显示对话框
+      dialogOption: {
+        title: '提示',
+        text: '每天手动或超时取消订单超过3次，将被禁止交易24小时',
+        cancelButtonText: '继续交易',
+        confirmButtonText: '取消订单'
+      },
       postFormat: {},
       btnQRText: '查看',
       bodyHeight: 0,
@@ -184,14 +196,10 @@ export default {
         })
     },
     // 取消订单
+    cancelOrder1 () {
+      this.dialogBoxVal = true
+    },
     cancelOrder () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'order_no': this.order_no,
-      //   'third_user_id': '1'
-      // }
       let data = this.postFormat
       data.order_no = this.order_no
 
@@ -203,6 +211,7 @@ export default {
           if (res.code === 10000) {
             this.$router.go(-1)
           } else {
+            this.dialogBoxVal = false
             this.$toast(res.msg)
           }
         })
@@ -240,7 +249,7 @@ export default {
     submit () {
       this.orderStatus = this.orderStatus.toString()
       if (this.orderStatus === '1') {
-        this.cancelOrder()
+        this.cancelOrder1()
         return false
       } else if (this.orderStatus === '3' || this.orderStatus === '7') { // 2 6 已匹配 // 3 7
         this.finishOrder()
@@ -257,7 +266,7 @@ export default {
     copy () {
       var clipboard = new Clipboard('.tag-read')
       clipboard.on('success', e => {
-        alert('复制成功')
+        this.$toast('复制成功')
         clipboard.destroy()
       })
       clipboard.on('error', e => {

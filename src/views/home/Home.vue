@@ -413,7 +413,6 @@ export default {
           console.log(`1. ${type}-提交订单`)
           this.postFormat.choice_pay_type = ''
           res = res.data
-          console.log(res)
           if (parseInt(res.code) === 10000) {
             const matchs = res.data.list.match
             const orderNo = res.data.list.order_no
