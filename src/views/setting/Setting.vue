@@ -3,6 +3,7 @@
     <common-header :title="navTitle"></common-header>
     <main>
       <div class="boxs boxs-pay" @click="jumpPayBound">
+        <div v-show="!hasBound" class="icon default">去绑定</div>
         <div v-show="hasBound" class="icon default">绑定/修改</div>
       </div>
       <div class="boxs boxs-real" @click="jumpRealBound">
