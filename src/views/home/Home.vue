@@ -394,12 +394,21 @@ export default {
         if (this.buttonVal === '充值') {
           this.submitOrderMatch('充值')
         } else {
-          if (parseInt(this.headerInfo.amount_income) < 10) {
+          if (parseInt(this.headerInfo.amount_income) === 0) {
+            this.$toast('提现积分为0')
+            return
+          }
+          if (this.keyword > parseInt(this.headerInfo.amount_income)) {
+            this.keyword = this.headerInfo.amount_income
+            this.$toast('提现超出当前积分')
+            return
+          }
+          if (parseInt(this.keyword) < 10) {
             this.keyword = 10
             this.$toast('最小提现10积分')
             return
           }
-          if (parseInt(this.headerInfo.amount_income) > 50000) {
+          if (parseInt(this.keyword) > 50000) {
             this.keyword = 50000
             this.$toast('最大提现50000积分')
             return
