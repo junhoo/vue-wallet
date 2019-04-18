@@ -24,7 +24,7 @@
       </li>
       <li class="li-item clearfix">
         <div class="left">积分</div>
-        <div class="right">{{orderDetailData.order_amount}}</div>
+        <div class="right">{{orderDetailData.real_amount}}</div>
       </li>
        <li class="li-item clearfix">
         <div class="left">费率</div>
