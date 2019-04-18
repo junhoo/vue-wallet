@@ -318,6 +318,7 @@ export default {
             sessionStorage.setItem('istrue3', JSON.stringify(this.istrue3))
             this.getUserMsg()
             this.$toast(res.msg)
+            this.$router.go(-1)
           } else {
             this.$toast(res.msg)
           }

@@ -77,7 +77,6 @@ export default {
     dialogText () {
       let text = ''
       const btnType = localStorage.getItem('dialogBtnType')
-      console.log(btnType + '33333')
       if (btnType === '充值') {
         if (this.state === 1) {
           text = '订单匹配中，请稍后'

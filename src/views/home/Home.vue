@@ -124,7 +124,7 @@ export default {
       loopTimer: null,
       loopAutoTimer: null,
       keyword: '',
-      visibleMoney: '',
+      // visibleMoney: '1',
       moneyShow: true, // 显示金额
       dialogBoxVal: false, // 显示对话框
       loadingVal: false,
@@ -170,6 +170,11 @@ export default {
     HomeList
   },
   created () {
+    if (localStorage.getItem('visibleMoney') === '0') {
+      this.moneyShow = false
+    } else {
+      this.moneyShow = true
+    }
     // const format = {
     //   'app-name': '123',
     //   'merchant_type': '1', // 1:A端 2:B端
@@ -193,9 +198,6 @@ export default {
     this.loopOrderDetail()
     this.loopAutoOrder()
     this.setDialogStorage()
-    if (!JSON.parse(localStorage.getItem('visibleMoney'))) {
-      this.moneyShow = false
-    }
   },
   methods: {
     autoLogin () {
@@ -394,6 +396,25 @@ export default {
         if (this.buttonVal === '充值') {
           this.submitOrderMatch('充值')
         } else {
+          if (parseInt(this.headerInfo.amount_income) === 0) {
+            this.$toast('提现积分不能为0')
+            return
+          }
+          if (this.keyword > parseInt(this.headerInfo.amount_income)) {
+            this.keyword = this.headerInfo.amount_income
+            this.$toast('提现超出当前积分')
+            return
+          }
+          if (parseInt(this.keyword) < 10) {
+            this.keyword = 10
+            this.$toast('最小提现10积分')
+            return
+          }
+          if (parseInt(this.keyword) > 50000) {
+            this.keyword = 50000
+            this.$toast('最大提现50000积分')
+            return
+          }
           this.submitOrderMatch('提现')
         }
       }
@@ -419,6 +440,9 @@ export default {
             localStorage.setItem('matchOrderState', matchs)
             localStorage.setItem('matchOrderNo', orderNo)
             this.getOrderInfo('1') // 提交刷新订单
+            if (localStorage.getItem('dialogBtnType') === '提现') {
+              this.getHomeInfo()
+            }
             this.matchingOrder()
             // this.dialogOrderVal = !this.dialogOrderVal // 成功打开弹窗
           } else if (parseInt(res.code) === 15005) {
@@ -515,9 +539,9 @@ export default {
     hideMoney () {
       this.moneyShow = !this.moneyShow
       if (this.moneyShow) {
-        localStorage.setItem('visibleMoney', true)
+        localStorage.setItem('visibleMoney', '1')
       } else {
-        localStorage.setItem('visibleMoney', false)
+        localStorage.setItem('visibleMoney', '0')
       }
     },
 
@@ -538,12 +562,12 @@ export default {
             const oldInfo = sessionStorage.getItem('userMsg')
             if (oldInfo) {
               if (userInfo.id !== oldInfo.id) { // 切换用户-重置初始信息
-                this.moneyShow = false
+                // this.moneyShow = false
                 localStorage.setItem('matchOrderNo', '')
                 localStorage.setItem('matchOrderState', '')
                 localStorage.setItem('openLoopConfirm', '0')
                 localStorage.setItem('openLoopFinish', '0')
-                localStorage.setItem('visibleMoney', true)
+                localStorage.setItem('visibleMoney', '1')
               }
             }
 
@@ -583,16 +607,19 @@ export default {
       if (this.timer) {
         clearTimeout(this.timer)
       }
+
       this.timer = setTimeout(() => {
-        if (match) {
-          console.log('3. 匹配成功')
-          localStorage.setItem('openLoopConfirm', '1')
-          this.dialogFlowVal = 2 // 后台查询-匹配成功-更新窗口
-          // this.getOrderInfo('1')
+        if (match) { // 进入查看匹配状态
+          this.dialogFlowVal = 2 // 匹配成功，请稍后
           this.updateDialogStorage('2')
+
+          console.log('3. 匹配成功')
           console.log('窗台步骤' + this.dialogFlowVal)
-          this.loopOrderDetail()
         }
+        localStorage.setItem('openLoopConfirm', '1') // 开启提示10分钟充值完成
+        this.loopOrderDetail()
+
+        // 触发弹窗
         console.log('窗口状态', this.dialogOrderVal)
         if (this.dialogOrderVal === false) {
           this.dialogOrderVal = true
@@ -604,11 +631,7 @@ export default {
 
     loopOrderDetail () {
       if (localStorage.getItem('openLoopConfirm') !== '1') return
-      if (localStorage.getItem('dialogBtnType') === '提现') {
-        console.log('4. 监听对方是否付款')
-      } else {
-        console.log('4. 监听是否充值到账')
-      }
+      console.log('4. 监听订单状态')
 
       this.getOrderData()
       this.loopTimer = setInterval(() => {
@@ -682,14 +705,20 @@ export default {
             const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认']
             const stateName = stateCode[status - 1]
             console.log('返回订单状态: ' + stateName)
-            // if (status === 5) { // 后台查询-订单已完成-更新窗口
 
             if (stateName === '已匹配' || stateName === '待确认') { // 6 7
-              this.dialogFlowVal = 2
+              this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
+              localStorage.setItem('matchOrderNo', _data.order_detail.order_no)
 
               localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
-              localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+
+              // 充值不开启 自动收款 / 提现才开启
+              if (localStorage.getItem('dialogBtnType') === '充值') {
+                localStorage.setItem('openLoopFinish', '0')
+              } else {
+                localStorage.setItem('openLoopFinish', '1') // 开启-自动收款
+              }
             }
 
             if (stateName === '已完成') { // 后台-充值到账

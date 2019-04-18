@@ -376,7 +376,8 @@ export default {
         .then(res => {
           res = res.data
           if (res.code === 10000) {
-            localStorage.setItem('openLoopFinish', '0')
+            // localStorage.setItem('openLoopFinish', '0')
+            localStorage.setItem('openLoopConfirm', '0') // 停止-弹出10分钟付款
             this.$router.go(-1)
           } else {
             this.$toast(res.msg)
