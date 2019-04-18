@@ -121,7 +121,7 @@
     <div class="btn-pay-boxs" v-if="1">
       <button @click="submit()" class="btn-pay">{{orderStatus|btnStatus}}</button>
     </div>
-    <div class="appeal" v-if="orderStatus==6 || orderStatus==2"><span>2小时候自动确认收款</span><i>我要申诉</i></div>
+    <div class="appeal" v-if="orderStatus==7 || orderStatus==3"><span>2小时候自动确认收款</span><i v-show="0">我要申诉</i></div>
     <dialog-box
               :show.sync='dialogBoxVal'
               :dialog-option="dialogOption"
@@ -132,13 +132,15 @@
 <script>
 import axios from 'axios'
 import CommonHeader from 'common/header/Header'
+import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
     CommonHeader,
-    CountDown
+    CountDown,
+    DialogBox
   },
   data () {
     return {
@@ -483,7 +485,7 @@ export default {
   }
   .text-boxs {
     padding: 0 43px;
-    margin-bottom: 200px;
+    margin-bottom: 150px;
       p {
         font-size: 24px;
         color: #999;
