@@ -83,7 +83,8 @@
           </div>
           <!-- 额外扣除服务{{userMsg.rate * 100}}%，实际到账{{keyword}} -->
           <p v-show="buttonVal === '充值'">付款金额：{{keyword}}</p>
-          <p v-show="buttonVal === '提现'">资产余额{{headerInfo.amount_income}}积分，<span @click="allTx()">全部提现</span></p>
+          <p v-show="buttonVal === '提现' && !keyword">资产余额{{headerInfo.amount_income}}积分，<span @click="allTx()">全部提现</span></p>
+          <p v-show="buttonVal === '提现' && keyword">额外扣除服务费10%，实际到账{{keyword*0.9}}CNY</p>
         </div>
         <button class="main-down" @click="verifyWindow()">提交订单</button>
       </main>
