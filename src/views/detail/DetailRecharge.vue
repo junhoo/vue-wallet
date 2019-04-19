@@ -251,7 +251,7 @@ export default {
       let data = this.postFormat
       data.order_no = this.order_no
 
-      const url = 'http://order.service.168mi.cn/api/order/payDetail'
+      const url = this.$api.order + '/api/order/payDetail'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -298,7 +298,7 @@ export default {
     cancelOrder () {
       let data = this.postFormat
       data.order_no = this.order_no
-      const url = 'http://order.service.168mi.cn/api/order/cancelRechangeOrder'
+      const url = this.$api.order + '/api/order/cancelRechangeOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -344,7 +344,7 @@ export default {
       data.order_no = this.order_no
       data.pay_type = this.payway
 
-      const url = 'http://order.service.168mi.cn/api/order/changePayType'
+      const url = this.$api.order + '/api/order/changePayType'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -363,7 +363,7 @@ export default {
       data.order_no = this.order_no
       data.pay_type = this.payway
 
-      const url = 'http://order.service.168mi.cn/api/order/endRechangeOrder'
+      const url = this.$api.order + '/api/order/endRechangeOrder'
       axios.post(url, data)
         .then(res => {
           res = res.data
@@ -382,6 +382,7 @@ export default {
     submit2 () {
       this.orderStatus = this.orderStatus.toString()
       if (this.orderStatus === '1') {
+        localStorage.setItem('openLoopConfirm', '0')
         this.cancelOrder1()
       } else {
         this.finishOrder()

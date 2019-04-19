@@ -256,6 +256,7 @@ export default {
     submit () {
       this.orderStatus = this.orderStatus.toString()
       if (this.orderStatus === '1') {
+        localStorage.setItem('openLoopConfirm', '0')
         this.cancelOrder1()
         return false
       } else if (this.orderStatus === '3' || this.orderStatus === '7') { // 2 6 已匹配 // 3 7

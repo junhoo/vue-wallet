@@ -596,7 +596,10 @@ export default {
       console.log(this.buttonVal)
       console.log('2. 匹配中...')
       // ???
+      console.log('5555555')
       let match = JSON.parse(localStorage.getItem('matchOrderState'))
+      console.log(match)
+      console.log(typeof match)
       if (typeof match === 'number') {
         match = true
       }
@@ -695,6 +698,7 @@ export default {
             this.dialogFlowAccount = orderAcc[value - 1]
             this.dialogFlowMoney = _data.order_amount
             const status = _data.status
+            sessionStorage.setItem('orderStatus', status)
 
             if (this.dialogOrderVal === false) {
               this.dialogOrderVal = true
@@ -705,7 +709,67 @@ export default {
             const stateName = stateCode[status - 1]
             console.log('返回订单状态: ' + stateName)
 
-            if (stateName === '已匹配' || stateName === '待确认') { // 6 7
+            if (_data.order_type === 1) { // 1充值
+              if (stateName === '待付款' || stateName === '已匹配') {
+                this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
+                this.setDialogStorage(this.dialogFlowVal)
+
+                localStorage.setItem('openLoopFinish', '0')
+                localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
+              }
+              if (stateName === '已完成') {
+                this.dialogFlowVal = 3
+                this.updateDialogStorage(this.dialogFlowVal)
+
+                localStorage.setItem('openLoopFinish', '0')
+                clearInterval(this.loopTimer)
+
+                this.dialogOrderVal = true
+                this.$bus.emit('openDialog', 'open')
+
+                this.getHomeInfo()
+                this.getOrderInfo('1')
+              }
+            }
+
+            if (_data.order_type === 2) { // 2提现
+              if (stateName === '待付款' || stateName === '已匹配') {
+                this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
+                this.setDialogStorage(this.dialogFlowVal)
+
+                localStorage.setItem('openLoopFinish', '0')
+                localStorage.setItem('matchOrderState', false) // 关闭-订单匹配
+              }
+              if (stateName === '未到账' || stateName === '待确认') {
+                this.dialogFlowVal = 3
+                this.updateDialogStorage(this.dialogFlowVal)
+
+                this.dialogOrderVal = true
+                this.$bus.emit('openDialog', 'open')
+                localStorage.setItem('openLoopFinish', '0')
+                clearInterval(this.loopTimer)
+
+                this.getHomeInfo()
+                this.getOrderInfo('1')
+
+                const TWO_HOURS_END = 7200000
+                const endTime = parseInt(new Date().getTime()) + TWO_HOURS_END
+                localStorage.setItem('loopEndTime', endTime)
+                this.loopAutoOrder()
+              }
+              if (stateName === '已完成') {
+                localStorage.setItem('openLoopFinish', '0')
+                clearInterval(this.loopTimer)
+              }
+            }
+
+            if (stateName === '已取消') {
+              localStorage.setItem('openLoopFinish', '0')
+              clearInterval(this.loopTimer)
+            }
+
+            /*
+            if (stateName === '已匹配') { // 6 7  || stateName === '待确认'
               this.dialogFlowVal = 2 // 打开 > 匹配成功，请稍后
               this.setDialogStorage(this.dialogFlowVal)
               // localStorage.setItem('matchOrderNo', _data.order_detail.order_no)
@@ -720,7 +784,7 @@ export default {
               }
             }
 
-            if (stateName === '已完成') { // 后台-充值到账
+            if (stateName === '已完成' || stateName === '待确认') { // 后台-充值到账 -已完成
               this.dialogFlowVal = 3
               this.updateDialogStorage(this.dialogFlowVal)
               if (localStorage.getItem('dialogBtnType') === '充值') {
@@ -733,6 +797,7 @@ export default {
                 clearInterval(this.loopTimer)
               }
             }
+            */
           } else {
             this.$toast(res.msg)
           }
@@ -811,6 +876,8 @@ export default {
     updateDialogStorage (value) {
       const _dialog = JSON.parse(localStorage.getItem('dialogOrder'))
       _dialog.dialogFlowVal = value
+      _dialog.dialogFlowAccount = this.dialogFlowAccount
+      _dialog.dialogFlowMoney = this.dialogFlowMoney
       localStorage.setItem('dialogOrder', JSON.stringify(_dialog))
     },
 
@@ -888,6 +955,7 @@ header {
   width: 100%;
   height: 303px;
   background: linear-gradient(0deg,rgba(75, 146, 254, 1),rgba(29, 64, 228, 1));
+  z-index: 1000;
   .bars {
     position: relative;
     height: 88px;
@@ -1055,6 +1123,7 @@ header {
 .bg-wrapper {
   background: @bgColor;
   padding-top: 4.05rem;
+  z-index: 999;
   .blank {
     height: 223px;
   }
