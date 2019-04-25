@@ -1,4 +1,5 @@
 import Home from '@/views/home/Home'
+import Home2 from '@/views/home/Home2'
 import Detail from '@/views/detail/Detail'
 import DetailRecharge from '@/views/detail/DetailRecharge'
 // import Vue from 'vue'
@@ -18,6 +19,11 @@ export default new Router({
       path: '/',
       name: 'Home',
       component: Home
+    },
+    {
+      path: '/home2',
+      name: 'Home2',
+      component: Home2
     },
     {
       path: '/detail',
