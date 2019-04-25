@@ -82,6 +82,12 @@ export default {
     }
   },
   methods: {
+    resMoney (item) {
+      if (item.title_type === '充值') {
+        return item.order_amount
+      }
+      return item.real_amount
+    },
     stateText (item) {
       let text = item.status_text
       if (item.title_type === '充值') {

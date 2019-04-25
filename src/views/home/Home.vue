@@ -203,7 +203,6 @@ export default {
   methods: {
     autoLogin () {
       let data = this.postFormat
-
       const url = this.$api.user
       axios.post(url + '/api/login/auto_login', data)
         .then(res => {
