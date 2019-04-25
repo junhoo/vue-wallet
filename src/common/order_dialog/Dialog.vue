@@ -10,7 +10,7 @@
           <p class="boxs-state">{{dialogText}}</p>
           <template v-if="buttonType === '充值'">
             <button class="look" v-show="state === 2" @click="closeDiv('付款')">立即付款</button>
-            <button class="look" v-show="state === 3" @click="closeDiv('查看')">查看</button>
+            <button class="look" v-show="state === 3" @click="closeDiv('到账查看')">查看</button>
             <p class="boxs-padding-4" v-show="state === 4">收款账号: {{account}} </p>
             <p class="boxs-text" v-show="state === 4">金额<span>￥{{money}}</span></p>
             <button
@@ -22,7 +22,7 @@
           <template v-else>
             <button class="look" v-show="state === 2" @click="closeDiv('查看')">查看</button>
             <p class="boxs-text" v-show="state === 3">收款账号：银行卡{{account}}</p>
-            <button class="look" v-show="state === 3" @click="closeDiv('收款')">去确认收款</button>
+            <button class="look" v-show="state === 3" @click="closeDiv('收款')">确认收款</button>
             <p class="boxs-text" v-show="state === 3">2小时候自动确认收款<span>我要申诉</span></p>
 
             <p class="boxs-padding-4" v-show="state === 4">收款账号: {{account}} </p>

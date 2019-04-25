@@ -20,7 +20,7 @@
       </li>
       <li class="li-item clearfix">
         <div class="left">金额</div>
-        <div class="right strong">￥{{orderDetailData.order_amount}}</div>
+        <div class="right strong">￥{{orderDetailData.real_amount}}</div>
       </li>
       <li class="li-item clearfix">
         <div class="left">积分</div>
@@ -256,6 +256,7 @@ export default {
     submit () {
       this.orderStatus = this.orderStatus.toString()
       if (this.orderStatus === '1') {
+        localStorage.setItem('openLoopConfirm', '0')
         this.cancelOrder1()
         return false
       } else if (this.orderStatus === '3' || this.orderStatus === '7') { // 2 6 已匹配 // 3 7

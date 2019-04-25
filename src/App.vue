@@ -75,9 +75,8 @@ export default {
       console.log('app-onDialog' + type)
       if (type === '查看' || type === '付款') {
         const orderNo = JSON.parse(localStorage.getItem('matchOrderNo'))
-        let stateVal = 1
+        const stateVal = sessionStorage.getItem('orderStatus')
         if (type === '付款') {
-          stateVal = 2
           sessionStorage.setItem('payRadio', 'open')
         }
         // clearInterval(this.loopTimer)
@@ -86,7 +85,13 @@ export default {
         this.jumpDetail(ordeType, stateVal, orderNo) // 1 已提交
       }
       if (type === '收款') {
+        localStorage.setItem('openLoopFinish', '0')
+        clearInterval(this.loopTimer)
         this.finishOrder()
+      }
+      if (type === '到账查看') {
+        localStorage.setItem('openLoopFinish', '0')
+        clearInterval(this.loopTimer)
       }
       if (type === 'close') {
         // 刷新订单数据
