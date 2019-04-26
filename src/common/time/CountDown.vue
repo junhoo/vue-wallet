@@ -1,5 +1,5 @@
 <template>
-  <span :endTime='endTime' :callback='callback' :endText='endText'>
+  <span class="timer" :endTime='endTime' :callback='callback' :endText='endText'>
     <slot>{{content}}</slot>
   </span>
 </template>
