@@ -40,7 +40,15 @@ export default {
     showfooter: Number
   },
   methods: {
-    callback () {}
+    callback () {},
+    appeal () {
+      this.$router.push({
+        name: 'Appeal',
+        query: {
+          orderType: this.showfooter
+        }
+      })
+    }
   },
   filters: {
     textW: function (value) {
@@ -83,7 +91,7 @@ export default {
     margin-bottom: 35px
   }
   .borbtn{
-    background:url('~imgurl/bg-border.png');
+    background:url('~imgurl/bg-border.png') center / 100% no-repeat;
     color: #2A2A2A
   }
 }

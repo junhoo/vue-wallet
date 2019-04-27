@@ -1,31 +1,53 @@
 <template>
-  <div class="recharge">
-    <common-header title="订单详情"></common-header>
+  <div class="appeal">
+    <common-header title="发起申诉"></common-header>
     <div class="rechargeMain">
+      <!-- 申诉内容 -->
+      <section>
+        <div class="appealContent">
+          <h3 class="m_title">申诉内容</h3>
+          <textarea class="textarea" name="" id="" cols="30" rows="5" placeholder="申诉内容"></textarea>
+        </div>
+        <div class="upload" :class="{'isload':isload}">
+          <div v-show="!isload">
+            <span class="upload_tip">上传支付凭证</span>
+            <input class="upload-file" type="file" @change="uploadFile($event)">
+          </div>
+          <img v-show="isload" class="upload_img" src="~imgurl/bound_real.png" alt="" @click="showImgSelec(0)">
+        </div>
+       </section>
+       <!-- 图片预览弹框 -->
+       <van-popup v-model="show" position="bottom" :close-on-click-overlay="false">
+        <span class="loadbtn" @click="showImgSelec(1)">预览</span>
+        <p class="loadbtn" @change="uploadFile($event)">重新上传<input class="upload-file" type="file" @change="uploadFile($event)"></p>
+        <p class="loadbtn" @click="showImgSelec(0)">取消</p>
+      </van-popup>
+      <van-dialog v-model="show2" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
+        <img src="~imgurl/dialog_bg.png" class="previewImg">
+      </van-dialog>
        <!-- 订单信息 -->
        <section>
          <ul>
            <li>
-             <span class="m_left" :class="{'skyblue':orderType == 2, 'blue':orderType == 5 || orderType == 3, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
+             <span class="m_left" :class="{'orange':orderType == 7, 'blue':orderType == 3}">{{orderType|orderStatus}}</span>
               <template>
-                <count-down v-show="orderType == 2" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
-              </template>
-              <template>
-                <i v-show="orderType == 4" class="m_right">超时自动取消</i>
-                <i v-show="orderType == 8" class="m_right">已被手动取消</i>
-                <i v-show="orderType == 3" class="m_right">等待对方确认收款</i>
+                <i v-if="orderType == 3" class="m_right">等待对方确认收款</i>
+                <i v-if="orderType == 7" class="m_right">请您确认已收到付款</i>
               </template>
            </li>
            <li>
-             <span class="m_left">付款金额</span>
+             <span v-if="orderType == 3" class="m_left">付款金额</span>
+             <span v-if="orderType == 7" class="m_left">收款金额</span>
              <i class="m_right">1000.00CNY</i>
            </li>
            <li>
-             <span class="m_left">充值积分</span>
+             <span v-if="orderType == 3" class="m_left">充值积分</span>
+             <span v-if="orderType == 7" class="m_left">卖出数量</span>
              <i class="m_right">1000</i>
            </li>
            <li>
-             <span class="m_left">下单时间</span>
+             <span v-if="orderType == 3" class="m_left">下单时间</span>
+             <span v-if="orderType == 7" class="m_left">接单时间</span>
              <i class="m_right">2019-04-15 11:56</i>
            </li>
            <li>
@@ -39,13 +61,9 @@
        </section>
        <!-- 支付信息 -->
         <section>
-         <ul class="wrapper" v-if="orderType != 4 || orderType != 8">
+         <ul class="wrapper" v-if="orderType == 3">
            <li class="li-item">
              <span class="m_left">{{payway|payTypeText}}支付</span>
-              <div class="m_right" @click="checkoutPay(0)">
-                <i class="right_text">切换支付方式</i>
-                <img src="~imgurl/arrow-right2.png" alt=""  class="right_icon arrow-icon">
-             </div>
            </li>
            <li>
              <span class="m_left">收款人</span>
@@ -60,16 +78,7 @@
                 <span class="m_left">{{payway|payTypeText}}账号</span>
                 <div class="m_right">
                   <i class="right_text">Jeney1625</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
-                </div>
-              </li>
-              <li class="qrcode">
-                <span class="m_left">收款二维码</span>
-                <div class="m_right">
-                  <img class="QR" src="~imgurl/upload.png" alt=""><br>
-                  <a :href="imgUrl" download="">保存二维码
-                    <img :src="imgUrl" alt="">
-                  </a>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
                 </div>
               </li>
            </div>
@@ -107,71 +116,8 @@
            </li>
          </ul>
        </section>
-       <!-- 选择支付方式 -->
-      <van-popup v-model="show" position="bottom" :close-on-click-overlay="false">
-          <ul class="wrapper">
-            <li class="clearfix">
-              <div class="m_center">切换支付方式</div>
-            </li>
-
-            <li class="clearfix" v-if="isAlipay">
-              <div class="m_left">
-               <img src="~imgurl/alipay-icon.png" alt=""  class="left_icon">
-               <i class="left_text">支付宝/Alipay</i>
-              </div>
-              <div class="m_right" @click="payChange(1)"><i class="rightBG_icon" :class="{'Active_pay' : payway == 1}"></i></div>
-            </li>
-
-            <li class="clearfix" v-if="iswx">
-              <div class="m_left">
-               <img src="~imgurl/wx-icon.png" alt=""  class="left_icon">
-               <i class="left_text">微信/WeChat</i>
-              </div>
-              <div class="m_right" @click="payChange(2)"><i class="rightBG_icon" :class="{'Active_pay' : payway == 2}"></i></div>
-            </li>
-
-            <li class="clearfix" v-if="isbank">
-              <div class="m_left">
-               <img src="~imgurl/bank-icon.png" alt=""  class="left_icon">
-               <i class="left_text">银行卡/Bank</i>
-              </div>
-              <div class="m_right" @click="payChange(3)"><i class="rightBG_icon" :class="{'Active_pay' : payway == 3}"></i></div>
-            </li>
-          </ul>
-        <div class="btn-pay-boxs">
-          <button class="btn-pay"></button>
-          <button @click="checkoutPay(1)" class="btn-pay boxW">确定</button>
-        </div>
-      </van-popup>
-      <!-- 提示信息 -->
-      <section>
-        <div class="tip" v-show="orderType == 8">
-          <span> 注意：</span><br>
-          <span>1：您已手动关闭了该订单交易</span><br>
-          <span>2：如果您已经向对方付款，而误点了取消订单按钮请联系客服。</span>
-        </div>
-        <div class="tip" v-show="orderType == 4">
-          <span> 注意：</span><br>
-          <span>1：超时未付款已被系统自动取消该订单</span><br>
-          <span>2：如果您已经向对方付款，而忘记确认付款请联系客服。</span>
-        </div>
-         <div class="tip" v-show="orderType == 3">
-          <span> 注意：</span><br>
-          <span>1：您已成功向对方付款，请等待对方确认收款即可完成</span><br>
-          <span>2：如果10分钟内对方未确认，请发起申诉。</span>
-        </div>
-        <div class="tip" v-show="orderType == 2">
-          <span> 注意：</span><br>
-          <span>1.平台不支持自动扣款,请用您本人的账号向以上账户转账</span><br>
-          <span>2.转账成功后请点击下方“我已完成付款”按钮</span><br>
-          <span>3.成功转账后，待卖方确认收款，即可完成该笔充值</span><br>
-          <span>4.请尽量保留转账截图，作为申诉时证据</span><br>
-          <span>5.银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项</span><br>
-          <span>6.请于10分钟内向卖方指定账户支付款项，并点击 “我已完成付款”，超时会被系统自动取消该笔充值订单；</span><br>
-        </div>
-      </section>
     </div>
-    <common-footer tip1="确认付款" tip2="取消订单" :showfooter="orderType"></common-footer>
+    <common-footer :showfooter="orderType"></common-footer>
   </div>
 </template>
 <script>
@@ -179,54 +125,33 @@
 import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
-import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
   name: 'Detail',
   components: {
     DialogBox,
     CommonHeader,
-    CommonFooter,
-    CountDown
+    CommonFooter
   },
   data () {
     return {
       show: false,
-      payway: '1',
-      iswx: true,
-      isAlipay: true,
-      isbank: true,
-      showQrcode: false,
-      orderType: 3,
-      imgUrl: '~imgurl/copy-icon.png'
+      show2: false,
+      isload: 1,
+      payway: 3,
+      orderType: 3
     }
   },
   created () {},
   methods: {
-    callback () {},
-    // 查看付款二维码
-    openQrcode () {
-      this.showQrcode = !this.showQrcode
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
-    },
-    // 切换支付方式
-    payChange (name) {
-      this.payway = name
-      if (name === '1') {
-        this.payText = '支付宝支付'
-        this.payText2 = '支付宝账号'
-      } else if (name === '3') {
-        this.payText = '银行卡支付'
-      } else {
-        this.payText = '微信支付'
-        this.payText2 = '微信账号'
-      }
-    },
-    checkoutPay (i) {
-      this.show = !this.show
+    // 点击图片弹框
+    showImgSelec (i) {
       if (i === 0) {
+        this.show = !this.show
         return false
       }
+      this.show = !this.show
+      this.show2 = !this.show2
     },
     // 复制
     copy () {
@@ -254,12 +179,8 @@ export default {
     },
     orderStatus: function (value) {
       value = value.toString()
-      if (value === '4' || value === '8') {
-        value = '已取消'
-      } else if (value === '2') {
-        value = '待付款'
-      } else if (value === '5') {
-        value = '已完成'
+      if (value === '7') {
+        value = '待确认'
       } else if (value === '3') {
         value = '未到账'
       }
@@ -275,44 +196,105 @@ export default {
   display: block;
   clear: both;
 }
-.van-popup--bottom{
-  height: 671px;
-  border-radius: 20px 20px 0 0;
-}
 .van-overlay{
   background-color: rgba(49, 49, 109, .25);
 }
-.btn-pay-boxs{
-  text-align: center;
-  position: relative;
-  .btn-pay{
-    width: 82.4%;
+.previewImg{
+  z-index: 9999;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%)
+}
+.van-popup{
+  border-radius: 20px 20px 0 0;
+  padding: 61px 66px 42px;
+  box-sizing: border-box;
+  .loadbtn{
+    font-size: 28px;
+    width: 100%;
     height: 97px;
+    line-height: 97px;
     text-align: center;
-    font-size: 30px;
-    color: #2A2A2A;
     border-radius: 49px;
-    background-image:-webkit-linear-gradient(left, #4264FB 0%, #4264FB 30%, #4264FB 70%, #16D3EF 90%);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 50px
+    background:url('~imgurl/bg-border.png') center / 100% no-repeat;
+    color: #2A2A2A;
+    margin-bottom: 35px;
+    position: relative;
+    .upload-file{
+      width: 100%;
+      position: absolute;
+      left: 0;
+      opacity: 0;
+    }
   }
-  .boxW{
-    width: 82.1%;
-    height: 93px;
-    top: 52px;
-    background-image:-webkit-linear-gradient(left, #fff 0%, #fff 100%)
+  span{
+    display: inline-block;
+    color: #F5F5F5 !important;
+    background: #1359D2 !important
   }
 }
-.recharge{
+.appeal{
   position: fixed;
   background-color: #F5F8FA;
   width: 100%;
   height: 100%;
   overflow-y: scroll;
+  .appealContent{
+    padding: 34px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-sizing: border-box;
+    margin-bottom: 28px;
+    .m_title{
+      font-size: 28px;
+      color: #010101;
+      font-weight: 600;
+      margin-bottom: 27px;
+    }
+    .textarea{
+      background-color: #F5F8FA;
+      padding: 25px 32px;
+      border-radius: 10px;
+      font-size: 28px;
+      color: #000;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #E8E5E5
+    }
+  }
+  .upload{
+    border-radius: 20px;
+    margin-bottom: 35px;
+    border: 2px dashed #1359D2;
+    height: 144px;
+    text-align: center;
+    line-height: 144px;
+    position: relative;
+    .upload_tip{
+      font-size: 28px;
+      color: #1359D2;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%)
+    }
+    .upload_img{
+      width: 100%;
+      height: 367px
+    }
+    .upload-file{
+      width: 100%;
+      position: absolute;
+      left: 0;
+      opacity: 0;
+    }
+  }
+  .isload{
+    border: none;
+    height: 367px;
+  }
   .rechargeMain{
-    padding: 194px 30px 350px;
+    padding: 118px 30px 250px;
     ul{
       width: 100%;
       margin-bottom: 24px;
@@ -376,6 +358,9 @@ export default {
         }
         .red{
           color: #FF5252
+        }
+        .orange{
+          color: #FFA63D
         }
         span.timer{
           color: #010101 !important

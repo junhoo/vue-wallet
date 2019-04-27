@@ -10,7 +10,7 @@
           </div>
         </li>
         <li>
-          <div class="boxs" @click="jumpPayBound()">
+          <div class="boxs" @click="jumpIn(0)">
             <span class="text-left">绑定支付</span>
             <span class="text-right">{{boundState}}</span>
           </div>
@@ -19,7 +19,7 @@
 
       <ul>
         <li>
-          <div class="boxs">
+          <div class="boxs" @click="jumpIn(1)">
             <span class="text-left">申诉管理</span>
             <span class="text-right"></span>
           </div>
@@ -50,8 +50,12 @@ export default {
     }
   },
   methods: {
-    jumpPayBound () {
-      this.$router.push({ path: '/setting/pay' })
+    jumpIn (i) {
+      if (i === 0) {
+        this.$router.push({ path: '/setting/pay' })
+      } else if (i === 1) {
+        this.$router.push({ path: '/appealList' })
+      }
     }
   }
 }

@@ -1,72 +1,70 @@
 <template>
-  <div>
-    <common-header :title="navTitle"></common-header>
-    <main>
-      <div class="boxs boxs-pay" @click="jumpPayBound">
-        <div v-show="!hasBound" class="icon default">去绑定</div>
-        <div v-show="hasBound" class="icon default">绑定/修改</div>
-      </div>
-      <div class="boxs boxs-real" @click="jumpRealBound">
-        <div
-          class="icon blue"
-          :class="{
-            'red':userMsg.is_realname == 2,
-            'default':userMsg.is_realname == 0,
-            'green':userMsg.is_realname == 1}">
-            {{userMsg.is_realname | certistatusText}}
+  <div class="AppealList">
+    <common-header title="申诉管理"></common-header>
+    <div class="noData" v-if="noData">
+      <img src="~imgurl/no_data.png" alt="">
+      <p>暂无记录</p>
+    </div>
+    <div class="dataList">
+      <div class="item" v-for="(item, index) in itemData" :key="index" @click="toADetail()">
+        <div class="m_left">
+          <p>申诉单号：{{item.orderid}}</p>
+          <span>{{item.time}}</span>
         </div>
-       </div>
-    </main>
+        <div class="m_right">
+          <span :class="{'red':item.status == 1, 'yellow':item.status == 2, 'green':item.status == 3}">{{item.status|statusTxt}}</span>
+          <i class="icon"></i>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import CommonHeader from 'common/header/Header'
 export default {
-  name: 'Setting',
+  name: 'AppealList',
   components: {
     CommonHeader
   },
   data () {
     return {
-      navTitle: '设置',
-      userMsg: {}
+      noData: false,
+      itemData: [
+        {
+          orderid: '1521',
+          time: '2019-03-09 12:21',
+          status: 1 // 1未处理 2处理中 3已完成
+        },
+        {
+          orderid: '1521',
+          time: '2019-03-09 12:21',
+          status: 2
+        },
+        {
+          orderid: '1521',
+          time: '2019-03-09 12:21',
+          status: 3
+        }
+      ]
     }
   },
   created () {
-    this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
-  },
-  computed: {
-    hasBound () {
-      const info = this.userMsg.pay_info
-      const hasList = [info.ali_pay, info.bank_pay, info.wechat_pay]
-      const lastList = hasList.filter(bol => bol === true)
-      if (lastList.length >= 1) {
-        return true
-      }
-      return false
-    }
   },
   methods: {
-    jumpPayBound () {
-      this.$router.push({ path: '/setting/pay' })
-    },
-    jumpRealBound () {
-      this.$router.push({
-        path: '/setting/settingCertification'
-      })
+    toADetail () {
+      this.$router.push({name: 'AppealDetail'})
     }
   },
   filters: {
-    certistatusText: function (value) {
-      if (value === 0) {
-        value = '未认证'
-      } else if (value === 1) {
-        value = '已认证'
-      } else if (value === 2) {
-        value = '未通过'
+    statusTxt: function (value) {
+      value = value.toString()
+      if (value === '1') {
+        value = '未处理'
+      } else if (value === '2') {
+        value = '处理中'
       } else {
-        value = '审核中'
+        value = '已完成'
       }
       return value
     }
@@ -75,58 +73,74 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@shareBox: {
-.boxs {
-  position: relative;
-  height: 242.5px;
-  padding: 20 0px;
-  .icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0 20px 0 34px;
-    line-height: 48px;
-    background:#0078FF;
-    border-radius: 0px 16px 0px 48px;
-  }
-}
-};
-
-main {
-  box-sizing: border-box;
-  margin: 0 20px;
-  .boxs {
-    position: relative;
-    height: 191px;
-    margin-top: 49px;
-    .icon {
-      position: absolute;
-      right: 0;
-      padding: 0 20px 0 34px;
-      line-height: 48px;
-      border-radius: 0px 16px 0px 48px;
-      color: #fff;
+.AppealList{
+  position: fixed;
+  background-color: #F5F8FA;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  .noData{
+    padding-top: 167px;
+    text-align: center;
+    img{
+      width: 86px;
+      margin-bottom: 65px
     }
-    .default {
-      background-color: #637280;
-    }
-    .blue {
-      background-color:#0078FF;
-    }
-    .green {
-      background-color: #52C75A;
-    }
-    .red {
-      background-color: #FF6C6C;
+    p{
+      font-size: 28px;
+      color: #BDBDBD
     }
   }
-  .boxs-pay {
-    background: url('~imgurl/bound_pay.png') center no-repeat;
-    background-size: 100%;
-  }
-  .boxs-real {
-    background: url('~imgurl/bound_real.png') center no-repeat;
-    background-size: 100%;
+  .dataList{
+    padding: 118px 30px;
+    .item{
+      background-color: #fff;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      padding: 41px 31px 31px;
+      display: flex;
+      .m_left{
+        p{
+          margin-bottom: 23px;
+          font-size: 28px;
+          color: #494949;
+        }
+        span{
+          font-size: 26px;
+          color: #B2B2B2
+        }
+      }
+      .m_right{
+        flex: 1;
+        position: relative;
+        text-align: right;
+        span{
+          width: 100%;
+          font-size: 28px;
+          position: absolute;
+          top: 15px;
+          right: 40px;
+        }
+        i{
+          position: absolute;
+          top: 15px;
+          right: 0px;
+          display: inline-block;
+          width: 15px;
+          height: 28px;
+          background: url('~imgurl/set_arrows.png')
+        }
+        .red{
+          color: #FB4242
+        }
+        .yellow{
+          color: #FFC62E
+        }
+        .green{
+          color: #2DD131
+        }
+      }
+    }
   }
 }
 </style>

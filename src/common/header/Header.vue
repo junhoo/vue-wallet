@@ -30,10 +30,14 @@ export default {
   clear: both;
 }
 .header {
-  position: relative;
+  position: fixed;
   width: 100%;
   height: 88px;
   z-index: 100;
+  box-sizing: border-box;
+  background-color: #fff;
+  top: 0;
+  left: 0;
   .back {
     z-index: 102;
     width: 88px;

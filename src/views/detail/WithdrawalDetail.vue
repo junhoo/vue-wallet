@@ -76,7 +76,7 @@ import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
-  name: 'Detail',
+  name: 'WithdrawalDetail',
   components: {
     DialogBox,
     CommonHeader,
@@ -85,7 +85,6 @@ export default {
   },
   data () {
     return {
-      show: false,
       payway: '1',
       iswx: true,
       isAlipay: true,
@@ -98,30 +97,6 @@ export default {
   created () {},
   methods: {
     callback () {},
-    // 查看付款二维码
-    openQrcode () {
-      this.showQrcode = !this.showQrcode
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
-    },
-    // 切换支付方式
-    payChange (name) {
-      this.payway = name
-      if (name === '1') {
-        this.payText = '支付宝支付'
-        this.payText2 = '支付宝账号'
-      } else if (name === '3') {
-        this.payText = '银行卡支付'
-      } else {
-        this.payText = '微信支付'
-        this.payText2 = '微信账号'
-      }
-    },
-    checkoutPay (i) {
-      this.show = !this.show
-      if (i === 0) {
-        return false
-      }
-    },
     // 复制
     copy () {
       var clipboard = new Clipboard('.tag-copy')
