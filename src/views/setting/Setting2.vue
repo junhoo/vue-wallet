@@ -12,7 +12,7 @@
         <li>
           <div class="boxs" @click="jumpPayBound()">
             <span class="text-left">绑定支付</span>
-            <span class="text-right">{{boundState}}</span>
+            <span class="text-right">{{userMsg | filterBound}}</span>
           </div>
         </li>
       </ul>
@@ -44,14 +44,29 @@ export default {
   },
   data () {
     return {
+      userMsg: {},
       navTitle: '设置',
       authState: '未认证', // 审核中 未通过  已认证
       boundState: '未认证' // 绑定/修改
     }
   },
+  created () {
+    this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
+  },
   methods: {
     jumpPayBound () {
       this.$router.push({ path: '/setting/pay' })
+    }
+  },
+  filters: {
+    filterBound (value) {
+      const info = value.pay_info
+      const hasList = [info.ali_pay, info.bank_pay, info.wechat_pay]
+      const lastList = hasList.filter(bol => bol === true)
+      if (lastList.length >= 1) {
+        return '绑定/修改'
+      }
+      return '未绑定'
     }
   }
 }

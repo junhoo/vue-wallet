@@ -1,6 +1,6 @@
 // import Vue from 'vue'
 // import Router from 'vue-router'
-import Home from '@/views/home/Home'
+// import Home from '@/views/home/Home'
 import Home2 from '@/views/home/Home2'
 import Detail from '@/views/detail/Detail'
 import RechargeDetail from '@/views/detail/RechargeDetail' // 充值详情
@@ -22,8 +22,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      name: 'Home2',
+      component: Home2
     },
     {
       path: '/home2',
