@@ -28,7 +28,7 @@ export default {
     const format = sessionStorage.getItem('reqformat')
     this.postFormat = JSON.parse(format)
     // this.getSocketUrl()
-    this.loop()
+    // this.loop()
   },
   data () {
     return {

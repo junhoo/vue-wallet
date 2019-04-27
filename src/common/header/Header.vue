@@ -34,7 +34,6 @@ export default {
   width: 100%;
   height: 164px;
   z-index: 100;
-  padding-top: 20px;
   box-sizing: border-box;
   background-color: #fff;
   .back {
