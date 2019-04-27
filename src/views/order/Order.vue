@@ -1,10 +1,10 @@
 <template>
   <div>
     <common-header :title="navTitle"></common-header>
-    <van-tabs v-model="active" swipeable>
+    <van-tabs v-model="active" swipeable :line-width="'50%'">
       <van-tab
-              v-for="index in 3"
-              :title="'选项 ' + index"
+              v-for="(item, index) in titleList"
+              :title="item"
               :key='index'>
         <div
           class="item">
@@ -24,6 +24,7 @@ export default {
   },
   data () {
     return {
+      titleList: ['充值', '提现'],
       navTitle: '订单记录',
       active: 2
     }
@@ -36,10 +37,13 @@ export default {
 // .van-tabs--line .van-tabs__wrap {
 //   height: 180px;
 // }
-.van-tabs--line {
-  .van-tabs__wrap {
-    height: 180px;
-  }
+// .van-tabs--line {
+//   .van-tabs__wrap {
+//     height: 180px;
+//   }
+// }
+.van-tabs__nav--line {
+  height: 180px;
 }
 
 .item {

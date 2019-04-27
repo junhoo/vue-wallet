@@ -11,16 +11,18 @@
 
         <p class="text-1">{{ name | filterTitle }}</p>
 
+        <p class="text-2" v-show="name === '去绑定'">您未绑定该支付方式，是否现在去绑定？</p>
         <p class="text-2" v-show="type === '充值'">请于10分钟内完成付款，否则将被取消</p>
         <p class="text-moeny" v-show="type === '充值'">800.00<span class="symbol">CNY</span></p>
 
         <p class="text-2" v-show="type === '提现'">{{ name | filterText }}</p>
-        <p class="text-3" v-show="name !== '匹配成功'">收款账号：银行卡（HankWen）</p>
+        <p class="text-3" v-show="name !== '匹配成功' && name !== '去绑定'">收款账号：银行卡（HankWen）</p>
 
         <div class="btn-box">
           <div class="finish-btn">
+            <button class="content" v-show="name === '去绑定'" @click="selectType()">去绑定</button>
             <button class="content" v-show="name === '确认收款'" @click="selectType()">去确认收款</button>
-            <button class="content" v-show="name !== '确认收款'" @click="selectType()">查看订单</button>
+            <button class="content" v-show="name !== '确认收款' && name !== '去绑定'" @click="selectType()">查看订单</button>
           </div>
 
           <div class="cancel-btn">
@@ -55,6 +57,7 @@ export default {
   filters: {
     filterTitle (value) {
       const pools = {
+        '去绑定': '提示',
         '匹配成功': '订单匹配成功',
         '确认收款': '确认收款',
         '自动收款': '超时自动确认收款'
@@ -71,6 +74,7 @@ export default {
     },
     filterCancel (value) {
       const pools = {
+        '去绑定': '取消',
         '匹配成功': '我知道了',
         '确认收款': '稍等一下',
         '自动收款': '我知道了'

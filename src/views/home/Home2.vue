@@ -15,7 +15,7 @@
       </div>
 
       <!-- 金额区 -->
-      <p class="money-use" @click="xxx()">8500.00</p>
+      <p class="money-use" @click="clickPopup()">8500.00</p>
       <p class="money-ban">冻结:1000</p>
     </header>
 
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { post } from '@/assets/js/fetch'
 import HomeSubmit from './components/Submit'
 import HomeDetail from './components/Detail'
 import OrderPopup from 'common/popup/Popup'
@@ -59,23 +60,86 @@ export default {
     HomeDetail,
     OrderPopup
   },
+  created () {
+    // ?app_name=123&merchant_type=1&merchant_code=12345&third_user_id=500
+    const format = {
+      'app-name': this.$route.query.app_name,
+      'merchant_type': this.$route.query.merchant_type, // 1:A端 2:B端
+      'merchant_code': this.$route.query.merchant_code,
+      'third_user_id': this.$route.query.third_user_id,
+      'choice_pay_type': ''
+    }
+    this.postFormat = format
+    this.autoLogin()
+  },
   data () {
     return {
-      detailType: '提现', // 充值 提现 未到账
+      detailType: '充值', // 充值 提现 未到账
       hasDetail: true,
       showPopup: false,
       showMatching: false,
-      popupName: '匹配成功' // 匹配成功 确认收款 自动收款
+      popupName: '匹配成功', // 去绑定 匹配成功 确认收款 自动收款
+      postFormat: {}
     }
   },
   methods: {
-    xxx () {
-      this.showPopup = !this.showPopup
+    autoLogin () {
+      let data = this.postFormat
+      const url = this.$api.user + '/api/login/auto_login'
+
+      post(url, data)
+        .then(res => {
+          console.log('1.0登录')
+          console.log(res)
+          const _obj = res.data.list
+          if (typeof _obj === 'string') {
+            this.getUserMsg()
+            // token 8679Nhv6Un3dlCtgaHencsb0YZA9WN0CLbOXvy8Sf9pakR6SLRon617IlzRqrSXLN3aK7A
+            localStorage.setItem('randomcode', _obj)
+          } else {
+            this.$toast(res.msg)
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误1')
+        })
+    },
+
+    // 获取用户信息
+    getUserMsg () {
+      let data = this.postFormat
+      let url = this.$api.user + '/api/user/getUserInfo'
+
+      post(url, data)
+        .then(res => {
+          console.log('2.0用户信息')
+          console.log(res)
+          const userInfo = res.data.list
+          this.userMsg = userInfo
+          this.boundState = userInfo.pay_info
+          // this.selectIconVal1 = this.boundState.ali_pay
+          // this.selectIconVal2 = this.boundState.wechat_pay
+          // this.selectIconVal3 = this.boundState.bank_pay
+          sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
+          // this.getHomeInfo()
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+
+    clickPopup () {
+      this.showPopup = true
     },
     onChildPopup (shareType) {
       if (shareType === 'close') {
         this.closeShare()
       }
+    },
+    jumpSetPage () {
+      this.$router.push({ name: 'Setting2' })
     },
     jumpOrderPage () {
       this.$router.push({ name: 'Order' })

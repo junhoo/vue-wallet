@@ -2,8 +2,9 @@
   <div class="wrapper">
     <common-header :title="navTitle"></common-header>
 
+    <div class="hint">请输入您的信息</div>
+    <p class="note">*请务必使用您本人的实名账户*</p>
     <main>
-      <div class="hint">请输入您的信息</div>
 
       <ul v-if="entryType === 'bank'">
         <li class="item">
@@ -46,13 +47,11 @@
         </li>
       </ul>
 
-      <p class="note">注：请务必使用您本人的实名账户</p>
     </main>
 
     <div class="yyy" v-if="entryType === 'alipay' || entryType === 'wechat'">
-      <p class="blank"></p>
       <div class="upload">
-        <p class="name">请上传收款二维码</p>
+        <!-- <p class="name">请上传收款二维码</p> -->
         <div class="imgs">
           <template v-if="entryIsbound === 'n'">
             <img v-if="preview !== ''"
@@ -78,6 +77,7 @@
           <!-- <van-uploader class="xxx" :after-read="onRead">
             <van-icon name="photograph" />
           </van-uploader> -->
+          <div class="mask"><span>重新上传</span></div>
           <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
@@ -113,7 +113,7 @@ export default {
       preview: '',
       entryType: '',
       entryIsbound: '',
-      navTitle: '设置',
+      navTitle: '',
       qrcodeUrl: '', // https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1671789140,435698588&fm=26&gp=0.jpg
       apiBank: {
         'app-name': '',
@@ -170,7 +170,7 @@ export default {
         }
       }
       if (this.entryType === 'alipay') {
-        const pools = [this.apiBank.alipay_name, this.apiBank.alipay_no, this.apiBank.alipay_address, this.apiBank.alipay_sub_branch]
+        const pools = [this.apiAlipay.alipay_name, this.apiAlipay.alipay_account]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -178,7 +178,7 @@ export default {
         }
       }
       if (this.entryType === 'wechat') {
-        const pools = [this.apiWechat.wechat_name, this.apiWechat.wechat_no, this.apiWechat.wechat_address, this.apiWechat.wechat_sub_branch]
+        const pools = [this.apiWechat.wechat_name, this.apiWechat.wechat_account]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -417,121 +417,140 @@ export default {
 </script>
 
 <style lang="less" scoped>
-main {
-  padding: 0 70px 0 30px;
-  color: #6D778B;
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  background-color: #F5F5F5;
   .hint {
-    margin-top: 40px;
+    margin-top: 68px;
+    margin-left: 43px;
     font-size: 48px;
+    color: #333333;
+    font-family: SourceHanSansCN-Medium;
+    font-weight: bold;
   }
-  .item {
-    margin-top: 48px;
-    .name {
-      color: #6D778B;
-      font-size: 28px;
-    }
-    input::placeholder{
-      color: #9FA9BA;
-      opacity: 1;
-      font-size: 32px;
-    }
-    input {
-      width: 100%;
-      line-height: 80px;
-      font-size: 32px;
-      padding-top: 20px;
-      border-bottom: 2px solid #E3E3E3;
-    }
-  }
+
   .note {
-    margin-top: 48px;
-    color: #FFA55A;
-    font-size: 28px;
+    margin-top: 64px;
+    margin-left: 43px;
+    padding-bottom: 14px;
+    color: #FF4F4F;
+    font-size: 24px;
     line-height: 48px;
   }
-}
 
-.yyy {
-  .blank {
-    background-color: #F4F4F4;
-    height: 12px;
-  }
-  .upload {
-    padding: 0 36px;
-    .name {
-      margin-top: 30px;
-      color: #6D778B;
-      height: 50px;
-      font-size: 36px;
-      font-weight: 600;
-    }
-    .btn {
-      margin: 0 auto;
-      margin-top: 74px;
-      width: 288px;
-      height: 288px;
-      .van-icon {
-        display: none;
+  main {
+    padding: 0 76px;
+    color: #6D778B;
+    .item {
+      margin-top: 53px;
+      .name {
+        color: #333333;
+        font-size: 28px;
       }
-      .van-uploader {
-        width: 288px;
-        height: 288px;
-        background: url('~imgurl/upload.png') no-repeat;
-        background-size: 100%;
+      input::placeholder{
+        color: #999999;
+        opacity: 1;
+        font-size: 32px;
       }
-    }
-    .imgs {
-      display: block;
-      margin: 0 auto;
-      margin-top: 74px;
-      width: 288px;
-      height: 288px;
-      border: 1px solid #9FA9BA;
-      // background: url('~imgurl/upload.png') no-repeat;
-      // background-size: 100%;
-      .img-up {
+      input {
         width: 100%;
-        height: 100%;
-      }
-      .img-down {
-        // width: 288px;
-        // height: 288px;
-        border: 1px solid #9FA9BA;
-      }
-      .img-width{
-        width: 288px;
-      }
-      .img-height{
-        height: 288px;
-      }
-      .img-file {
-        border: 1px red solid;
-        margin-top: -288px;
-        width: 288px;
-        height: 288px;
-        opacity: 0;
-        color: transparent;
+        color: #333333;
+        font-size: 30px;
+        padding-top: 36px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid #E3E3E3;
+        background-color: #F5F5F5;
       }
     }
   }
-}
 
-footer {
-  position: relative;
-  margin-top: 90px;
-  .buttons {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 620px;
-    height: 88px;
-    background: #E0E0E0;
-    border-radius: 10px;
-    font-size:32px;
-    color: #ffffff;
+  .yyy {
+    .upload {
+      padding: 0 36px;
+      .btn {
+        margin: 0 auto;
+        margin-top: 74px;
+        width: 288px;
+        height: 288px;
+        .van-icon {
+          display: none;
+        }
+        .van-uploader {
+          width: 288px;
+          height: 288px;
+          background: url('~imgurl/upload.png') no-repeat;
+          background-size: 100%;
+        }
+      }
+      .imgs {
+        display: block;
+        margin: 0 auto;
+        margin-top: 75px;
+        width: 245px;
+        height: 245px;
+        border: 1px solid #9FA9BA;
+        // background: url('~imgurl/upload.png') no-repeat;
+        // background-size: 100%;
+        .img-up {
+          width: 100%;
+          height: 100%;
+        }
+        .img-down {
+          // width: 288px;
+          // height: 288px;
+          // border: 1px solid #9FA9BA;
+        }
+        .img-width {
+          width: 245px;
+        }
+        .img-height {
+          height: 245px;
+        }
+        .img-file {
+          margin-top: -275px;
+          width: 245px;
+          height: 245px;
+          opacity: 0;
+          color: transparent;
+        }
+        .mask {
+          margin-top: -245px;
+          height: 245px;
+          width: 245px;
+          position: relative;
+          text-align: center;
+          background-color: rgba(0, 0, 0, .2);
+          span {
+            font-size: 24px;
+            color: #ffffff;
+          }
+        }
+      }
+    }
   }
-  .show-color {
-    background: #0078FF;
+
+  footer {
+    position: relative;
+    margin-top: 106px;
+    .buttons {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 620px;
+      height: 88px;
+      background: #E0E0E0;
+      font-size: 28px;
+      color: #ffffff;
+      border-radius:49px;
+    }
+    .show-color {
+      background: #1359D2;
+    }
   }
 }
 </style>

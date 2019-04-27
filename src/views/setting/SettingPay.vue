@@ -1,21 +1,21 @@
 <template>
   <transition>
-    <div>
+    <div class="boundpay-body">
       <common-header :title="navTitle"></common-header>
       <main>
-        <div class="boxs bank" @click="jumpPayBound('bank')">
-          <div class="name">银行卡</div>
-          <div class="text" v-text="bank"></div>
+        <div class="boxs wechat" @click="jumpPayBound('wechat')">
+          <div class="name">微信</div>
+          <div class="text" v-text="wechat"></div>
         </div>
         <div class="boxs alipay" @click="jumpPayBound('alipay')">
           <div class="name">支付宝</div>
           <div class="text" v-text="alipay"></div>
         </div>
-        <div class="boxs wechat" @click="jumpPayBound('wechat')">
-          <div class="name">微信</div>
-          <div class="text" v-text="wechat"></div>
+        <div class="boxs bank" @click="jumpPayBound('bank')">
+          <div class="name">银行卡</div>
+          <div class="text" v-text="bank"></div>
         </div>
-        <p>注：请务必使用您本人的实名账号，被绑定的支付方式将在交易时向买方展示，请至少绑定一种支付方式</p>
+        <p>注：请务必使用您本人的实名账户，被绑定的支付方式将在交易时向买方展示，请至少绑定一种支付方式；</p>
       </main>
     </div>
   </transition>
@@ -30,7 +30,7 @@ export default {
   },
   data () {
     return {
-      navTitle: '设置',
+      navTitle: '绑定支付',
       bank: '',
       alipay: '',
       wechat: '',
@@ -61,50 +61,62 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.boundpay-body {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #f5f5f5;
+}
+
 main {
   box-sizing: border-box;
-  margin: 40px 20px 0 20px;
+  margin: 30px 45px 0 45px;
+  .bank {
+    background: url('~imgurl/bank-icon.png') center left 32px no-repeat;
+    background-size: 40px 40px;
+  }
+  .alipay {
+    background: url('~imgurl/alipay-icon.png') center left 32px no-repeat;
+    background-size: 40px 40px;
+  }
+  .wechat {
+    background: url('~imgurl/wx-icon.png') center left 32px no-repeat;
+    background-size: 40px 40px;
+  }
+
   .boxs {
     display: flex;
     justify-content: space-between;
-    height: 144px;
-    line-height: 144px;
-    margin: 20px 0px;
+    height: 98px;
+    line-height: 98px;
+    position: relative;
     text-align: center;
-    background-color: #F5F6FA;
-    border-radius: 20px;
+    margin-bottom: 32px;
+    border-radius: 16px;
+    background-color: #ffffff;
     .name {
-      font-size: 32px;
-      margin-left: 92px;
-      color: #9EA8B9;
+      font-size: 30px;
+      margin-left: 95px;
+      color: #333333;
     }
     .text {
       font-size: 32px;
-      color: #6D778B;
+      color: #1359D2;
       font-weight: bold;
-      padding-right: 50px;
+      padding-right: 45px;
       background: url('~imgurl/arrow-right.png') no-repeat right 20px center;
       background-size: 16px 28px;
     }
   }
-  .bank {
-    background: url('~imgurl/bank-icon.png') center left 32px no-repeat;
-    background-size: 42px 37px;
-  }
-  .alipay {
-    background: url('~imgurl/alipay-icon.png') center left 32px no-repeat;
-    background-size: 42px 37px;
-  }
-  .wechat {
-    background: url('~imgurl/wx-icon.png') center left 32px no-repeat;
-    background-size: 42px 37px;
-  }
+
   p {
-    padding: 0 18px;
-    line-height: 48px;
-    font-size: 26px;
+    padding: 7px 0 0 7px;
+    line-height: 25px;
+    font-size: 24px;
     font-family: PingFang-SC-Medium;
-    color:#666666;
+    color:#FF4F4F;
   }
 }
 
