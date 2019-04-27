@@ -10,7 +10,7 @@
         <div class="middle">Wallet</div>
         <div class="right">
           <p class="empty"></p>
-          <p class="icon-option"></p>
+          <p class="icon-option" @click="jumpOrderPage()"></p>
         </div>
       </div>
 
@@ -76,6 +76,9 @@ export default {
       if (shareType === 'close') {
         this.closeShare()
       }
+    },
+    jumpOrderPage () {
+      this.$router.push({ name: 'Order' })
     }
   }
 }

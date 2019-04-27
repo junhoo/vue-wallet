@@ -11,11 +11,13 @@ import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'lib-flexible/flexible'
 // import Vant from 'vant'
-import { Popup, RadioGroup, Radio } from 'vant'
 // import 'vant/lib/index.css'
+import { Popup, RadioGroup, Radio, Tab, Tabs } from 'vant'
 import 'vant/lib/popup/style'
 import 'vant/lib/radio-group/style'
 import 'vant/lib/radio/style'
+import 'vant/lib/tab/style'
+import 'vant/lib/tabs/style'
 
 const Vue = require('vue')
 Vue.use(Popup)
@@ -24,6 +26,9 @@ Vue.use(Radio)
 
 Vue.use(Toast)
 Vue.use(VueBus)
+
+Vue.use(Tab)
+Vue.use(Tabs)
 
 Vue.prototype.$api = JSON.parse(process.env.api)
 Vue.config.productionTip = false
