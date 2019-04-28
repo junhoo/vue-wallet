@@ -63,7 +63,7 @@ export default {
 <style lang="less" scoped>
 .boundpay-body {
   position: fixed;
-  top: 0;
+  top: 88px;
   right: 0;
   left: 0;
   bottom: 0;

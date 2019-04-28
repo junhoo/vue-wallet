@@ -18,21 +18,21 @@
            </li>
            <li>
              <span class="m_left">付款金额</span>
-             <i class="m_right">1000.00CNY</i>
+             <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
            </li>
            <li>
              <span class="m_left">充值积分</span>
-             <i class="m_right">1000</i>
+             <i class="m_right">{{orderDetailData.order_amount}}</i>
            </li>
            <li>
              <span class="m_left">下单时间</span>
-             <i class="m_right">2019-04-15 11:56</i>
+             <i class="m_right">{{orderDetailData.time_str}}</i>
            </li>
            <li>
              <span class="m_left">订单编号</span>
              <div class="m_right">
-               <i class="right_text">20190415002006005</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
+               <i class="right_text">{{orderDetailData.order_no}}</i>
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="orderDetailData.order_no" @click="copy()">
              </div>
            </li>
          </ul>
@@ -114,7 +114,7 @@
               <div class="m_center">切换支付方式</div>
             </li>
 
-            <li class="clearfix" v-if="isAlipay">
+            <li class="clearfix" v-if="paykind.isAlipay">
               <div class="m_left">
                <img src="~imgurl/alipay-icon.png" alt=""  class="left_icon">
                <i class="left_text">支付宝/Alipay</i>
@@ -122,7 +122,7 @@
               <div class="m_right" @click="payChange(1)"><i class="rightBG_icon" :class="{'Active_pay' : payway == 1}"></i></div>
             </li>
 
-            <li class="clearfix" v-if="iswx">
+            <li class="clearfix" v-if="paykind.iswx">
               <div class="m_left">
                <img src="~imgurl/wx-icon.png" alt=""  class="left_icon">
                <i class="left_text">微信/WeChat</i>
@@ -130,7 +130,7 @@
               <div class="m_right" @click="payChange(2)"><i class="rightBG_icon" :class="{'Active_pay' : payway == 2}"></i></div>
             </li>
 
-            <li class="clearfix" v-if="isbank">
+            <li class="clearfix" v-if="paykind.isbank">
               <div class="m_left">
                <img src="~imgurl/bank-icon.png" alt=""  class="left_icon">
                <i class="left_text">银行卡/Bank</i>
@@ -175,7 +175,7 @@
   </div>
 </template>
 <script>
-// import axios from 'axios'
+import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
@@ -192,22 +192,42 @@ export default {
   data () {
     return {
       show: false,
-      payway: '1',
-      iswx: true,
-      isAlipay: true,
-      isbank: true,
-      showQrcode: false,
-      orderType: 3,
-      imgUrl: '~imgurl/copy-icon.png'
+      payway: '1', // 1.支付宝 2.微信 3.银行卡
+      paykind: {
+        iswx: true,
+        isAlipay: true,
+        isbank: true
+      },
+      orderType: 3, // 订单状态 2.代付款 3.未到账 4.已取消(手动) 5.已完成 8.已取消(自动)
+      imgUrl: '~imgurl/copy-icon.png', // 付款二维码
+      orderDetailData: {}, // 订单详情信息
+      order_no: '' // 订单编号
     }
   },
-  created () {},
+  created () {
+    this.order_no = this.$route.query.order_no
+    this.getOrderDel()
+  },
   methods: {
     callback () {},
-    // 查看付款二维码
-    openQrcode () {
-      this.showQrcode = !this.showQrcode
-      this.btnQRText = this.showQrcode ? '收起' : '点击查看'
+    // 获取订单信息
+    getOrderDel () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        complain_no: this.complain_no
+      }
+      let url = this.$api.order + '/api/order/payDetail'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          this.orderDetailData = res.data.list
+          this.payway = this.orderDetailData.pay_type
+          this.orderType = this.orderDetailData.status
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
     },
     // 切换支付方式
     payChange (name) {
@@ -312,7 +332,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 194px 30px 350px;
+    padding: 118px 30px 350px;
     ul{
       width: 100%;
       margin-bottom: 24px;

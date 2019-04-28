@@ -21,7 +21,11 @@
 
     <main>
       <!-- 首页-提交块 -->
-      <home-submit v-show="!hasDetail"></home-submit>
+      <home-submit
+                  v-show="!hasDetail"
+                  :userMsg="userMsg"
+                  v-on:onChildSubmit='onChildSubmit'>
+      </home-submit>
       <!-- 首页-订单详情-->
       <home-detail v-show="hasDetail" :type="detailType"></home-detail>
     </main>
@@ -71,15 +75,18 @@ export default {
     }
     this.postFormat = format
     this.autoLogin()
+    sessionStorage.setItem('reqformat', JSON.stringify(format))
   },
   data () {
     return {
       detailType: '充值', // 充值 提现 未到账
-      hasDetail: true,
+      boundType: '',
+      hasDetail: false,
       showPopup: false,
       showMatching: false,
       popupName: '匹配成功', // 去绑定 匹配成功 确认收款 自动收款
-      postFormat: {}
+      postFormat: {},
+      userMsg: {}
     }
   },
   methods: {
@@ -116,11 +123,10 @@ export default {
           console.log('2.0用户信息')
           console.log(res)
           const userInfo = res.data.list
+          // userInfo.pay_info.ali_pay = true
+          // userInfo.pay_info.wechat_pay = true
+          // userInfo.pay_info.bank_pay = true
           this.userMsg = userInfo
-          this.boundState = userInfo.pay_info
-          // this.selectIconVal1 = this.boundState.ali_pay
-          // this.selectIconVal2 = this.boundState.wechat_pay
-          // this.selectIconVal3 = this.boundState.bank_pay
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
           // this.getHomeInfo()
         })
@@ -133,11 +139,23 @@ export default {
     clickPopup () {
       this.showPopup = true
     },
-    onChildPopup (shareType) {
-      if (shareType === 'close') {
+
+    onChildSubmit (type) {
+      this.boundType = type
+      this.popupName = '去绑定'
+      this.showPopup = true
+    },
+    onChildPopup (type) {
+      if (type === '去绑定') {
+        setTimeout(() => {
+          this.$router.push({ path: '/setting/bound', query: { 'type': this.boundType, 'isbound': 'n' } })
+        }, 50)
+      }
+      if (type === 'close') {
         this.closeShare()
       }
     },
+
     jumpSetPage () {
       this.$router.push({ name: 'Setting2' })
     },

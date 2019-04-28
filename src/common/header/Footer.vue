@@ -8,7 +8,7 @@
 <div v-else-if="showfooter == 3">
   <div class="foote clearfix">
     <!-- <p>发起申诉<count-down v-show="showfooter == 2" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down></p> -->
-    <p class="borbtn" :click="appeal()">发起申诉</p>
+    <p class="borbtn">发起申诉</p>
   </div>
 </div>
 <div v-else-if="showfooter == 7">
@@ -43,7 +43,7 @@ export default {
     callback () {},
     appeal () {
       this.$router.push({
-        name: 'Appeal',
+        path: '/appeal',
         query: {
           orderType: this.showfooter
         }

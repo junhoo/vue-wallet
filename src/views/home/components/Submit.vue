@@ -23,7 +23,14 @@
     <!-- 输入框 -->
     <div class="input-box">
       <p class="text" v-text="inputHint"></p>
-      <input class="inputs" type="text" :placeholder="inputPlaceholder">
+      <input
+          type="text"
+          v-model="keyword"
+          class="inputs"
+          :placeholder="inputPlaceholder"
+          maxlength="7"
+          @input="handleInput"
+          onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
       <span class="small-name">积分</span>
     </div>
 
@@ -33,7 +40,7 @@
       <div
           class="icon-box icon-alipay"
           :class="{'icon-alipay-active': selectAlipay}"
-          @click="clickAlipay()">
+          @click="selectPayType(1)">
         <div class="inside-img">
         </div>
         <div class="inside-text">支付宝支付</div>
@@ -43,7 +50,7 @@
       <div
           class="icon-box icon-wechat"
           :class="{'icon-wechat-active': selectWechat}"
-          @click="clickWechat()">
+          @click="selectPayType(2)">
         <div class="inside-img"></div>
         <div class="inside-text">微信</div>
       </div>
@@ -52,29 +59,101 @@
       <div
           class="icon-box icon-bank"
           :class="{'icon-bank-active': selectBank}"
-          @click="clickBnak()">
+          @click="selectPayType(3)">
         <div class="inside-img"></div>
         <div class="inside-text">银行卡</div>
       </div>
 
-      <button class="submit-btn">提交订单</button>
+      <button class="submit-btn" @click="verifyWindow()">提交订单</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    userMsg: {}
+  },
   data () {
     return {
+      keyword: '',
+      goBoundText: 1,
       selectButton: '充值',
       selectAlipay: false,
       selectWechat: false,
       selectBank: false,
       inputHint: '充值积分',
-      inputPlaceholder: '填写充值积分'
+      inputPlaceholder: '填写充值积分',
+      boundState: {}
+    }
+  },
+  watch: {
+    userMsg () {
+      console.log('submit')
+      // console.log(this.userMsg)
+      this.getUser()
     }
   },
   methods: {
+    getUser () {
+      this.boundState = this.userMsg.pay_info
+      this.selectAlipay = this.boundState.ali_pay
+      this.selectWechat = this.boundState.wechat_pay
+      this.selectBank = this.boundState.bank_pay
+    },
+
+    // 支付按钮的显示
+    selectPayType (type) {
+      console.log('selectPayType')
+      this.goBoundText = type
+      const apiIocn = this.boundState
+      if (!apiIocn.ali_pay && !apiIocn.bank_pay && !apiIocn.wechat_pay) {
+        this.popupHint('none')
+        return
+      }
+
+      const hasList = [this.selectAlipay, this.selectWechat, this.selectBank]
+      const lastList = hasList.filter(bol => bol === true)
+
+      if (type === 1) {
+        if (!this.boundState.ali_pay) {
+          this.popupHint()
+          return false
+        }
+        if (lastList.length <= 1 && !this.selectWechat && !this.selectBank) {
+          this.$toast('至少选择一种支付方式')
+          return
+        }
+        this.selectAlipay = !this.selectAlipay
+      } else if (type === 2) {
+        if (!this.boundState.wechat_pay) {
+          this.popupHint()
+          return false
+        }
+        if (lastList.length <= 1 && !this.selectAlipay && !this.selectBank) {
+          this.$toast('至少选择一种支付方式')
+          return
+        }
+        this.selectWechat = !this.selectWechat
+      } else if (type === 3) {
+        if (!this.boundState.bank_pay) {
+          this.popupHint()
+          return false
+        }
+        if (lastList.length <= 1 && !this.selectAlipay && !this.selectWechat) {
+          this.$toast('至少选择一种支付方式')
+          return
+        }
+        this.selectBank = !this.selectBank
+      }
+    },
+
+    popupHint (val = '') {
+      const arr = ['alipay', 'wechat', 'bank']
+      const type = arr[this.goBoundText - 1]
+      this.$emit('onChildSubmit', type) // 定义->子组件声明的事件
+    },
+
     clickButton (type) {
       this.selectButton = type
       this.inputHint = type === '充值' ? '充值积分' : '提现积分'
@@ -89,6 +168,71 @@ export default {
     },
     clickBnak () {
       this.selectBank = !this.selectBank
+    },
+
+    // 验证窗口 提交订单
+    verifyWindow () {
+      const inputs = this.keyword
+      if (parseInt(this.userMsg.status) === 0) { // 0 锁定 1正常
+        this.dialogOption = {
+          title: '提示',
+          text: '您已被禁止交易，' + this.userMsg.unlocking_time + '小时后解禁',
+          cancelButtonText: '确认',
+          buttonCount: 1
+        }
+        this.dialogBoxVal = true
+        return
+      }
+      if (localStorage.getItem('openLoopConfirm') === '1' || localStorage.getItem('openLoopFinish') === '1') {
+        this.hintHasOrder()
+        return
+      }
+      if (inputs === '') {
+        var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/
+        if (!exp.test(inputs)) {
+          this.$toast('请输入充值数量')
+        }
+      } else if (!this.selectAlipay && !this.selectWechat && !this.selectBank) {
+        this.$toast('至少选择一种支付方式')
+      } else if (this.userMsg.is_realname === 0 || this.userMsg.is_realname === 2) { // 0未认证 1审核通过 2审核未通过 3审核中
+        this.dialogOption = {
+          title: '提示',
+          text: '请先完成实名认证再进行交易',
+          cancelButtonText: '取消',
+          confirmButtonText: '去实名'
+        }
+        this.dialogBoxVal = true
+      } else {
+        if (this.buttonVal === '充值') {
+          this.submitOrderMatch('充值')
+        } else {
+          if (parseInt(this.headerInfo.amount_income) === 0) {
+            this.$toast('提现积分不能为0')
+            return
+          }
+          if (this.keyword > parseInt(this.headerInfo.amount_income)) {
+            this.keyword = this.headerInfo.amount_income
+            this.$toast('提现超出当前积分')
+            return
+          }
+          if (parseInt(this.keyword) < 10) {
+            this.keyword = 10
+            this.$toast('最小提现10积分')
+            return
+          }
+          if (parseInt(this.keyword) > 50000) {
+            this.keyword = 50000
+            this.$toast('最大提现50000积分')
+            return
+          }
+          this.submitOrderMatch('提现')
+        }
+      }
+    },
+
+    handleInput (e) {
+      this.keyword = this.keyword.replace(/[^\d]/g, '')
+      this.keyword = this.keyword.replace('.', '')
     }
   }
 }

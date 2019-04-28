@@ -1,26 +1,30 @@
 <template>
   <div class="AppealList">
     <common-header title="申诉管理"></common-header>
-    <div class="noData" v-if="noData">
+    <div class="noData" v-if="!itemData.lenght">
       <img src="~imgurl/no_data.png" alt="">
       <p>暂无记录</p>
     </div>
-    <div class="dataList">
-      <div class="item" v-for="(item, index) in itemData" :key="index" @click="toADetail()">
-        <div class="m_left">
-          <p>申诉单号：{{item.orderid}}</p>
-          <span>{{item.time}}</span>
+    <div v-else class="dataList">
+      <van-list v-model="loading" :finished="finished" finished-text="我是有底线的" @load="onLoad">
+        <div class="item" v-for="(item, index) in itemData" :key="index" @click="toADetail(item.complain_no)">
+          <div class="m_left">
+            <p>申诉单号：{{item.complain_no}}</p>
+            <span>{{item.add_time | formatDate}}</span>
+          </div>
+          <div class="m_right">
+            <span :class="{'red':item.status == 1, 'yellow':item.status == 2, 'green':item.status == 3}">{{item.status|statusTxt}}</span>
+            <i class="icon"></i>
+          </div>
         </div>
-        <div class="m_right">
-          <span :class="{'red':item.status == 1, 'yellow':item.status == 2, 'green':item.status == 3}">{{item.status|statusTxt}}</span>
-          <i class="icon"></i>
-        </div>
-      </div>
+      </van-list>
     </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
+import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'AppealList',
@@ -30,30 +34,58 @@ export default {
   data () {
     return {
       noData: false,
-      itemData: [
-        {
-          orderid: '1521',
-          time: '2019-03-09 12:21',
-          status: 1 // 1未处理 2处理中 3已完成
-        },
-        {
-          orderid: '1521',
-          time: '2019-03-09 12:21',
-          status: 2
-        },
-        {
-          orderid: '1521',
-          time: '2019-03-09 12:21',
-          status: 3
-        }
-      ]
+      itemData: [],
+      list: [],
+      loading: false,
+      finished: false,
+      limit: 10,
+      page: 1
     }
   },
   created () {
+    this.getAppealMsg()
   },
   methods: {
-    toADetail () {
-      this.$router.push({name: 'AppealDetail'})
+    // 获取申诉列表信息
+    getAppealMsg () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        page: this.page,
+        limit: this.limit
+      }
+      let url = this.$api.order + '/api/Complain/complainList'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          this.itemData = res.data.list
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+    // 上拉加载
+    onLoad () {
+      // 异步更新数据
+      setTimeout(() => {
+        for (let i = 0; i < 10; i++) {
+          this.list.push(this.list.length + 1)
+        }
+        // 加载状态结束
+        this.loading = false
+        // 数据全部加载完成
+        if (this.list.length >= 40) {
+          this.finished = true
+        }
+      }, 500)
+    },
+    toADetail (id) {
+      this.$router.push({
+        name: 'AppealDetail',
+        query: {
+          complain_no: id
+        }
+      })
     }
   },
   filters: {
@@ -67,6 +99,9 @@ export default {
         value = '已完成'
       }
       return value
+    },
+    formatDate: function (value) {
+      return moment(value).format('YYYY-MM-DD hh:mm')
     }
   }
 }
@@ -141,6 +176,9 @@ export default {
         }
       }
     }
+  }
+  .van-list{
+    text-align: center
   }
 }
 </style>

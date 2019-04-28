@@ -12,15 +12,19 @@
         <p class="text-1">{{ name | filterTitle }}</p>
 
         <p class="text-2" v-show="name === '去绑定'">您未绑定该支付方式，是否现在去绑定？</p>
-        <p class="text-2" v-show="type === '充值'">请于10分钟内完成付款，否则将被取消</p>
-        <p class="text-moeny" v-show="type === '充值'">800.00<span class="symbol">CNY</span></p>
+        <div v-show="name !== '去绑定'">
+          <p class="text-2" v-show="type === '充值'">请于10分钟内完成付款，否则将被取消</p>
+          <p class="text-moeny" v-show="type === '充值'">800.00<span class="symbol">CNY</span></p>
+        </div>
 
-        <p class="text-2" v-show="type === '提现'">{{ name | filterText }}</p>
-        <p class="text-3" v-show="name !== '匹配成功' && name !== '去绑定'">收款账号：银行卡（HankWen）</p>
+        <div v-show="name !== '去绑定'">
+          <p class="text-2" v-show="type === '提现'">{{ name | filterText }}</p>
+          <p class="text-3" v-show="name !== '匹配成功'">收款账号：银行卡（HankWen）</p>
+        </div>
 
         <div class="btn-box">
           <div class="finish-btn">
-            <button class="content" v-show="name === '去绑定'" @click="selectType()">去绑定</button>
+            <button class="content" v-show="name === '去绑定'" @click="selectType('去绑定')">去绑定</button>
             <button class="content" v-show="name === '确认收款'" @click="selectType()">去确认收款</button>
             <button class="content" v-show="name !== '确认收款' && name !== '去绑定'" @click="selectType()">查看订单</button>
           </div>
@@ -47,8 +51,9 @@ export default {
     type: ''
   },
   methods: {
-    selectType (shareType) {
-      this.$emit('onChildPopup', shareType) // 定义->子组件声明的事件
+    selectType (type) {
+      this.closeDiv()
+      this.$emit('onChildPopup', type) // 定义->子组件声明的事件
     },
     closeDiv () {
       this.$emit('update:show', false)

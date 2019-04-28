@@ -63,12 +63,12 @@ export default new Router({
       component: SettingBound
     },
     {
-      path: '/recharge_detail',
+      path: '/rechargeDetail',
       name: 'RechargeDetail',
       component: RechargeDetail
     },
     {
-      path: '/withdrawal_detail',
+      path: '/withdrawalDetail',
       name: 'WithdrawalDetail',
       component: WithdrawalDetail
     },

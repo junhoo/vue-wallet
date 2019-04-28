@@ -23,6 +23,10 @@
           <div class="name">开户支行</div>
           <input type="text" placeholder="请输入银行卡的开户支行" v-model="apiBank.bank_sub_branch">
         </li>
+        <li class="item">
+          <div class="name">收款备注</div>
+          <input type="text" placeholder="请输入收款备注" v-model="apiBank.pay_remarks">
+        </li>
       </ul>
 
       <ul v-if="entryType === 'alipay'">
@@ -34,6 +38,10 @@
           <div class="name">支付宝账号</div>
           <input type="text" placeholder="请输入支付宝账号" v-model="apiAlipay.alipay_account">
         </li>
+        <li class="item">
+          <div class="name">收款备注</div>
+          <input type="text" placeholder="请输入收款备注" v-model="apiWechat.pay_remarks">
+        </li>
       </ul>
 
       <ul v-if="entryType === 'wechat'">
@@ -44,6 +52,10 @@
         <li class="item">
           <div class="name">微信账号</div>
           <input type="text" placeholder="请输入微信账号" v-model="apiWechat.wechat_account">
+        </li>
+        <li class="item">
+          <div class="name">收款备注</div>
+          <input type="text" placeholder="请输入收款备注" v-model="apiWechat.pay_remarks">
         </li>
       </ul>
 
@@ -77,7 +89,7 @@
           <!-- <van-uploader class="xxx" :after-read="onRead">
             <van-icon name="photograph" />
           </van-uploader> -->
-          <div class="mask"><span>重新上传</span></div>
+          <!-- <div class="mask"><span>重新上传</span></div> -->
           <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
@@ -98,6 +110,7 @@
 
 <script>
 import axios from 'axios'
+import { post } from '@/assets/js/fetch'
 import DialogBox from 'common/dialog/Dialog'
 import CommonHeader from 'common/header/Header'
 export default {
@@ -123,7 +136,8 @@ export default {
         'bank_name': '', // 银行名字
         'bank_address': '', // 开户银行
         'bank_sub_branch': '', // 开户支行
-        'bank_no': '' // 银行卡号
+        'bank_no': '', // 银行卡号
+        'pay_remarks': ''
       },
       apiAlipay: {
         'app-name': '',
@@ -132,6 +146,7 @@ export default {
         'alipay_name': '',
         'alipay_account': '',
         'alipay_rq_code': '',
+        'pay_remarks': '',
         'third_user_id': ''
       },
       apiWechat: {
@@ -141,6 +156,7 @@ export default {
         'wechat_name': '',
         'wechat_account': '',
         'wechat_rq_code': '',
+        'pay_remarks': '',
         'third_user_id': ''
       },
       dialogBoxVal: false, // 显示对话框
@@ -170,7 +186,8 @@ export default {
         }
       }
       if (this.entryType === 'alipay') {
-        const pools = [this.apiAlipay.alipay_name, this.apiAlipay.alipay_account]
+        const inputBox = this.apiAlipay
+        const pools = [inputBox.alipay_name, inputBox.alipay_account, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -178,7 +195,8 @@ export default {
         }
       }
       if (this.entryType === 'wechat') {
-        const pools = [this.apiWechat.wechat_name, this.apiWechat.wechat_account]
+        const inputBox = this.apiWechat
+        const pools = [inputBox.wechat_name, inputBox.wechat_account, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -220,22 +238,27 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-      axios.post(url, param)
+      // axios.post(url, param)
+      //   .then(res => {
+      //     res = res.data
+      //     if (res.code === 10000) {
+      //     } else {
+      //       this.$toast(res.msg)
+      //     }
+
+      console.log(param)
+      post(url, param)
         .then(res => {
-          res = res.data
-          if (res.code === 10000) {
-            const imgurl = res.data.list.url
-            if (imgurl) {
-              if (entryType === 'wechat') {
-                this.apiWechat.wechat_rq_code = imgurl
-              } else {
-                this.apiAlipay.alipay_rq_code = imgurl
-              }
+          console.log(res)
+          const imgurl = res.data.list.url
+          if (imgurl) {
+            if (entryType === 'wechat') {
+              this.apiWechat.wechat_rq_code = imgurl
             } else {
-              this.$toast('上传路径消失~')
+              this.apiAlipay.alipay_rq_code = imgurl
             }
           } else {
-            this.$toast(res.msg)
+            this.$toast('上传路径消失~')
           }
         })
         .catch(e => {
@@ -253,7 +276,9 @@ export default {
       //   'merchant_code': '12345',
       //   'third_user_id': '1'
       // }
-      let data = this.postFormat
+      // let data = this.postFormat
+      const data = { token: localStorage.getItem('randomcode') }
+      console.log(data)
 
       let url = this.$api.user
       if (type === 'bank') {
@@ -263,30 +288,33 @@ export default {
       } else if (type === 'wechat') {
         url += '/api/Bindpay/getWeChatLists'
       }
-      axios.post(url, data)
+      // axios.post(url, data)
+      //   .then(res => {
+      //     res = res.data
+      //     if (res.code === 10000) {
+      //     } else {
+      //       this.$toast(res.msg)
+      //     }
+
+      post(url, data)
         .then(res => {
-          res = res.data
-          if (res.code === 10000) {
-            const _info = res.data.list
-            this.istrue = JSON.parse(sessionStorage.getItem('istrue'))
-            if (type === 'bank') {
-              this.apiBank.bank_name = _info.bank_name
-              this.apiBank.bank_address = _info.bank_address
-              this.apiBank.bank_sub_branch = _info.bank_sub_branch
-              this.apiBank.bank_no = _info.bank_no
-            } else if (type === 'alipay') {
-              this.apiAlipay.alipay_name = _info.alipay_name
-              this.apiAlipay.alipay_account = _info.alipay_account
-              this.apiAlipay.alipay_rq_code = _info.alipay_rq_code
-              this.qrcodeUrl = _info.alipay_rq_code
-            } else if (type === 'wechat') {
-              this.apiWechat.wechat_name = _info.wechat_name
-              this.apiWechat.wechat_account = _info.wechat_account
-              this.apiWechat.wechat_rq_code = _info.wechat_rq_code
-              this.qrcodeUrl = res.data.list.wechat_rq_code
-            }
-          } else {
-            this.$toast(res.msg)
+          const _info = res.data.list
+          this.istrue = JSON.parse(sessionStorage.getItem('istrue'))
+          if (type === 'bank') {
+            this.apiBank.bank_name = _info.bank_name
+            this.apiBank.bank_address = _info.bank_address
+            this.apiBank.bank_sub_branch = _info.bank_sub_branch
+            this.apiBank.bank_no = _info.bank_no
+          } else if (type === 'alipay') {
+            this.apiAlipay.alipay_name = _info.alipay_name
+            this.apiAlipay.alipay_account = _info.alipay_account
+            this.apiAlipay.alipay_rq_code = _info.alipay_rq_code
+            this.qrcodeUrl = _info.alipay_rq_code
+          } else if (type === 'wechat') {
+            this.apiWechat.wechat_name = _info.wechat_name
+            this.apiWechat.wechat_account = _info.wechat_account
+            this.apiWechat.wechat_rq_code = _info.wechat_rq_code
+            this.qrcodeUrl = res.data.list.wechat_rq_code
           }
         })
         .catch(e => {
@@ -294,6 +322,7 @@ export default {
           this.$toast('网络错误')
         })
     },
+
     // 确定绑定
     boundBank () {
       const type = this.entryType
@@ -344,9 +373,9 @@ export default {
       if (entryType === 'bank') {
         data = this.apiBank
         data['app-name'] = this.postFormat['app-name']
-        data.merchant_code = this.postFormat.merchant_code
-        data.merchant_type = this.postFormat.merchant_type
-        data.third_user_id = this.postFormat.third_user_id
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/bankInfoUpdate'
@@ -354,9 +383,9 @@ export default {
       } else if (entryType === 'wechat') {
         data = this.apiWechat
         data['app-name'] = this.postFormat['app-name']
-        data.merchant_code = this.postFormat.merchant_code
-        data.merchant_type = this.postFormat.merchant_type
-        data.third_user_id = this.postFormat.third_user_id
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateWeChatInfo'
@@ -364,9 +393,9 @@ export default {
       } else if (entryType === 'alipay') {
         data = this.apiAlipay
         data['app-name'] = this.postFormat['app-name']
-        data.merchant_code = this.postFormat.merchant_code
-        data.merchant_type = this.postFormat.merchant_type
-        data.third_user_id = this.postFormat.third_user_id
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateAlipayInfo'
@@ -374,19 +403,24 @@ export default {
       } else {
         data = {}
       }
-      axios.post(url, data)
+
+      // axios.post(url, data)
+      //   .then(res => {
+      //       res = res.data
+      //     if (res.code === 10000) {
+      //       } else {
+      //           this.$toast(res.msg)
+      //     }
+      data.token = localStorage.getItem('randomcode')
+      post(url, data)
         .then(res => {
-          res = res.data
-          if (res.code === 10000) {
-            sessionStorage.setItem('istrue', JSON.stringify(this.istrue))
-            this.$toast('保存成功', 1500)
-            this.getUserMsg()
-          } else {
-            this.$toast(res.msg)
-          }
+          sessionStorage.setItem('istrue', JSON.stringify(this.istrue))
+          this.$toast('保存成功', 1500)
+          this.getUserMsg()
         })
         .catch(e => {
-          this.$toast('网络错误')
+          console.log(e)
+          this.$toast('网络错误5')
         })
     },
 
@@ -426,7 +460,7 @@ export default {
   box-sizing: border-box;
   background-color: #F5F5F5;
   .hint {
-    margin-top: 68px;
+    margin-top: 58px;
     margin-left: 43px;
     font-size: 48px;
     color: #333333;
@@ -447,7 +481,7 @@ export default {
     padding: 0 76px;
     color: #6D778B;
     .item {
-      margin-top: 53px;
+      margin-top: 50px;
       .name {
         color: #333333;
         font-size: 28px;
@@ -536,7 +570,7 @@ export default {
 
   footer {
     position: relative;
-    margin-top: 106px;
+    margin-top: 56px;
     .buttons {
       position: absolute;
       left: 50%;

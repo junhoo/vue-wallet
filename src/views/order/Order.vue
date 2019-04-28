@@ -1,17 +1,19 @@
 <template>
   <div>
     <common-header :title="navTitle"></common-header>
-    <van-tabs v-model="active" swipeable :line-width="'50%'">
-      <van-tab
-              v-for="(item, index) in titleList"
-              :title="item"
-              :key='index'>
-        <div
-          class="item">
-          内容 {{ index }}
-        </div>
-      </van-tab>
-    </van-tabs>
+    <div class="fff">
+      <van-tabs v-model="active" swipeable :line-width="'300px'">
+        <van-tab
+                v-for="(item, index) in titleList"
+                :title="item"
+                :key='index'>
+          <div
+            class="item">
+            内容 {{ index }}
+          </div>
+        </van-tab>
+      </van-tabs>
+    </div>
   </div>
 </template>
 
@@ -34,19 +36,31 @@ export default {
 
 <style lang="less" scoped>
 
-// .van-tabs--line .van-tabs__wrap {
-//   height: 180px;
-// }
-// .van-tabs--line {
-//   .van-tabs__wrap {
-//     height: 180px;
-//   }
-// }
-.van-tabs__nav--line {
-  height: 180px;
-}
-
 .item {
   height: 100px;
+}
+</style>
+
+<style>
+/* .van-tabs--line {
+  padding-top: 88px;
+}
+
+.van-tabs--line .van-tabs__wrap {
+  height: 88px;
+}
+
+.van-ellipsis {
+  height: 88px;
+  line-height: 88px;
+  color: #000000;
+  font-size: 30px;
+  font-weight:bold;
+} */
+.van-tabs__line {
+  height: 8px;
+  background:#4264FB;
+  border-radius: 4px;
+  width: 50%;
 }
 </style>

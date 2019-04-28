@@ -69,7 +69,7 @@
   </div>
 </template>
 <script>
-// import axios from 'axios'
+import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
@@ -85,18 +85,38 @@ export default {
   },
   data () {
     return {
-      payway: '1',
-      iswx: true,
-      isAlipay: true,
-      isbank: true,
-      showQrcode: false,
-      orderType: 7,
-      imgUrl: '~imgurl/copy-icon.png'
+      payway: '1', // 1.支付宝 2.微信 3.银行卡
+      orderType: 7, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
+      imgUrl: '~imgurl/copy-icon.png', // 付款二维码
+      orderDetailData: {}, // 订单详情信息
+      order_no: '' // 订单编号
     }
   },
-  created () {},
+  created () {
+    this.order_no = this.$route.query.order_no
+    this.getOrderDel()
+  },
   methods: {
     callback () {},
+    // 获取订单信息
+    getOrderDel () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        complain_no: this.complain_no
+      }
+      let url = this.$api.order + '/api/order/drawDetail'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          this.orderDetailData = res.data.list
+          this.payway = this.orderDetailData.pay_type
+          this.orderType = this.orderDetailData.status
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
     // 复制
     copy () {
       var clipboard = new Clipboard('.tag-copy')

@@ -7,158 +7,215 @@
         <div class="step">
           <div class="stepItem">
             <img class="stepImg" src="~imgurl/icon_sta0_1.png" alt="">
-            <span class="stepTxt">等待平台客服处理  2019-04-21 12:45</span>
+            <span class="stepTxt">等待平台客服处理  {{appealData.add_time | formatDate}}</span>
           </div>
           <div class="line" :class="{'line_blue':appealStatus != 1}"></div>
           <div class="stepItem">
-            <img class="stepImg" :src="~imgurl/icon_sta1_2.png" alt="">
+            <img v-if="appealStatus!=1" class="stepImg" src="~imgurl/icon_sta0_2.png" alt="">
+            <img v-else class="stepImg" src="~imgurl/icon_sta1_2.png" alt="">
             <span class="stepTxt">处理中</span>
+            <p v-if="appealStatus!=1" class="stepTip">客服专员{{appealData.customer_id}}正在核实信息</p>
           </div>
-          <div class="line"></div>
+          <div class="line" :class="{'line_blue':appealStatus == 3}"></div>
           <div class="stepItem">
-            <img class="stepImg" src="~imgurl/icon_sta1_3.png" alt="">
+            <img v-if="appealStatus==3" class="stepImg" src="~imgurl/icon_sta0_3.png" alt="">
+            <img v-else class="stepImg" src="~imgurl/icon_sta1_3.png" alt="">
             <span class="stepTxt">已完成</span>
+            <p v-if="appealStatus==3 && orderType ==1" class="stepTip">已联系卖方确认收款</p>
+            <p v-else-if="appealStatus==3 && orderType ==2" class="stepTip">已通知买方处理</p>
           </div>
         </div>
       </section>
-     
       <!-- 申诉内容 -->
       <section>
         <div class="appealContent">
           <h3 class="m_title">申诉内容</h3>
-          <span class="m_text">买方长时间未确认收款</span>
+          <span class="m_text">{{appealData.content}}</span>
         </div>
-        <div class="upload">
+        <div class="upload" v-if="orderType == 1">
           <img class="upload_img" src="~imgurl/bound_real.png" alt="" @click="showImgSelec()">
         </div>
-       </section>
+      </section>
        <!-- 图片预览弹框 -->
-       <van-dialog v-model="show" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
-        <img src="~imgurl/dialog_bg.png" class="previewImg">
-       </van-dialog>
+      <van-dialog v-model="show" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
+       <img :src="appealData.pay_prove_pic" class="previewImg">
+      </van-dialog>
        <!-- 订单信息 -->
-       <section>
-         <ul>
-           <li>
-             <span class="m_left" :class="{'orange':orderType == 7, 'blue':orderType == 3}">{{orderType|orderStatus}}</span>
-              <template>
-                <i v-if="orderType == 3" class="m_right">等待对方确认收款</i>
-                <i v-if="orderType == 7" class="m_right">请您确认已收到付款</i>
-              </template>
-           </li>
-           <li>
-             <span v-if="orderType == 3" class="m_left">付款金额</span>
-             <span v-if="orderType == 7" class="m_left">收款金额</span>
-             <i class="m_right">1000.00CNY</i>
-           </li>
-           <li>
-             <span v-if="orderType == 3" class="m_left">充值积分</span>
-             <span v-if="orderType == 7" class="m_left">卖出数量</span>
-             <i class="m_right">1000</i>
-           </li>
-           <li>
-             <span v-if="orderType == 3" class="m_left">下单时间</span>
-             <span v-if="orderType == 7" class="m_left">接单时间</span>
-             <i class="m_right">2019-04-15 11:56</i>
-           </li>
-           <li>
-             <span class="m_left">订单编号</span>
-             <div class="m_right">
-               <i class="right_text">20190415002006005</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
-             </div>
-           </li>
-         </ul>
-       </section>
+      <section>
+        <ul>
+          <li>
+            <span class="m_left" :class="{'orange':orderType == 2, 'blue':orderType == 1}">{{orderType|orderStatus}}</span>
+             <template>
+               <i v-if="orderType == 1" class="m_right">等待对方确认收款</i>
+               <i v-if="orderType == 2" class="m_right">请您确认已收到付款</i>
+             </template>
+          </li>
+          <li>
+            <span v-if="orderType == 1" class="m_left">付款金额</span>
+            <span v-if="orderType == 2" class="m_left">收款金额</span>
+            <i class="m_right">{{appealData.amount}}CNY</i>
+          </li>
+          <li>
+            <span v-if="orderType == 1" class="m_left">充值积分</span>
+            <span v-if="orderType == 2" class="m_left">卖出数量</span>
+            <i class="m_right">{{appealData.order_amount}}</i>
+          </li>
+          <li>
+            <span v-if="orderType == 1" class="m_left">下单时间</span>
+            <span v-if="orderType == 2" class="m_left">接单时间</span>
+            <i class="m_right">{{appealData.order_time}}</i>
+          </li>
+          <li>
+            <span class="m_left">订单编号</span>
+            <div class="m_right">
+              <i class="right_text">{{appealData.order_no}}</i>
+              <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="appealData.order_no" @click="copy()">
+            </div>
+          </li>
+        </ul>
+      </section>
        <!-- 支付信息 -->
         <section>
-         <ul class="wrapper" v-if="orderType == 3">
+         <ul class="wrapper" v-if="orderType == 1">
            <li class="li-item">
-             <span class="m_left">{{payway|payTypeText}}支付</span>
+             <span class="m_left">{{payType|payTypeText}}支付</span>
            </li>
            <li>
              <span class="m_left">收款人</span>
              <div class="m_right">
-               <i class="right_text">Jeney</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
+               <i class="right_text">{{payee}}</i>
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payee" @click="copy()">
              </div>
            </li>
            <!-- 支付宝、微信支付 -->
-           <div class="wxAli" v-if="payway != 3">
+           <div class="wxAli">
+           <!-- <div class="wxAli" v-if="payType != 3"> -->
              <li>
-                <span class="m_left">{{payway|payTypeText}}账号</span>
+                <span class="m_left">{{payType|payTypeText}}账号</span>
                 <div class="m_right">
-                  <i class="right_text">Jeney1625</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
+                  <i class="right_text">{{accountNumber}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="accountNumber" @click="copy()">
                 </div>
               </li>
            </div>
            <!--银行卡支付  -->
-           <div class="band" v-else>
+           <div class="band">
+           <!-- <div class="band" v-else> -->
              <li>
                 <span class="m_left">银行名称</span>
                 <div class="m_right">
-                  <i class="right_text">中国银行</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
+                  <i class="right_text">{{payInfo.address}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.address" @click="copy()">
                 </div>
               </li>
               <li>
                 <span class="m_left">支行名称</span>
                 <div class="m_right">
-                  <i class="right_text">梅陇支行</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="梅陇支行" @click="copy()">
+                  <i class="right_text">{{payInfo.bank_sub_branch}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_sub_branch" @click="copy()">
                 </div>
               </li>
               <li>
                 <span class="m_left">银行卡号</span>
                 <div class="m_right">
-                  <i class="right_text">20190415002006005</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
+                  <i class="right_text">{{payInfo.bank_no}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_no" @click="copy()">
                 </div>
               </li>
            </div>
-
-           <li>
+           <!-- <li>
              <span class="m_left">付款时备注</span>
              <div class="m_right">
                <i class="right_text">8898</i>
                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
              </div>
-           </li>
+           </li> -->
          </ul>
        </section>
     </div>
+    <div class="cancel"><span @click="deleteA()">删除</span></div>
   </div>
 </template>
 <script>
 // import axios from 'axios'
+import moment from 'moment'
 import CommonHeader from 'common/header/Header'
-import CommonFooter from 'common/header/Footer'
+import { post } from '@/assets/js/fetch'
 import DialogBox from 'common/dialog/Dialog'
 import Clipboard from 'clipboard'
 export default {
   name: 'AppealDetail',
   components: {
     DialogBox,
-    CommonHeader,
-    CommonFooter
+    CommonHeader
   },
   data () {
     return {
       show: false,
       active: 2,
-      payway: 3,
-      orderType: 3,
-      appealStatus: 2
+      payType: 3, // 1.支付宝 2.微信 3.银行卡
+      orderType: 1, // 订单类型： 1.充值 2.提现
+      appealStatus: 2, // 操作状态： 1.未处理 2.处理中
+      complain_no: '',
+      appealData: {},
+      payInfo: {},
+      payee: '', // 收款人
+      accountNumber: '' // 账号 微信or支付宝
     }
   },
-  created () {},
+  created () {
+    this.complain_no = this.$route.query.complain_no
+    this.getAppealDel()
+  },
   methods: {
-    // 切换申诉进度样式
-    stepStyle () {
-      if (appealStatus == 2) {
-        
+    // 获取申诉详情
+    getAppealDel () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        complain_no: this.complain_no
       }
+      let url = this.$api.order + '/api/Complain/complainLogInfo'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          this.appealData = res.data.list
+          this.appealStatus = this.appealData.status
+          this.orderType = this.appealData.order_type
+          this.payType = this.appealData.pay_type
+          this.payInfo = this.appealData.pay_info
+          if (this.payType === 1) {
+            this.payee = this.payInfo.alipay_name
+            this.accountNumber = this.payInfo.alipay_account
+          } else if (this.payType === 2) {
+            this.payee = this.payInfo.wechat_name
+            this.accountNumber = this.payInfo.wechat_account
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+    // 撤销申诉
+    deleteA () {
+      this.getAppealDel()
+      if (this.appealStatus === 2) {
+        this.$toast('该申诉单已在处理中')
+        return false
+      }
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        complain_no: this.complain_no
+      }
+      let url = this.$api.order + '/api/Complain/delComplainLog'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
     },
     // 点击图片弹框
     showImgSelec () {
@@ -177,6 +234,9 @@ export default {
     }
   },
   filters: {
+    formatDate: function (value) {
+      return moment(value).format('YYYY-MM-DD hh:mm')
+    },
     payTypeText: function (value) {
       // value = value.toString()
       if (value === 1) {
@@ -190,9 +250,9 @@ export default {
     },
     orderStatus: function (value) {
       value = value.toString()
-      if (value === '7') {
+      if (value === '2') {
         value = '待确认'
-      } else if (value === '3') {
+      } else if (value === '1') {
         value = '未到账'
       }
       return value
@@ -266,6 +326,11 @@ export default {
         .stepTxt{
           font-size: 26px;
           color: #000
+        }
+        .stepTip{
+          font-size: 26px;
+          color: #969696;
+          padding-left: 85px;
         }
       }
       .line{
@@ -378,6 +443,27 @@ export default {
     span{
       display: inline-block;
       margin-bottom: 20px
+    }
+  }
+  .cancel{
+    position: fixed;
+    bottom: 0;
+    background-color: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 45px 65px 69px;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 100;
+    span{
+      display: inline-block;
+      font-size: 30px;
+      color: #F5F5F5;
+      border-radius: 49px;
+      background-color: #FF5050;
+      width: 100%;
+      height: 97px;
+      line-height: 97px;
+      text-align: center
     }
   }
 }
