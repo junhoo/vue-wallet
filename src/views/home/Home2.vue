@@ -49,6 +49,10 @@
                   :type='detailType'
                   v-on:onChildPopup='onChildPopup'>
     </order-popup>
+
+    <van-popup v-model="showHint" position="top" :overlay="false">
+      <div class="popup-hint">请填写需要充值的数量</div>
+    </van-popup>
   </div>
 </template>
 
@@ -79,10 +83,12 @@ export default {
   },
   data () {
     return {
+      timerHint: 0,
       detailType: '充值', // 充值 提现 未到账
       boundType: '',
       hasDetail: false,
       showPopup: false,
+      showHint: false,
       showMatching: false,
       popupName: '匹配成功', // 去绑定 匹配成功 确认收款 自动收款
       postFormat: {},
@@ -91,13 +97,14 @@ export default {
   },
   methods: {
     autoLogin () {
+      // const hasLogin = localStorage.getItem('randomcode')
+      // if (hasLogin !== '' && hasLogin !== null) { return }
       let data = this.postFormat
       const url = this.$api.user + '/api/login/auto_login'
 
       post(url, data)
         .then(res => {
           console.log('1.0登录')
-          console.log(res)
           const _obj = res.data.list
           if (typeof _obj === 'string') {
             this.getUserMsg()
@@ -121,11 +128,7 @@ export default {
       post(url, data)
         .then(res => {
           console.log('2.0用户信息')
-          console.log(res)
           const userInfo = res.data.list
-          // userInfo.pay_info.ali_pay = true
-          // userInfo.pay_info.wechat_pay = true
-          // userInfo.pay_info.bank_pay = true
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
           // this.getHomeInfo()
@@ -138,6 +141,16 @@ export default {
 
     clickPopup () {
       this.showPopup = true
+    },
+
+    showTopHint () {
+      this.showHint = true
+      if (this.timerHint) {
+        clearTimeout(this.timerHint)
+      }
+      this.timerHint = setTimeout(() => {
+        this.showHint = false
+      }, 1500)
     },
 
     onChildSubmit (type) {
@@ -356,5 +369,16 @@ main {
       }
     }
   }
+}
+
+.popup-hint {
+  width: 750px;
+  height: 179px;
+  line-height: 179px;
+  font-size: 28px;
+  text-align: center;
+  color: #ffffff;
+  border: 1px solid rgba(6, 32, 78, 1);
+  background: rgba(6, 32, 78, 1);
 }
 </style>

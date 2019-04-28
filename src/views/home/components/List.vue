@@ -262,7 +262,7 @@ export default {
         .icon {
           width: 100%;
           height: 148px;
-          background: url('~imgurl/no_data.png') no-repeat center;
+          background: url('~imgurl/no_order.png') no-repeat center;
           background-size: 80px 100px;
         }
         .text {
