@@ -41,14 +41,14 @@ export default {
   },
   methods: {
     callback () {},
-    appeal () {
-      this.$router.push({
-        path: '/appeal',
-        query: {
-          orderType: this.showfooter
-        }
-      })
-    }
+    // appeal () {
+    //   this.$router.push({
+    //     path: '/appeal',
+    //     query: {
+    //       orderType: this.showfooter
+    //     }
+    //   })
+    // }
   },
   filters: {
     textW: function (value) {

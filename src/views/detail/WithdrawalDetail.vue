@@ -160,7 +160,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 194px 30px 350px;
+    padding: 64px 30px 350px;
     ul{
       width: 100%;
       margin-bottom: 24px;
