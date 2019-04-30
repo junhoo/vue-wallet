@@ -1,32 +1,42 @@
 <template>
-<div v-if="showfooter == 2">
-   <div class="footer clearfix">
-    <p>{{tip1}}</p>
-    <p class="borbtn">{{tip2}}</p>
+<div>
+  <div v-if="showfooter == 2">
+     <div class="footer clearfix">
+      <p @click="submit()">确认付款</p>
+      <p @click="cancelOrder(0)" class="borbtn">取消订单</p>
+    </div>
   </div>
-</div>
-<div v-else-if="showfooter == 3">
-  <div class="foote clearfix">
-    <!-- <p>发起申诉<count-down v-show="showfooter == 2" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down></p> -->
-    <p class="borbtn">发起申诉</p>
+  <div v-else-if="showfooter == 3">
+    <div class="foote clearfix">
+      <p @click="appeal()" v-show="endCountdown">发起申诉 <count-down v-show="showfooter == 3" endTime="1556594720000" :callback="callback(0)" endText="" timeType='symbol'></count-down></p>
+      <p class="borbtn" v-show="endCountdown">发起申诉</p>
+    </div>
   </div>
-</div>
-<div v-else-if="showfooter == 7">
-  <div class="foo clearfix">
-    <p>确认收款</p>
-    <p class="appbtn">发起申诉<count-down v-show="showfooter == 7" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down></p>
+  <div v-else-if="showfooter == 7">
+    <div class="foo clearfix">
+      <p>确认收款</p>
+      <p class="appbtn">发起申诉<count-down v-show="showfooter == 7" endTime="1556560239" :callback="callback(0)" endText="" timeType='zh'></count-down></p>
+    </div>
   </div>
-</div>
-<div v-else>
-  <div class="foot clearfix">
-    <p v-if="okTxt">{{okTxt}}</p>
-    <p v-else>{{showfooter|textW}}</p>
-    <span>联系客服</span>
+  <div v-else>
+    <div class="foot clearfix">
+      <p v-if="okTxt">{{okTxt}}</p>
+      <p v-else>{{showfooter|textW}}</p>
+      <span>联系客服</span>
+    </div>
   </div>
+<!-- 弹出框 -->
+<van-popup v-model="show" position="bottom" :overlay="false">
+  <h3 class="title_tip">提示</h3>
+  <span class="txt_tip">每天手动或超时取消订单超过3次，将被禁止交易24小时</span>
+  <p class="actBtn submit" @click="cancelOrder(1)">取消订单</p>
+  <p class="actBtn cancel" @click="cancelOrder(0)">继续交易</p>
+</van-popup>
 </div>
 </template>
 
 <script>
+import { post } from '@/assets/js/fetch'
 import CountDown from 'common/time/CountDown'
 export default {
   name: 'Footer',
@@ -34,21 +44,69 @@ export default {
     CountDown
   },
   props: {
-    tip1: String,
-    tip2: String,
     okTxt: String,
-    showfooter: Number
+    showfooter: Number,
+    pay_type: Number,
+    order_no: Number
+  },
+  data () {
+    return {
+      show: false,
+      endCountdown: false
+    }
   },
   methods: {
-    callback () {},
-    // appeal () {
-    //   this.$router.push({
-    //     path: '/appeal',
-    //     query: {
-    //       orderType: this.showfooter
-    //     }
-    //   })
-    // }
+    callback () {
+      this.endCountdown = true
+      console.log(this.endCountdown)
+      alert(1111)
+    },
+    // 取消订单
+    cancelOrder (index) {
+      if (index === 0) {
+        this.show = !this.show
+        return false
+      }
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        order_no: this.order_no
+      }
+      let url = this.$api.order + '/api/order/cancelRechangeOrder'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+    // 确认付款
+    submit () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        order_no: this.order_no,
+        pay_type: this.pay_type
+      }
+      let url = this.$api.order + '/api/order/cancelRechangeOrder'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          this.$()
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+    appeal () {
+      this.$router.push({
+        path: '/appeal',
+        query: {
+          order_no: this.order_no
+        }
+      })
+    }
   },
   filters: {
     textW: function (value) {
@@ -166,6 +224,40 @@ export default {
     background-color: transparent;
     border: 3px solid #B5B5B5;
     color: #BDBDBD
+  }
+}
+.van-popup--bottom{
+  height: auto;
+  border-radius: 20px 20px 0 0;
+  padding: 45px 65px 75px;
+  text-align: center;
+  box-sizing: border-box;
+  .actBtn{
+    width: 100%;
+    border-radius: 49px;
+    height: 97px;
+    line-height: 97px;
+    font-size: 30px;
+  }
+  .submit{
+    color: #F5F5F5;
+    background-color: #4264FB;
+    margin-bottom: 25px
+  }
+  .cancel{
+    color: #2A2A2A;
+    background: url('~imgurl/bg-border.png') center / 100% no-repeat
+  }
+  .title_tip{
+    font-size: 38px;
+    color: #0F0F0F;
+    margin-bottom: 33px
+  }
+  .txt_tip{
+    display: inline-block;
+    font-size: 28px;
+    color: #7D7D7D;
+    margin-bottom: 68px
   }
 }
 </style>

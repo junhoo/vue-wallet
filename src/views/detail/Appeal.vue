@@ -1,17 +1,18 @@
 <template>
+<div>
+  <common-header title="发起申诉"></common-header>
   <div class="appeal">
-    <common-header title="发起申诉"></common-header>
     <div class="rechargeMain">
       <!-- 申诉内容 -->
       <section>
         <div class="appealContent">
           <h3 class="m_title">申诉内容</h3>
-          <textarea class="textarea" name="" id="" cols="30" rows="5" placeholder="申诉内容"></textarea>
+          <textarea class="textarea" v-model="appealTxt" cols="30" rows="5" placeholder="申诉内容"></textarea>
         </div>
         <div class="upload" :class="{'isload':isload}">
           <div v-show="!isload">
             <span class="upload_tip">上传支付凭证</span>
-            <input class="upload-file" type="file" @change="uploadFile($event)">
+            <input class="upload-file" type="file" accept="image/png, image/jpeg, image/jpg" @change="uploadFile($event)">
           </div>
           <img v-show="isload" class="upload_img" src="~imgurl/bound_real.png" alt="" @click="showImgSelec(0)">
         </div>
@@ -117,11 +118,13 @@
          </ul>
        </section>
     </div>
-    <common-footer :showfooter="orderType"></common-footer>
+  </div>
+  <div class="launchAppeal"><span @click="launchAppeal()">发起申诉</span></div>
   </div>
 </template>
 <script>
 // import axios from 'axios'
+import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
@@ -133,10 +136,14 @@ export default {
     CommonHeader,
     CommonFooter
   },
+  props: {
+    order_no: Number
+  },
   data () {
     return {
       show: false,
       show2: false,
+      appealTxt: '',
       isload: 1,
       payway: 3,
       orderType: 3
@@ -144,6 +151,45 @@ export default {
   },
   created () {},
   methods: {
+    // event上传图片
+    tirggerFile (event, i) {
+      let file = event.target.files[0]
+      let param = new FormData()
+      param.append('file', file, file.name)
+      param.append('type', '1')
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        order_no: this.order_no,
+        file: param
+      }
+      let url = this.$api.order + '/api/Complain/applyComplain'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
+    // 发起申诉
+    launchAppeal () {
+      var data = {
+        token: localStorage.getItem('randomcode'),
+        order_no: this.order_no,
+        pay_prove_pic: 1,
+        content: this.appealTxt
+      }
+      let url = this.$api.order + '/api/Complain/applyComplain'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
     // 点击图片弹框
     showImgSelec (i) {
       if (i === 0) {
@@ -236,6 +282,7 @@ export default {
 }
 .appeal{
   position: fixed;
+  top: 88px;
   background-color: #F5F8FA;
   width: 100%;
   height: 100%;
@@ -294,7 +341,7 @@ export default {
     height: 367px;
   }
   .rechargeMain{
-    padding: 118px 30px 250px;
+    padding: 36px 30px 300px;
     ul{
       width: 100%;
       margin-bottom: 24px;
@@ -395,6 +442,26 @@ export default {
       display: inline-block;
       margin-bottom: 20px
     }
+  }
+}
+.launchAppeal{
+  background-color: #fff;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 71px 66px 43px;
+  border-radius: 20px 20px 0 0;
+  box-sizing: border-box;
+  span{
+    text-align: center;
+    font-size: 28px;
+    color: #F5F5F5;
+    background-color: #4264FB;
+    border-radius: 49px;
+    height: 97px;
+    line-height: 97px;
+    width: 100%;
+    display: inline-block
   }
 }
 </style>

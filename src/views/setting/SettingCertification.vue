@@ -13,13 +13,15 @@
           <div class="name">证件类型</div>
           <input readonly type="text" :value="pap">
           <div class="btn" @click="selectcard()"><i ></i></div>
-          <template v-if="chenckcard">
+          <template v-zif="chenckcard">
               <ul>
                 <li @click="selecitem(1)" :class="{'liActive':liActive==1}">身份证</li>
                 <li @click="selecitem(2)" :class="{'liActive':liActive==2}">护照</li>
                 <li @click="selecitem(3)" :class="{'liActive':liActive==3}">港澳通行证</li>
               </ul>
           </template>
+          <!-- <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
+          </van-popup> -->
         </div>
         <div class="item">
           <div class="name">真实姓名</div>
@@ -125,6 +127,7 @@ export default {
       navTitle: '',
       pap: '身份证',
       chenckcard: 0,
+      show: false,
       status: 0,
       liActive: 1,
       username: '',
@@ -160,14 +163,7 @@ export default {
   methods: {
     // 获取用户实名认证信息
     getUserInfo () {
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'third_user_id': '1'
-      // }
       let data = this.postFormat
-
       let url = this.$api.user
       axios.post(url + '/api/Authentication/getAuthenticationLists', data)
         .then(res => {
@@ -197,6 +193,7 @@ export default {
     // 选择证件类型
     selectcard () {
       this.chenckcard = !this.chenckcard
+      this.show = !this.show
     },
     selecitem (idx) {
       this.liActive = idx

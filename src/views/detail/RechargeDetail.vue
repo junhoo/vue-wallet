@@ -1,6 +1,7 @@
 <template>
+<div>
+  <common-header title="订单详情"></common-header>
   <div class="recharge">
-    <common-header title="订单详情"></common-header>
     <div class="rechargeMain">
        <!-- 订单信息 -->
        <section>
@@ -50,7 +51,7 @@
            <li>
              <span class="m_left">收款人</span>
              <div class="m_right">
-               <i class="right_text">Jeney</i>
+               <i class="right_text">jeney</i>
                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
              </div>
            </li>
@@ -59,16 +60,16 @@
              <li>
                 <span class="m_left">{{payway|payTypeText}}账号</span>
                 <div class="m_right">
-                  <i class="right_text">Jeney1625</i>
+                  <i class="right_text">{{pay_info.alipay.alipay_name}}</i>
                   <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
                 </div>
               </li>
               <li class="qrcode">
                 <span class="m_left">收款二维码</span>
                 <div class="m_right">
-                  <img class="QR" src="~imgurl/upload.png" alt=""><br>
-                  <a :href="imgUrl" download="">保存二维码
-                    <img :src="imgUrl" alt="">
+                  <img v-show="payway == 1" class="QR" :src="pay_url" alt=""><br>
+                  <a :href="pay_url" download="">保存二维码
+                    <img :src="pay_url" alt="">
                   </a>
                 </div>
               </li>
@@ -78,33 +79,33 @@
              <li>
                 <span class="m_left">银行名称</span>
                 <div class="m_right">
-                  <i class="right_text">中国银行</i>
+                  <i class="right_text">{{pay_info.bank.bank_name}}</i>
                   <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
                 </div>
               </li>
               <li>
                 <span class="m_left">支行名称</span>
                 <div class="m_right">
-                  <i class="right_text">梅陇支行</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="梅陇支行" @click="copy()">
+                  <i class="right_text">{{pay_info.bank.bank_sub_branch}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="pay_info.bank.bank_sub_branch" @click="copy()">
                 </div>
               </li>
               <li>
                 <span class="m_left">银行卡号</span>
                 <div class="m_right">
-                  <i class="right_text">20190415002006005</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
+                  <i class="right_text">{{pay_info.bank.bank_no}}</i>
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="pay_info.bank.bank_no" @click="copy()">
                 </div>
               </li>
            </div>
 
-           <li>
+           <!-- <li>
              <span class="m_left">付款时备注</span>
              <div class="m_right">
                <i class="right_text">8898</i>
                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
              </div>
-           </li>
+           </li> -->
          </ul>
        </section>
        <!-- 选择支付方式弹框 -->
@@ -171,8 +172,9 @@
         </div>
       </section>
     </div>
-    <common-footer tip1="确认付款" tip2="取消订单" :showfooter="orderType"></common-footer>
+    <common-footer :showfooter="orderType" :order_no="order_no" :pay_type="payway"></common-footer>
   </div>
+</div>
 </template>
 <script>
 import { post } from '@/assets/js/fetch'
@@ -192,21 +194,46 @@ export default {
   data () {
     return {
       show: false,
-      payway: '1', // 1.支付宝 2.微信 3.银行卡
+      payway: 1, // 1.支付宝 2.微信 3.银行卡
       paykind: {
-        iswx: true,
-        isAlipay: true,
-        isbank: true
+        iswx: false,
+        isAlipay: false,
+        isbank: false
       },
       orderType: 3, // 订单状态 2.代付款 3.未到账 4.已取消(手动) 5.已完成 8.已取消(自动)
-      imgUrl: '~imgurl/copy-icon.png', // 付款二维码
-      orderDetailData: {}, // 订单详情信息
-      order_no: '' // 订单编号
+      orderDetailData: {
+        order_amount: 1234,
+        time_str: '2019-01-02 12:12',
+        order_no: 44445661544848466
+      }, // 订单详情信息
+      order_no: '', // 订单编号
+      pay_name: 'jeney', // 支付账户名
+      pay_account: '14154sadf', // 支付账号
+      pay_url: 'https://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9B%BE%E7%89%87&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=425432418,2716090605&os=63728564,3173438044&simid=0,0&pn=0&rn=1&di=53790&ln=1053&fr=&fmq=1556511318965_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&hs=2&objurl=http%3A%2F%2Fimg.atobo.com%2FProductImg%2FEWM%2FUWeb%2F2%2F4%2F9%2F0%2F3225%2F24903225%2F1.gif&rpstart=0&rpnum=0&adpicid=0&force=undefined', // 支付二维码
+      pay_info: {
+        alipay: {
+          alipay_name: 'jeney',
+          alipay_account: '2222222223',
+          pay_url: 'https://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9B%BE%E7%89%87&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=425432418,2716090605&os=63728564,3173438044&simid=0,0&pn=0&rn=1&di=53790&ln=1053&fr=&fmq=1556511318965_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&hs=2&objurl=http%3A%2F%2Fimg.atobo.com%2FProductImg%2FEWM%2FUWeb%2F2%2F4%2F9%2F0%2F3225%2F24903225%2F1.gif&rpstart=0&rpnum=0&adpicid=0&force=undefined'
+        },
+        wx: {
+          wechat_name: 'jeney',
+          wechat_account: '2222222223',
+          pay_url: 'https://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E4%BA%8C%E7%BB%B4%E7%A0%81%E5%9B%BE%E7%89%87&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=425432418,2716090605&os=63728564,3173438044&simid=0,0&pn=0&rn=1&di=53790&ln=1053&fr=&fmq=1556511318965_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&hs=2&objurl=http%3A%2F%2Fimg.atobo.com%2FProductImg%2FEWM%2FUWeb%2F2%2F4%2F9%2F0%2F3225%2F24903225%2F1.gif&rpstart=0&rpnum=0&adpicid=0&force=undefined'
+        },
+        bank: {
+          bank_name: '中国银行',
+          bank_address: '招商银行',
+          bank_sub_branch: '深圳分行泰然支行',
+          bank_no: 5201234523895424
+        }
+      } // 支持付款方式
     }
   },
   created () {
     this.order_no = this.$route.query.order_no
-    this.getOrderDel()
+    // this.getOrderDel()
+    this.payTypeMsg()
   },
   methods: {
     callback () {},
@@ -223,11 +250,35 @@ export default {
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
+          this.pay_info = res.data.pay_info
+          this.payTypeMsg()
         })
         .catch(e => {
           console.log(e)
           this.$toast('网络错误4')
         })
+    },
+    // 确定支付信息
+    payTypeMsg () {
+      if (this.payway === 1) {
+        this.pay_url = this.pay_info.alipay.pay_url
+      } else if (this.payway === 2) {
+        this.pay_url = this.pay_info.wx.pay_url
+      }
+      if (this.pay_info.alipay) {
+        this.paykind.isAlipay = true
+        this.pay_name = this.pay_info.alipay.alipay_name
+        this.pay_account = this.pay_info.alipay.alipay_account
+      }
+      if (this.pay_info.wx) {
+        this.paykind.iswx = true
+        this.pay_name = this.pay_info.wx.wechat_name
+        this.pay_account = this.pay_info.wx.wechat_account
+      }
+      if (this.pay_info.bank) {
+        this.paykind.isbank = true
+        this.pay_name = this.pay_info.bank.bank_name
+      }
     },
     // 切换支付方式
     payChange (name) {
@@ -262,10 +313,10 @@ export default {
   },
   filters: {
     payTypeText: function (value) {
-      // value = value.toString()
-      if (value === 1) {
+      value = value.toString()
+      if (value === '1') {
         value = '支付宝'
-      } else if (value === 2) {
+      } else if (value === '2') {
         value = '微信'
       } else {
         value = '银行卡'
@@ -327,12 +378,13 @@ export default {
 }
 .recharge{
   position: fixed;
+  top: 88px;
   background-color: #F5F8FA;
   width: 100%;
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 118px 30px 350px;
+    padding: 36px 30px 350px;
     ul{
       width: 100%;
       margin-bottom: 24px;
@@ -411,6 +463,7 @@ export default {
           transform: translateX(-50%) translateY(-50%);
           text-align: center;
           .QR{
+            width: 214px;
             height: 214px
           }
           a{

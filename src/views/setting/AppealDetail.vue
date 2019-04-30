@@ -1,6 +1,7 @@
 <template>
-  <div class="appeal">
+<div>
     <common-header title="申诉详情"></common-header>
+  <div class="appeal">
     <div class="rechargeMain">
       <!-- 进步条 -->
       <section>
@@ -134,6 +135,7 @@
        </section>
     </div>
     <div class="cancel"><span @click="deleteA()">删除</span></div>
+  </div>
   </div>
 </template>
 <script>
@@ -312,7 +314,7 @@ export default {
     }
   }
   .rechargeMain{
-    padding: 118px 30px 250px;
+    padding: 36px 30px 250px;
     .step{
       background-color: #fff;
       border-radius: 20px;

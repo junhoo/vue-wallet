@@ -1,6 +1,7 @@
 <template>
+<div>
+ <common-header title="订单详情"></common-header>
   <div class="recharge">
-    <common-header title="订单详情"></common-header>
     <div class="rechargeMain">
        <!-- 订单信息 -->
        <section>
@@ -18,29 +19,29 @@
            </li>
            <li>
              <span class="m_left">收款金额</span>
-             <i class="m_right">1000.00CNY</i>
+             <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
            </li>
            <li>
              <span class="m_left">提现积分</span>
-             <i class="m_right">1000</i>
+             <i class="m_right">{{orderDetailData.order_amount}}</i>
            </li>
            <li>
              <span class="m_left">提现费率</span>
-             <i class="m_right">10%</i>
+             <i class="m_right">{{orderDetailData.rate}}%</i>
            </li>
            <li>
              <span class="m_left">实际到账</span>
-             <i class="m_right">900CNY</i>
+             <i class="m_right">{{orderDetailData.real_amount}}CNY</i>
            </li>
            <li>
              <span class="m_left">下单时间</span>
-             <i class="m_right">2019-04-15 11:56</i>
+             <i class="m_right">{{orderDetailData.time_str}}</i>
            </li>
            <li>
              <span class="m_left">订单编号</span>
              <div class="m_right">
-               <i class="right_text">20190415002006005</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
+               <i class="right_text">{{orderDetailData.order_no}}</i>
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="orderDetailData.order_no" @click="copy()">
              </div>
            </li>
             <li>
@@ -66,6 +67,7 @@
       </section>
     </div>
     <common-footer v-if="orderType == 7 || orderType == 5" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
+  </div>
   </div>
 </template>
 <script>
@@ -160,7 +162,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 64px 30px 350px;
+    padding: 36px 30px 450px;
     ul{
       width: 100%;
       margin-bottom: 24px;
