@@ -158,7 +158,7 @@ export default {
       param.append('file', file, file.name)
       param.append('type', '1')
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no,
         file: param
       }
@@ -175,7 +175,7 @@ export default {
     // 发起申诉
     launchAppeal () {
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no,
         pay_prove_pic: 1,
         content: this.appealTxt

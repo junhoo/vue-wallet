@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click='send'>发消息</button>
+    <button @click='send'></button>
   </div>
 </template>
 
@@ -18,7 +18,6 @@ export default {
   //   url: ''
   // },
   mounted () {
-    console.log('socket-mounted')
     // 初始化
     this.init()
   },
@@ -38,7 +37,7 @@ export default {
       }
     },
     open () {
-      console.log('socket连接成功')
+      // console.log('1.0 socket连接成功')
       this.randomStr = Math.random().toString(36).substr(2)
       const data = {
         'from_uid': 123, // 用户id
@@ -55,22 +54,23 @@ export default {
       console.log('连接错误')
     },
     getMessage (msg) {
-      console.log('socket接收')
       let res = msg.data
+      // console.log('3.0 socket接收')
+      // console.log(res)
       try {
         res = JSON.parse(res)
       } catch (error) {
         console.log('socket接收-解析失败')
       }
-      console.log(res.from_uid, 10000)
-      console.log(this.randomStr, res.rand_str)
+      // console.log(res.from_uid, 10000)
+      // console.log(this.randomStr, res.rand_str)
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
-        console.log('ok')
+        // console.log('ok')
       }
     },
     send (params) {
-      console.log('socket发送')
-      console.log(params)
+      // console.log('2.0 socket发送')
+      // console.log(params)
       this.socket.send(params)
     },
     close () {

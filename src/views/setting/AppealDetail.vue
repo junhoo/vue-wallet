@@ -173,7 +173,7 @@ export default {
     // 获取申诉详情
     getAppealDel () {
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         complain_no: this.complain_no
       }
       let url = this.$api.order + '/api/Complain/complainLogInfo'
@@ -206,7 +206,7 @@ export default {
         return false
       }
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         complain_no: this.complain_no
       }
       let url = this.$api.order + '/api/Complain/delComplainLog'

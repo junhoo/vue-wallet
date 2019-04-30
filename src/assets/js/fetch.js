@@ -1,38 +1,21 @@
 import axios from 'axios'
 
-export function post (url, data) {
-  return new Promise((resolve, reject) => {
-    axios.post(url, data)
-      .then(res => {
-        res = res.data
-        if (parseInt(res.code) === 10000) {
-          resolve(res)
-        } else {
-          reject(res)
-        }
-      })
-      .catch(e => {
-        reject(e)
-      })
-  })
-}
-
 // axios.defaults.timeout = 5000;
 // axios.defaults.baseURL ='http://www.baidu.com'; //填写域名
 
-// //http request 拦截器
+// http request 拦截器
 // axios.interceptors.request.use(
 //   config => {
-//     config.data = JSON.stringify(config.data);
+//     config.data = JSON.stringify(config.data)
 //     config.headers = {
-//       'Content-Type':'application/x-www-form-urlencoded'
+//       'Content-Type': 'application/x-www-form-urlencoded'
 //     }
-//     return config;
+//     return config
 //   },
 //   error => {
-//     return Promise.reject(err);
+//     return Promise.reject(error)
 //   }
-// );
+// )
 
 // 响应拦截器即异常处理
 // axios.interceptors.response.use(response => {
@@ -84,3 +67,20 @@ export function post (url, data) {
 //     }
 //     return Promise.resolve(err.response)
 // })
+
+export function post (url, data) {
+  return new Promise((resolve, reject) => {
+    axios.post(url, data)
+      .then(res => {
+        res = res.data
+        if (parseInt(res.code) === 10000) {
+          resolve(res)
+        } else {
+          reject(res)
+        }
+      })
+      .catch(e => {
+        reject(e)
+      })
+  })
+}

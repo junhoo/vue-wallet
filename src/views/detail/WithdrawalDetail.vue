@@ -103,7 +103,7 @@ export default {
     // 获取订单信息
     getOrderDel () {
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         complain_no: this.complain_no
       }
       let url = this.$api.order + '/api/order/drawDetail'

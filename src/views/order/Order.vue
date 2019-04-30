@@ -91,13 +91,12 @@ export default {
       this.orderList = []
       this.showNoImg = false
       this.loadingVal = true
+
       const data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         order_type: index + 1
       }
       const url = this.$api.order + '/api/order/getOrderList'
-      // const url = 'http://api.palao.168mi.cn/Api/Index/article_list'
-      // const data = {}
       if (this.timer) {
         clearTimeout(this.timer)
       }
@@ -174,7 +173,7 @@ export default {
             this.loadingVal = false
             this.showTopHint('网络错误，请重试')
           })
-      }, 500)
+      }, 350)
     },
 
     showTopHint (info) {

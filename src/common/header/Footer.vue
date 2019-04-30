@@ -68,7 +68,7 @@ export default {
         return false
       }
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
       }
       let url = this.$api.order + '/api/order/cancelRechangeOrder'
@@ -84,7 +84,7 @@ export default {
     // 确认付款
     submit () {
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no,
         pay_type: this.pay_type
       }

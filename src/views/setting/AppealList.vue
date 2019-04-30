@@ -51,7 +51,7 @@ export default {
     // 获取申诉列表信息
     getAppealMsg () {
       var data = {
-        token: localStorage.getItem('randomcode'),
+        token: sessionStorage.getItem('randomcode'),
         page: this.page,
         limit: this.limit
       }
