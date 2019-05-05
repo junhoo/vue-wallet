@@ -214,36 +214,19 @@ export default {
     },
 
     onmessage (info) {
-      // 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6 已匹配 7 待确认 8 自动取消
-      this.detailInfo = info
-      const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认', '自动取消']
-      const orderType = stateCode[info.data.status - 1]
       console.log(info)
+      // 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6 已匹配 7 待确认 8 自动取消
+      const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认', '自动取消']
+      const orderType = stateCode[info.data.status]
+
       console.log(orderType)
-
-      if (orderType === '已提交') {
-        this.showMatching = true
-        return
-      }
-
-      var stateName = ''
       if (info.data.order_type === 1) { // 1充值 2提现
-        if (orderType === '已匹配') {
-          stateName = '充值匹配成功'
-        }
-      } else {
-        if (orderType === '已匹配') {
-          stateName = '提现匹配成功'
-        }
-      }
 
-      if (orderType === '已完成') {
-        stateName = '交易完成'
       }
-
+      this.showMatching = true
       setTimeout(() => {
-        this.popupName = stateName
         this.showMatching = false
+        this.popupName = '充值匹配成功'
         this.showPopup = true
         this.hasDetail = true
       }, 1000)

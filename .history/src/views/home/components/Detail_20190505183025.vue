@@ -7,11 +7,11 @@
 
     <div class="content-box">
       <div class="text-box-1">
-        <span class="text-left">收款金额</span><span class="text-right">{{detailInfo.data.order_amount}}</span>
+        <span class="text-left">收款金额</span><span class="text-right">{{detailInfo.order_amount}}</span>
         <p class="text-symbol">CNY</p>
       </div>
       <div class="text-box-2">
-        <span class="text-left">提现积分</span><span class="text-right">{{detailInfo.data.order_amount}}</span>
+        <span class="text-left">提现积分</span><span class="text-right">{{detailInfo.order_amount}}</span>
       </div>
       <div class="text-box-3" v-show="type === '充值'">
         <span class="text-left">收款方式</span><span class="text-right">买家未付款</span>

@@ -43,6 +43,7 @@
         <template v-else>
           <!-- <p class="text-2" v-show="name === '充值匹配成功'">请于10分钟内完成付款，否则将被取消</p>
           <p class="text-moeny" v-show="name === '充值匹配成功'">800.00<span class="symbol">CNY</span></p> -->
+
           <p class="text-2">{{ name | filterText }}</p>
           <p class="text-3" v-show="name === '匹配成功'">收款账号：银行卡（HankWen）</p>
         </template>
