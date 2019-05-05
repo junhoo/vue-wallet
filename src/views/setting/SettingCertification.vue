@@ -4,7 +4,7 @@
     <main>
       <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
         <div class="hint">实名认证</div>
-        <div class="note2">*请务必使用您本人的实名账户*</div>
+        <div class="note2" v-show="!userCertifyMsg">*请务必使用您本人的实名账户*</div>
 
         <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
         <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
@@ -13,15 +13,16 @@
           <div class="name">证件类型</div>
           <input readonly type="text" :value="pap">
           <div class="btn" @click="selectcard()"><i ></i></div>
-          <template v-if="chenckcard">
-              <ul>
-                <li @click="selecitem(1)" :class="{'liActive':liActive==1}">身份证</li>
-                <li @click="selecitem(2)" :class="{'liActive':liActive==2}">护照</li>
-                <li @click="selecitem(3)" :class="{'liActive':liActive==3}">港澳通行证</li>
-              </ul>
-          </template>
-          <!-- <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
-          </van-popup> -->
+          <!-- 选择证件类型 -->
+          <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
+            <h3>选择证件类型</h3>
+            <ul>
+              <li @click="selecitem(1)"><span>身份证</span><i :class="{'liActive':liActive==1}"></i></li>
+              <li @click="selecitem(2)"><span>护照</span><i :class="{'liActive':liActive==2}"></i></li>
+              <li @click="selecitem(3)"><span>港澳通行证</span><i :class="{'liActive':liActive==3}"></i></li>
+            </ul>
+            <p><span @click="selectcard()">确定</span></p>
+          </van-popup>
         </div>
         <div class="item">
           <div class="name">真实姓名</div>
@@ -40,7 +41,7 @@
             <div v-show="cardUrl1 !== ''">
               <div class="mask">
                 <img  ref="cardimg" :class="[istrue1 ? 'img-width':'img-height']" :src="cardUrl21" alt="">
-                <i>已上传</i>
+                <i>重新上传</i>
               </div>
             </div>
             <div v-show="cardUrl1 === ''">
@@ -59,7 +60,7 @@
             <div v-show="cardUrl2 !== ''">
               <div class="mask">
                 <img :src="cardUrl22" :class="[istrue2 ? 'img-width':'img-height']" alt="">
-                <i>已上传</i>
+                <i>重新上传</i>
               </div>
             </div>
             <div v-show="cardUrl2 === ''">
@@ -81,7 +82,7 @@
             <template v-if="cardUrl3">
               <div class="mask mask1">
                 <img :src="cardUrl23" :class="[istrue3 ? 'img-width':'img-height']" alt="">
-                <i>已上传</i>
+                <i>重新上传</i>
               </div>
             </template>
             <template v-else>
@@ -113,7 +114,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'SettingBound',
@@ -126,8 +127,7 @@ export default {
       firstUpload: true,
       navTitle: '',
       pap: '身份证',
-      chenckcard: 0,
-      show: false,
+      chenckcard: false,
       status: 0,
       liActive: 1,
       username: '',
@@ -156,35 +156,28 @@ export default {
     }
   },
   created () {
-    const format = sessionStorage.getItem('reqformat')
-    this.postFormat = JSON.parse(format)
     this.getUserInfo()
   },
   methods: {
     // 获取用户实名认证信息
     getUserInfo () {
       let data = this.postFormat
+      data.token = sessionStorage.getItem('randomcode')
       let url = this.$api.user
-      axios.post(url + '/api/Authentication/getAuthenticationLists', data)
+      post(url + '/api/Authentication/getAuthenticationLists', data)
         .then(res => {
-          res = res.data
-          if (res.code === 10000) {
-            this.istrue1 = JSON.parse(sessionStorage.getItem('istrue1'))
-            this.istrue2 = JSON.parse(sessionStorage.getItem('istrue2'))
-            this.istrue3 = JSON.parse(sessionStorage.getItem('istrue3'))
-            if (res.data.list.length === 0) {
-              return false
-            }
-            this.firstUpload = false
-            const _data = res.data.list
-            this.userCertifyMsg = _data
-            this.userNo = _data.credentials_no
-            this.username = _data.name
-            this.pap = _data.credentials_type_str
-          } else if (res.code === '14003') {
-          } else {
-            this.$toast(res.msg)
+          this.istrue1 = JSON.parse(sessionStorage.getItem('istrue1'))
+          this.istrue2 = JSON.parse(sessionStorage.getItem('istrue2'))
+          this.istrue3 = JSON.parse(sessionStorage.getItem('istrue3'))
+          if (res.data.list.length === 0) {
+            return false
           }
+          this.firstUpload = false
+          const _data = res.data.list
+          this.userCertifyMsg = _data
+          this.userNo = _data.credentials_no
+          this.username = _data.name
+          this.pap = _data.credentials_type_str
         })
         .catch(e => {
           this.$toast('网络错误，不能访问')
@@ -193,7 +186,6 @@ export default {
     // 选择证件类型
     selectcard () {
       this.chenckcard = !this.chenckcard
-      this.show = !this.show
     },
     selecitem (idx) {
       this.liActive = idx
@@ -204,7 +196,6 @@ export default {
       } else {
         this.pap = '港澳通行证'
       }
-      this.chenckcard = !this.chenckcard
     },
     // event上传图片
     tirggerFile (event, i) {
@@ -220,7 +211,6 @@ export default {
           img.src = e.target.result
           img.onload = function () {
             that.istrue1 = this.width > this.height
-            console.log(self.istrue)
           }
         } else if (i === 2) {
           that.cardUrl22 = this.result
@@ -228,7 +218,6 @@ export default {
           img.src = e.target.result
           img.onload = function () {
             that.istrue2 = this.width > this.height
-            console.log(self.istrue)
           }
         } else {
           that.cardUrl23 = this.result
@@ -236,7 +225,6 @@ export default {
           img.src = e.target.result
           img.onload = function () {
             that.istrue3 = this.width > this.height
-            console.log(self.istrue)
           }
         }
       }
@@ -250,11 +238,10 @@ export default {
       } else {
         url += '/api/Upload/uploadHMpassFile'
       }
-      axios.post(url, param)
+      post(url, param)
         .then(res => {
-          res = res.data
+          const imgurl = res.data.list.url
           if (res.code === 10000) {
-            const imgurl = res.data.list.url
             if (imgurl) {
               if (i === 1) {
                 this.cardUrl1 = imgurl
@@ -308,30 +295,19 @@ export default {
       if (!this.firstUpload) {
         url1 = '/api/Authentication/updateAuthentication'
       }
-      // const data = {
-      //   'app-name': '123',
-      //   'merchant_type': '1', // 1:A端
-      //   'merchant_code': '12345',
-      //   'third_user_id': '1',
-      //   'name': this.username,
-      //   'credentials_no': this.userNo,
-      //   'credentials_asurface': this.cardUrl1, // 正面照
-      //   'credentials_bsurface': this.cardUrl2, // 背面照
-      //   'hold_certificates': this.cardUrl3, // 手持照
-      //   'credentials_type': this.liActive
-      // }
       let data = this.postFormat
       data.name = this.username
+      data.token = sessionStorage.getItem('randomcode')
       data.credentials_no = this.userNo
       data.credentials_asurface = this.cardUrl1 // 正面照
       data.credentials_bsurface = this.cardUrl2 // 背面照
       data.hold_certificates = this.cardUrl3 // 手持照
       data.credentials_type = this.liActive
-
-      axios.post(url + url1, data)
+      post(url + url1, data)
         .then(res => {
-          res = res.data
+          console.log(res, 'az')
           if (res.code === 10000) {
+            console.log(this.istrue1, this.istrue2, this.istrue3, 'az')
             sessionStorage.setItem('istrue1', JSON.stringify(this.istrue1))
             sessionStorage.setItem('istrue2', JSON.stringify(this.istrue2))
             sessionStorage.setItem('istrue3', JSON.stringify(this.istrue3))
@@ -350,8 +326,9 @@ export default {
     // 获取用户信息
     getUserMsg () {
       let data = this.postFormat
+      data.token = sessionStorage.getItem('randomcode')
       let url = this.$api.user
-      axios.post(url + '/api/user/getUserInfo', data)
+      post(url + '/api/user/getUserInfo', data)
         .then(res => {
           res = res.data
           if (res.code === 10000) {
@@ -456,20 +433,27 @@ export default {
             background: url("~imgurl/todownarrow.png") center / 100% no-repeat;
           }
         }
+        .van-overlay{
+          background-color: rgba(49, 49, 109, .25) !important;
+        }
         ul{
-          background-color: #F3F4F7;
-          position: absolute;
-          top: 122px;
-          width: 100%;
-          z-index: 222;
+          background-color: #fff;
           li{
-            font-size: 32px;
-            color: #6D778B;
-            padding: 25px 18px;
+            font-size: 28px;
+            color: #000;
+            padding: 41px 56px 42px 49px;
+            border-bottom: 1px solid #F5F4F4;
+            display: flex;
+            justify-content: space-between;
+            i{
+              display: inline-block;
+              height: 38px;
+              width: 38px;
+              background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
+            }
           }
           .liActive{
-            background-color: #3B67E0;
-            color: #fff;
+            background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
           }
         }
       }
@@ -496,7 +480,7 @@ export default {
           }
           .mask{
             height: 277px;
-            width: 280px;
+            // width: 280px;
             position: relative;
             i{
               display: inline-block;
@@ -576,6 +560,34 @@ export default {
     }
     .show-color {
       background: #1359D2;
+    }
+  }
+}
+.van-overlay{
+  background-color: rgba(49, 49, 109, .25) !important;
+}
+.van-popup--bottom{
+  border-radius: 20px 20px 0 0;
+  h3{
+    color: #010101;
+    font-size: 28px;
+    height: 105px;
+    line-height: 105px;
+    text-align: center;
+    border-bottom: 1px solid #F5F4F4
+  }
+  p{
+    padding: 50px 66px 77px;
+    span{
+      border-radius: 49px;
+      height: 97px;
+      line-height: 97px;
+      font-size: 28px;
+      color: #2A2A2A;
+      text-align: center;
+      width: 100%;
+      display: inline-block;
+      background:url('~imgurl/bg-border.png') center / 100% no-repeat;
     }
   }
 }

@@ -6,7 +6,7 @@
         <li>
           <div class="boxs" @click="jumpIn(1)">
             <span class="text-left">实名认证</span>
-            <span class="text-right">{{authState}}</span>
+            <span class="text-right">{{userMsg | is_realname}}</span>
           </div>
         </li>
         <li>
@@ -73,6 +73,19 @@ export default {
         return '绑定/修改'
       }
       return '未绑定'
+    },
+    is_realname (value) {
+      const info = value.is_realname
+      if (info === 0) {
+        value = '未认证'
+      } else if (info === 1) {
+        value = '已认证'
+      } else if (info === 2) {
+        value = '认证失败'
+      } else {
+        value = '未认证'
+      }
+      return value
     }
   }
 }
