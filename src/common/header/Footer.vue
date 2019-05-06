@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div v-if="showfooter == 2">
+  <div v-if="showfooter == 2 || showfooter == 6">
      <div class="footer clearfix">
       <p @click="submit()">确认付款</p>
       <p @click="cancelOrder(0)" class="borbtn">取消订单</p>
@@ -22,7 +22,7 @@
     <div class="foot clearfix">
       <p v-if="okTxt">{{okTxt}}</p>
       <p v-else>{{showfooter|textW}}</p>
-      <span>联系客服</span>
+      <span>联系客服 {{showfooter}}</span>
     </div>
   </div>
 <!-- 弹出框 -->
@@ -58,8 +58,6 @@ export default {
   methods: {
     callback () {
       this.endCountdown = true
-      console.log(this.endCountdown)
-      alert(1111)
     },
     // 取消订单
     cancelOrder (index) {

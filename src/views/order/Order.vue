@@ -14,7 +14,7 @@
               v-for="(item, index) in orderList"
               :key="index">
               <div class="content">
-                <div class="item">
+                <div class="item" @click="todetail(item.order_no,item.status)">
                   <div class="item-top">
                     <p class="left">{{item.order_amount}}</p>
                     <p
@@ -103,9 +103,7 @@ export default {
       this.timer = setTimeout(() => {
         post(url, data)
           .then(res => {
-            console.log('1.0 订单')
             let _list = res.data.list.list
-            console.log(_list)
             if ((index + 1) === 1) {
             //   _list = [
             //     {
@@ -176,7 +174,6 @@ export default {
           })
       }, 350)
     },
-
     showTopHint (info) {
       if (info === 'close') {
         this.showHint = false
@@ -190,6 +187,17 @@ export default {
       this.timerHint = setTimeout(() => {
         this.showHint = false
       }, 1500)
+    },
+    todetail (id, status) {
+      if (status === 1) {
+        return false
+      }
+      this.$router.push({
+        name: 'RechargeDetail',
+        query: {
+          order_no: id
+        }
+      })
     }
   }
 }
