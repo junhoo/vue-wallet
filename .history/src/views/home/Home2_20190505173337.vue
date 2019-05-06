@@ -215,7 +215,6 @@ export default {
 
     onmessage (info) {
       // 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6 已匹配 7 待确认 8 自动取消
-      this.detailInfo = info
       const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认', '自动取消']
       const orderType = stateCode[info.data.status - 1]
       console.log(info)
@@ -238,7 +237,7 @@ export default {
       }
 
       if (orderType === '已完成') {
-        stateName = '交易完成'
+        stateName = '提现匹配成功'
       }
 
       setTimeout(() => {
