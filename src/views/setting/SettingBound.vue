@@ -84,8 +84,7 @@
                 :src="preview">
             <img
                 v-else
-                class="img-down"
-                :class="[isWidth?'img-width':'img-height']"
+                class="img-down img-width img-height"
                 :src="qrcodeUrl">
           </template>
           <!-- <van-uploader class="xxx" :after-read="onRead">
@@ -262,11 +261,9 @@ export default {
       //     } else {
       //       this.showTopHint(res.msg)
       //     }
-
-      console.log(param)
       post(url, param)
         .then(res => {
-          console.log(res)
+          console.log(param, 'azaz')
           const imgurl = res.data.list.url
           if (imgurl) {
             if (entryType === 'wechat') {
@@ -295,8 +292,6 @@ export default {
       // }
       // let data = this.postFormat
       const data = { token: sessionStorage.getItem('randomcode') }
-      console.log(data)
-
       let url = this.$api.user
       if (type === 'bank') {
         url += '/api/Bindpay/getBankLists'
@@ -316,7 +311,6 @@ export default {
       post(url, data)
         .then(res => {
           const _info = res.data.list
-          console.log(_info)
           this.istrue = JSON.parse(sessionStorage.getItem('istrue'))
           if (type === 'bank') {
             this.apiBank.bank_name = _info.bank_name

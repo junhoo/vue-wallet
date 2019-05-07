@@ -4,8 +4,7 @@
     <main>
       <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
         <div class="hint">实名认证</div>
-        <div class="note2" v-show="!userCertifyMsg">*请务必使用您本人的实名账户*</div>
-
+        <div class="note2" v-show="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2">*请务必使用您本人的实名账户*</div>
         <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
         <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
         <p v-if="userCertifyMsg.status == 0 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
@@ -51,7 +50,7 @@
                 <img class="img imgG"  v-else src="~imgurl/card1-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue1 ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_asurface" alt="">
+                <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
               </div>
             </div>
             <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
@@ -70,7 +69,7 @@
                 <img class="img imgG" v-else src="~imgurl/card2-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue2 ? 'img-width':'img-height']" :src="userCertifyMsg.credentials_bsurface" alt="">
+                <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
               </div>
             </div>
             <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
@@ -92,7 +91,7 @@
                 <img class="img imgG" v-else src="~imgurl/card3-3.png" alt="">
               </div>
               <div v-else>
-                <img class="img" :class="[istrue3 ? 'img-width':'img-height']" :src="userCertifyMsg.hold_certificates" alt="">
+                <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
               </div>
             </template>
             <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
@@ -480,7 +479,6 @@ export default {
           }
           .mask{
             height: 277px;
-            // width: 280px;
             position: relative;
             i{
               display: inline-block;
@@ -495,18 +493,12 @@ export default {
               font-size: 24px;
               color: #fff;
             }
-            .img-width{
-              width: 280px;
-            }
-            .img-height{
-              height: 277px;
-            }
-          }
-          .picture-top {
-
-          }
-          .picture-mid {
-
+            // .img-width{
+            //   width: 280px;
+            // }
+            // .img-height{
+            //   height: 277px;
+            // }
           }
           .mask1{
             left: 50%;
@@ -517,6 +509,8 @@ export default {
           }
           .img{
             box-shadow: 0 0 20px -8px #d2d2d2;
+            width: 370px;
+            height: 277px
           }
           .imgG{
             width: 370px;

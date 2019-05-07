@@ -7,14 +7,14 @@
        <section>
          <ul>
            <li>
-             <span class="m_left" :class="{'skyblue':orderType == 2 || orderType == 6, 'blue':orderType == 5 || orderType == 3, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
-              <template>
-                <count-down v-show="orderType == 2 || orderType == 6" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
+             <span class="m_left" :class="{'skyblue':orderType == 2 || orderType == 6, 'blue':orderType == 5 || orderType == 3 || orderType == 7, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
+              <template v-if="orderType == 2 || orderType == 6" >
+                <count-down endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
               </template>
               <template>
-                <i v-show="orderType == 4" class="m_right">超时自动取消</i>
-                <i v-show="orderType == 8" class="m_right">已被手动取消</i>
-                <i v-show="orderType == 3" class="m_right">等待对方确认收款</i>
+                <i v-show="orderType == 8" class="m_right">超时自动取消</i>
+                <i v-show="orderType == 4" class="m_right">已被手动取消</i>
+                <i v-show="orderType == 3 || orderType == 7" class="m_right">等待对方确认收款</i>
               </template>
            </li>
            <li>
@@ -40,10 +40,10 @@
        </section>
        <!-- 支付信息 -->
         <section>
-         <ul class="wrapper" v-if="orderType != 4 || orderType != 8">
+         <ul class="wrapper" v-if="orderType != 4 && orderType != 8">
            <li class="li-item">
              <span class="m_left">{{payway|payTypeText}}支付</span>
-              <div class="m_right" @click="checkoutPay(0)">
+              <div v-if="orderType != 3 && orderType != 7" class="m_right" @click="checkoutPay(0)">
                 <i class="right_text">切换支付方式</i>
                 <img src="~imgurl/arrow-right2.png" alt=""  class="right_icon arrow-icon">
              </div>
@@ -51,7 +51,7 @@
            <li>
              <span class="m_left">收款人</span>
              <div class="m_right">
-               <i class="right_text">jeney</i>
+               <i class="right_text">{{pay_name}}</i>
                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
              </div>
            </li>
@@ -60,7 +60,7 @@
              <li>
                 <span class="m_left">{{payway|payTypeText}}账号</span>
                 <div class="m_right">
-                  <i class="right_text">{{pay_name}}</i>
+                  <i class="right_text">{{pay_account}}</i>
                   <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
                 </div>
               </li>
@@ -79,7 +79,7 @@
              <li>
                 <span class="m_left">银行名称</span>
                 <div class="m_right">
-                  <i class="right_text">{{pay_info.bank_pay.bank_name}}</i>
+                  <i class="right_text">{{pay_info.bank_pay.bank_address}}</i>
                   <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
                 </div>
               </li>
@@ -146,12 +146,12 @@
       </van-popup>
       <!-- 提示信息 -->
       <section>
-        <div class="tip" v-show="orderType == 8">
+        <div class="tip" v-show="orderType == 4">
           <span> 注意：</span><br>
           <span>1：您已手动关闭了该订单交易</span><br>
           <span>2：如果您已经向对方付款，而误点了取消订单按钮请联系客服。</span>
         </div>
-        <div class="tip" v-show="orderType == 4">
+        <div class="tip" v-show="orderType == 8">
           <span> 注意：</span><br>
           <span>1：超时未付款已被系统自动取消该订单</span><br>
           <span>2：如果您已经向对方付款，而忘记确认付款请联系客服。</span>
@@ -172,7 +172,7 @@
         </div>
       </section>
     </div>
-    <common-footer :showfooter="orderType" :order_no="order_no" :pay_type="payway"></common-footer>
+    <common-footer :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="order_type" :order_no="order_no" :pay_type="payway"></common-footer>
   </div>
 </div>
 </template>
@@ -200,6 +200,7 @@ export default {
         isAlipay: false,
         isbank: false
       },
+      order_type: 1, // 订单类型 1.充值 2.提现
       orderType: 3, // 订单状态 2.代付款 3.未到账 4.已取消(手动) 5.已完成 8.已取消(自动)
       orderDetailData: {}, // 订单详情信息
       order_no: '', // 订单编号
@@ -228,6 +229,7 @@ export default {
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
+          this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
           this.payTypeMsg()
         })
@@ -309,7 +311,7 @@ export default {
         value = '待付款'
       } else if (value === '5') {
         value = '已完成'
-      } else if (value === '3') {
+      } else if (value === '3' || value === '7') {
         value = '未到账'
       }
       return value

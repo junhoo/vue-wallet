@@ -75,7 +75,6 @@
 
         <li class="li-item clearfix">
           <div class="left">银行卡号</div>
-          <div class="icon"></div>
           <div class="right">1561165456</div>
         </li>
       </template>

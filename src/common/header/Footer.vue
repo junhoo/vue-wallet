@@ -1,21 +1,34 @@
 <template>
 <div>
-  <div v-if="showfooter == 2 || showfooter == 6">
+  <div v-if="(showfooter == 2 || showfooter == 6) && order_type == 1">
      <div class="footer clearfix">
       <p @click="submit()">确认付款</p>
       <p @click="cancelOrder(0)" class="borbtn">取消订单</p>
     </div>
   </div>
-  <div v-else-if="showfooter == 3">
+  <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 1">
     <div class="foote clearfix">
-      <p @click="appeal()" v-show="endCountdown">发起申诉 <count-down v-show="showfooter == 3" endTime="1556594720000" :callback="callback(0)" endText="" timeType='symbol'></count-down></p>
-      <p class="borbtn" v-show="endCountdown">发起申诉</p>
+      <p v-if="endCountdown == 0">
+        发起申诉
+        <count-down endTime="1557130889000"
+          endText=""
+          timeType='symbol'
+          v-on:callbackEvent='oncallback'>
+        </count-down>
+      </p>
+      <p @click="appeal()" class="borbtn" v-if="endCountdown == 1">发起申诉</p>
     </div>
   </div>
-  <div v-else-if="showfooter == 7">
+  <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
       <p>确认收款</p>
-      <p class="appbtn">发起申诉<count-down v-show="showfooter == 7" endTime="1556560239" :callback="callback(0)" endText="" timeType='zh'></count-down></p>
+      <p class="appbtn">发起申诉
+        <count-down endTime="1557130889000"
+          endText=""
+          timeType='symbol'
+          v-on:callbackEvent='oncallback'>
+        </count-down>
+      </p>
     </div>
   </div>
   <div v-else>
@@ -46,18 +59,21 @@ export default {
   props: {
     okTxt: String,
     showfooter: Number,
+    order_type: Number,
     pay_type: Number,
-    order_no: Number
+    order_no: Number,
+    orderDetailData: Object,
+    pay_info: Array
   },
   data () {
     return {
       show: false,
-      endCountdown: false
+      endCountdown: 0
     }
   },
   methods: {
-    callback () {
-      this.endCountdown = true
+    oncallback (bol) {
+      this.endCountdown = 1
     },
     // 取消订单
     cancelOrder (index) {
@@ -86,7 +102,7 @@ export default {
         order_no: this.order_no,
         pay_type: this.pay_type
       }
-      let url = this.$api.order + '/api/order/cancelRechangeOrder'
+      let url = this.$api.order + '/api/order/endRechangeOrder'
       post(url, data)
         .then(res => {
           console.log(res)
@@ -98,10 +114,13 @@ export default {
         })
     },
     appeal () {
+      console.log(this.pay_info)
+      console.log(JSON.stringify(this.pay_info))
       this.$router.push({
         path: '/appeal',
         query: {
-          order_no: this.order_no
+          orderDetailData: JSON.stringify(this.orderDetailData),
+          pay_info: JSON.stringify(this.pay_info)
         }
       })
     }

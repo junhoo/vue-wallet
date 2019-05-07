@@ -125,9 +125,9 @@ export default {
           console.log('1.0登录')
           const _obj = res.data.list
           if (typeof _obj === 'string') {
-            this.getUserMsg()
             // token 8679Nhv6Un3dlCtgaHencsb0YZA9WN0CLbOXvy8Sf9pakR6SLRon617IlzRqrSXLN3aK7A
             sessionStorage.setItem('randomcode', _obj)
+            this.getUserMsg()
           } else {
             this.$toast(res.msg)
           }
@@ -140,7 +140,7 @@ export default {
 
     // 获取用户信息
     getUserMsg () {
-      let data = this.postFormat
+      let data = { token: sessionStorage.getItem('randomcode') }
       let url = this.$api.user + '/api/user/getUserInfo'
 
       post(url, data)
@@ -215,7 +215,7 @@ export default {
 
     onmessage (info) {
       // 1 已提交 2 待付款 3 未到账 4 已取消 5 已完成 6 已匹配 7 待确认 8 自动取消
-      this.detailInfo = info
+      this.detailInfo = info.data
       const stateCode = ['已提交', '待付款', '未到账', '已取消', '已完成', '已匹配', '待确认', '自动取消']
       const orderType = stateCode[info.data.status - 1]
       console.log(info)

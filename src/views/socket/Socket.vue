@@ -82,35 +82,35 @@ export default {
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
         console.log('4.0 匹配ok')
       }
-      res = {
-        'from_uid': 10000,
-        'to_uid': '24850905',
-        'type': 301,
-        'rand_str': 1556267261.691679,
-        'msg': {
-          'event_type': 'transaction',
-          'data': {
-            'user_id': '54258922',
-            'status': 5,
-            'seller_status': 5,
-            'buyer_id': '24850905',
-            'seller_id': '54258922',
-            'order_amount': '11.00',
-            'order_no': '9631171556196208',
-            'choice_pay_type': '1,2',
-            'pay_type': 0,
-            'order_type': 2,
-            'rate': '0.10',
-            'rate_type': 2,
-            'cancel_time': 0,
-            'add_time': 1556196208,
-            'pay_prove_pic': '',
-            'update_time': 1556196208,
-            'bonus_rate': '0.10',
-            'history_user_id': ''
-          }
-        }
-      }
+      // res = {
+      //   'from_uid': 10000,
+      //   'to_uid': '24850905',
+      //   'type': 301,
+      //   'rand_str': 1556267261.691679,
+      //   'msg': {
+      //     'event_type': 'transaction',
+      //     'data': {
+      //       'user_id': '54258922',
+      //       'status': 5,
+      //       'seller_status': 5,
+      //       'buyer_id': '24850905',
+      //       'seller_id': '54258922',
+      //       'order_amount': '11.00',
+      //       'order_no': '9631171556196208',
+      //       'choice_pay_type': '1,2',
+      //       'pay_type': 0,
+      //       'order_type': 2,
+      //       'rate': '0.10',
+      //       'rate_type': 2,
+      //       'cancel_time': 0,
+      //       'add_time': 1556196208,
+      //       'pay_prove_pic': '',
+      //       'update_time': 1556196208,
+      //       'bonus_rate': '0.10',
+      //       'history_user_id': ''
+      //     }
+      //   }
+      // }
       if (res.type === 301) {
         const resMsg = res.msg
         // const resInfo = resMsg.data

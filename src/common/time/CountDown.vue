@@ -23,6 +23,7 @@ export default {
       type: Function,
       default: () => {
         // 结束后毁回调
+        console.log('???')
       }
     },
     timeType: {
@@ -31,7 +32,9 @@ export default {
     }
   },
   mounted () {
-    this.countdowm(this.endTime, this.timeType)
+    if (parseInt(this.endTime) > 0) {
+      this.countdowm(this.endTime, this.timeType)
+    }
   },
   methods: {
     countdowm (timestamp, timetype) {
@@ -74,7 +77,8 @@ export default {
         } else {
           clearInterval(timer)
           self.content = self.endText
-          self._callback()
+          self.$emit('callbackEvent', true)
+          // self._callback()
         }
       }, 1000)
     },
