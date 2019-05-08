@@ -107,7 +107,6 @@
                 </div>
               </li>
            </div>
-
            <li>
              <span class="m_left">付款时备注</span>
              <div class="m_right">
@@ -210,7 +209,9 @@ export default {
       let url = this.$api.order + '/api/Complain/applyComplain'
       post(url, data)
         .then(res => {
-          console.log(res)
+          this.$router.push({
+            path: '/appealList'
+          })
         })
         .catch(e => {
           console.log(e)

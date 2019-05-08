@@ -2,7 +2,7 @@
   <div>
     <common-header title="申诉管理"></common-header>
     <div class="appeal-list">
-      <div class="no-data" v-if="!itemData.lenght">
+      <div class="no-data" v-if="itemData.length == 0">
         <img src="~imgurl/no_order.png" alt="">
         <p>暂无记录</p>
       </div>
@@ -58,7 +58,6 @@ export default {
       let url = this.$api.order + '/api/Complain/complainList'
       post(url, data)
         .then(res => {
-          console.log(res)
           this.itemData = res.data.list
         })
         .catch(e => {
@@ -131,7 +130,7 @@ export default {
     }
   }
   .data-list{
-    padding: 118px 30px;
+    padding: 42px 30px;
     .item{
       background-color: #fff;
       border-radius: 20px;

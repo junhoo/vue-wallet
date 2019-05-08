@@ -34,12 +34,12 @@
           <span class="m_text">{{appealData.content}}</span>
         </div>
         <div class="upload" v-if="orderType == 1">
-          <img class="upload_img" src="~imgurl/bound_real.png" alt="" @click="showImgSelec()">
+          <img class="upload_img" :src="appealData.pay_prove_pic_img" alt="" @click="showImgSelec()">
         </div>
       </section>
        <!-- 图片预览弹框 -->
       <van-dialog v-model="show" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
-       <img :src="appealData.pay_prove_pic" class="previewImg">
+       <img :src="appealData.pay_prove_pic_img" class="previewImg">
       </van-dialog>
        <!-- 订单信息 -->
       <section>
@@ -89,8 +89,7 @@
              </div>
            </li>
            <!-- 支付宝、微信支付 -->
-           <div class="wxAli">
-           <!-- <div class="wxAli" v-if="payType != 3"> -->
+           <div class="wxAli" v-if="payType != 3">
              <li>
                 <span class="m_left">{{payType|payTypeText}}账号</span>
                 <div class="m_right">
@@ -100,8 +99,7 @@
               </li>
            </div>
            <!--银行卡支付  -->
-           <div class="band">
-           <!-- <div class="band" v-else> -->
+           <div class="band" v-else>
              <li>
                 <span class="m_left">银行名称</span>
                 <div class="m_right">
@@ -124,17 +122,17 @@
                 </div>
               </li>
            </div>
-           <!-- <li>
+           <li>
              <span class="m_left">付款时备注</span>
              <div class="m_right">
-               <i class="right_text">8898</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
+               <i class="right_text">{{pay_remarks}}</i>
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="pay_remarks" @click="copy()">
              </div>
-           </li> -->
+           </li>
          </ul>
        </section>
     </div>
-    <div class="cancel"><span @click="deleteA()">删除</span></div>
+    <div v-if="appealStatus==1 || appealStatus==2" class="cancel"><span @click="deleteA()">删除</span></div>
   </div>
   </div>
 </template>
@@ -162,7 +160,8 @@ export default {
       appealData: {},
       payInfo: {},
       payee: '', // 收款人
-      accountNumber: '' // 账号 微信or支付宝
+      accountNumber: '', // 账号 微信or支付宝
+      pay_remarks: '' // 账号 微信or支付宝
     }
   },
   created () {
@@ -185,6 +184,7 @@ export default {
           this.orderType = this.appealData.order_type
           this.payType = this.appealData.pay_type
           this.payInfo = this.appealData.pay_info
+          this.pay_remarks = this.payInfo.pay_remarkspay_remarks
           if (this.payType === 1) {
             this.payee = this.payInfo.alipay_name
             this.accountNumber = this.payInfo.alipay_account
@@ -212,7 +212,9 @@ export default {
       let url = this.$api.order + '/api/Complain/delComplainLog'
       post(url, data)
         .then(res => {
-          console.log(res)
+          this.$router.push({
+            path: '/appealList'
+          })
         })
         .catch(e => {
           console.log(e)
@@ -371,6 +373,7 @@ export default {
         }
         .m_left{
           color: #ABACAF;
+          text-align: left;
           .left_icon{
             width: 49px;
             margin-right: 30px
