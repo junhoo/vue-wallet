@@ -351,7 +351,6 @@ export default {
       }
 
       if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
         this.detailType = '充值未到账'
       }
 

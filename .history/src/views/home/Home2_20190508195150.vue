@@ -121,8 +121,7 @@ export default {
         choice_pay_type: '',
         a_status_str: ''
       },
-      order_no: '',
-      order_type: '1' // 1充值 2提现
+      order_no: ''
     }
   },
   methods: {
@@ -141,7 +140,6 @@ export default {
             console.log('rematch')
             this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
             this.order_no = _list.order_no
-            this.order_type = _list.order_type
             this.showMatching = true
             return
           }
@@ -260,7 +258,7 @@ export default {
 
     onChildSubmit (type) {
       if (type === '去匹配') {
-        console.log('home 下单成功-显示匹配')
+        console.log('下单成功-显示匹配')
         this.showMatching = true
         return
       }
@@ -279,8 +277,7 @@ export default {
       this.showPopup = true
     },
 
-    onChildPopup (val) {
-      let type = val
+    onChildPopup (type) {
       console.log('=== 弹窗入口 ===')
       if (this.timerLink) {
         clearTimeout(this.timerLink)
@@ -295,21 +292,13 @@ export default {
           this.$router.push({ path: '/setting/settingCertification' })
         }, 50)
       }
-      if (type === '查看订单') {
-        type = this.order_type === 1 ? '充值查看订单' : '提现查看订单'
-      }
-      console.log(type)
-      // 跳转充值详情
-      if (type === '立即付款' || type === '充值查看订单') {
+      if (type === '立即付款' || type === '去确认收款' || type === '查看订单') {
         this.timerLink = setTimeout(() => {
           this.$router.push({
             name: 'RechargeDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
-      }
-      // 跳转提现详情
-      if (type === '去确认收款' || type === '提现查看订单') {
       }
     },
 
@@ -320,8 +309,6 @@ export default {
       const orderType = orderInfo.a_status_str
       console.log(orderType)
       this.order_no = orderInfo.order_no
-      this.order_type = orderInfo.order_type
-      this.popupMoney = orderInfo.order_amount
 
       if (orderType === '匹配中') {
         this.showMatching = true
@@ -351,7 +338,6 @@ export default {
       }
 
       if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
         this.detailType = '充值未到账'
       }
 
@@ -380,6 +366,7 @@ export default {
       }
       this.timerPopup = setTimeout(() => {
         if (stateName === '结束') { return }
+        this.popupMoney = orderInfo.order_amount
         this.popupAccount = orderInfo.account
         this.showMatching = false
         this.detailInfo = orderInfo

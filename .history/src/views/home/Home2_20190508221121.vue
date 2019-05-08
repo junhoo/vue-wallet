@@ -122,7 +122,7 @@ export default {
         a_status_str: ''
       },
       order_no: '',
-      order_type: '1' // 1充值 2提现
+      order_type: '' // 1充值 2提现
     }
   },
   methods: {
@@ -295,11 +295,10 @@ export default {
           this.$router.push({ path: '/setting/settingCertification' })
         }, 50)
       }
-      if (type === '查看订单') {
-        type = this.order_type === 1 ? '充值查看订单' : '提现查看订单'
-      }
-      console.log(type)
       // 跳转充值详情
+      if (type === '查看订单') {
+        type === this.order_type === 1 ? '充值查看订单' : '提现查看订单'
+      }
       if (type === '立即付款' || type === '充值查看订单') {
         this.timerLink = setTimeout(() => {
           this.$router.push({
@@ -351,7 +350,6 @@ export default {
       }
 
       if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
         this.detailType = '充值未到账'
       }
 
