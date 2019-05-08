@@ -7,7 +7,7 @@
           <p class="empty"></p>
           <p class="icon-setting"></p>
         </div>
-        <div class="middle" @click="getCurOrder()">Wallet</div>
+        <div class="middle" @click="getO()">Wallet</div>
         <div class="right">
           <p class="empty"></p>
           <p class="icon-option" @click="jumpOrderPage()"></p>
@@ -125,17 +125,18 @@ export default {
     }
   },
   methods: {
-    getCurOrder () {
+    getO () {
       // http://order.service.168mi.cn
       const url = this.$api.order + '/api/order/getOrderForA'
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
-          console.log('res', res)
           const _list = res.data.list
-          if (!_list) { return }
           _list.a_status_str = decodeURIComponent(_list.a_status_str)
-
+          console.log('res', res)
+          const mock = {
+            data: _list
+          }
           if (_list.a_status_str === '接单用户取消,匹配中') {
             console.log('rematch')
             this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
@@ -143,8 +144,6 @@ export default {
             this.showMatching = true
             return
           }
-          // _list.a_status_str = '匹配中'
-          const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           if (pools[_list.a_status_str]) {
             console.log('yes')
@@ -160,10 +159,9 @@ export default {
       console.log('=== xxx')
       const addstring = '6666666'
       const encode = encrypt(addstring)
+      console.log(encode, 1)
       const decode = decrypt(encode)
-      console.log('=== 原值' + addstring)
-      console.log('=== 加密' + encode)
-      console.log('=== 解密' + decode)
+      console.log(decode, 2)
     },
 
     autoLogin () {

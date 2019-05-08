@@ -7,7 +7,7 @@
           <p class="empty"></p>
           <p class="icon-setting"></p>
         </div>
-        <div class="middle" @click="getCurOrder()">Wallet</div>
+        <div class="middle" @click="getO()">Wallet</div>
         <div class="right">
           <p class="empty"></p>
           <p class="icon-option" @click="jumpOrderPage()"></p>
@@ -37,7 +37,7 @@
           <div class="imgs"></div>
         </div>
         <p class="text-big">订单匹配中</p>
-        <p class="text-small">系统正在为您发起{{detailType}}申请</p>
+        <p class="text-small">系统正在为您发起充值申请</p>
 
         <div class="cancel-btn">
           <div class="content">
@@ -125,31 +125,19 @@ export default {
     }
   },
   methods: {
-    getCurOrder () {
+    getO () {
       // http://order.service.168mi.cn
       const url = this.$api.order + '/api/order/getOrderForA'
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
+          res.data.list.a_status_str = decodeURIComponent(res.data.list.a_status_str)
           console.log('res', res)
-          const _list = res.data.list
-          if (!_list) { return }
-          _list.a_status_str = decodeURIComponent(_list.a_status_str)
-
-          if (_list.a_status_str === '接单用户取消,匹配中') {
-            console.log('rematch')
-            this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
-            this.order_no = _list.order_no
-            this.showMatching = true
-            return
+          const mock = {
+            data: res.data.list
           }
-          // _list.a_status_str = '匹配中'
-          const mock = { data: _list }
-          const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
-          if (pools[_list.a_status_str]) {
-            console.log('yes')
-            this.onmessage(mock)
-          }
+          console.log(mock)
+          // this
         })
         .catch(e => {
           console.log(e)
@@ -158,12 +146,15 @@ export default {
 
     testAes () {
       console.log('=== xxx')
+      // 加密密钥16位
+      var key = '37962202945339491692654053117998'
+      // 加密向量16位
+      var iv = '0798736492443041'
       const addstring = '6666666'
-      const encode = encrypt(addstring)
-      const decode = decrypt(encode)
-      console.log('=== 原值' + addstring)
-      console.log('=== 加密' + encode)
-      console.log('=== 解密' + decode)
+      const encode = encrypt(addstring, key, iv)
+      console.log(encode, 1)
+      const decode = decrypt(encode, key, iv)
+      console.log(decode, 2)
     },
 
     autoLogin () {

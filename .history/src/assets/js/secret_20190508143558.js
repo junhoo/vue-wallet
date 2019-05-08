@@ -4,7 +4,7 @@ import CryptoJS from '@/assets/js/aes.js'
 const key = '37962202945339491692654053117998'
 // 加密向量16位
 const iv = '0798736492443041'
-export function encrypt (data) {
+export function encrypt (data, key, iv) {
   const _key = CryptoJS.enc.Utf8.parse(key)
   const _iv = CryptoJS.enc.Utf8.parse(iv)
   const _obj = {
@@ -16,7 +16,7 @@ export function encrypt (data) {
   return encrypted.toString()
 }
 
-export function decrypt (encrypted) {
+export function decrypt (encrypted, key, iv) {
   const _key = CryptoJS.enc.Utf8.parse(key)
   const _iv = CryptoJS.enc.Utf8.parse(iv)
   const _obj = {
