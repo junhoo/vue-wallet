@@ -131,11 +131,12 @@ export default {
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
-          console.log('res', res)
           const _list = res.data.list
-          if (!_list) { return }
           _list.a_status_str = decodeURIComponent(_list.a_status_str)
-
+          console.log('res', res)
+          const mock = {
+            data: _list
+          }
           if (_list.a_status_str === '接单用户取消,匹配中') {
             console.log('rematch')
             this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
@@ -143,8 +144,6 @@ export default {
             this.showMatching = true
             return
           }
-          // _list.a_status_str = '匹配中'
-          const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           if (pools[_list.a_status_str]) {
             console.log('yes')

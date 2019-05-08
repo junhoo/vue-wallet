@@ -51,20 +51,16 @@ export default {
     init () {
       console.log('-- socket：inits')
       if (typeof (WebSocket) === 'undefined') {
-        console.log('环境不支持socket')
+        console.log('当天环境不支持socket')
       } else {
-        try {
-          // 实例化socket
-          this.socket = new WebSocket(this.path)
-          // 监听socket连接
-          this.socket.onopen = this.open
-          // 监听socket错误信息
-          this.socket.onerror = this.error
-          // 监听socket消息
-          this.socket.onmessage = this.message
-        } catch (error) {
-          this.reconnect()
-        }
+        // 实例化socket
+        this.socket = new WebSocket(this.path)
+        // 监听socket连接
+        this.socket.onopen = this.open
+        // 监听socket错误信息
+        this.socket.onerror = this.error
+        // 监听socket消息
+        this.socket.onmessage = this.message
       }
     },
     open () {
@@ -167,8 +163,6 @@ export default {
     },
     close () {
       console.log('socket已经关闭')
-    },
-    reconnect () {
     }
   },
   destroyed () {

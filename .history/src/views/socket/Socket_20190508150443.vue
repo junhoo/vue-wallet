@@ -168,7 +168,7 @@ export default {
     close () {
       console.log('socket已经关闭')
     },
-    reconnect () {
+    reconnect() {
     }
   },
   destroyed () {

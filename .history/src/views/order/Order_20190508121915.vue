@@ -104,7 +104,6 @@ export default {
         post(url, data)
           .then(res => {
             let _list = res.data.list.list
-            console.log(_list)
             for (const val of _list) {
               if (val.status === 4 || val.status === 8) {
                 val.status_str = '已取消'

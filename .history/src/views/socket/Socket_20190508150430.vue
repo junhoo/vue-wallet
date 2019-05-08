@@ -63,7 +63,7 @@ export default {
           // 监听socket消息
           this.socket.onmessage = this.message
         } catch (error) {
-          this.reconnect()
+          this.reconect()
         }
       }
     },
@@ -168,7 +168,7 @@ export default {
     close () {
       console.log('socket已经关闭')
     },
-    reconnect () {
+    reconnect() {
     }
   },
   destroyed () {
