@@ -52,7 +52,7 @@
              <span class="m_left">收款人</span>
              <div class="m_right">
                <i class="right_text">{{pay_name}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="pay_name" @click="copy()">
              </div>
            </li>
            <!-- 支付宝、微信支付 -->
@@ -61,16 +61,14 @@
                 <span class="m_left">{{payway|payTypeText}}账号</span>
                 <div class="m_right">
                   <i class="right_text">{{pay_account}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
+                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="pay_account" @click="copy()">
                 </div>
               </li>
               <li class="qrcode">
                 <span class="m_left">收款二维码</span>
                 <div class="m_right">
-                  <img v-show="payway == 1" class="QR" :src="pay_url" alt=""><br>
-                  <a :href="pay_url" download="">保存二维码
-                    <img :src="pay_url" alt="">
-                  </a>
+                  <img class="QR" :src="pay_url" alt=""><br>
+                  <a :href="pay_url" download="">保存二维码</a>
                 </div>
               </li>
            </div>
@@ -99,13 +97,13 @@
               </li>
            </div>
 
-           <!-- <li>
+           <li>
              <span class="m_left">付款时备注</span>
              <div class="m_right">
-               <i class="right_text">8898</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
+               <i class="right_text">{{pay_remarks}}</i>
+               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="pay_remarks" @click="copy()">
              </div>
-           </li> -->
+           </li>
          </ul>
        </section>
        <!-- 选择支付方式弹框 -->
@@ -207,13 +205,13 @@ export default {
       pay_name: 'jeney', // 支付账户名
       pay_account: '14154sadf', // 支付账号
       pay_url: '', // 支付二维码
+      pay_remarks: '', // 付款时备注
       pay_info: {} // 支持付款方式
     }
   },
   created () {
     this.order_no = parseInt(this.$route.query.order_no)
     this.getOrderDel()
-    this.payTypeMsg()
   },
   methods: {
     callback () {},
@@ -248,16 +246,19 @@ export default {
       if (this.pay_info.ali_pay) {
         this.paykind.isAlipay = true
         this.pay_name = this.pay_info.ali_pay.alipay_name
+        this.pay_remarks = this.pay_info.ali_pay.pay_remarks
         this.pay_account = this.pay_info.ali_pay.alipay_account
       }
       if (this.pay_info.wechat_pay) {
         this.paykind.iswx = true
         this.pay_name = this.pay_info.wechat_pay.wechat_name
+        this.pay_remarks = this.pay_info.wechat_pay.pay_remarks
         this.pay_account = this.pay_info.wechat_pay.wechat_account
       }
       if (this.pay_info.bank_pay) {
         this.paykind.isbank = true
         this.pay_name = this.pay_info.bank_pay.bank_name
+        this.pay_remarks = this.pay_info.bank_pay.pay_remarks
       }
     },
     // 切换支付方式

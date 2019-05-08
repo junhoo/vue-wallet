@@ -145,6 +145,7 @@ export default {
       payway: 3,
       orderType: 3,
       Url: '',
+      Url2: '',
       orderDetailData: {},
       pay_info: [],
       order_no: 12,
@@ -186,16 +187,12 @@ export default {
       let param = new FormData()
       param.append('file', file, file.name)
       param.append('type', '1')
-      var data = {
-        token: sessionStorage.getItem('randomcode'),
-        order_no: this.order_no,
-        file: param
-      }
       let url = this.$api.order + '/api/Complain/uploadComplainFile'
-      post(url, data)
+      post(url, param)
         .then(res => {
           this.isload = 1
-          console.log(res, 'az')
+          this.Url2 = res.data.list.url
+          this.Url = res.data.list.img
         })
         .catch(e => {
           console.log(e)
@@ -207,7 +204,7 @@ export default {
       var data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no,
-        pay_prove_pic: 1, //  申诉凭证
+        pay_prove_pic: this.Url2, //  申诉凭证
         content: this.appealTxt // 申诉内容
       }
       let url = this.$api.order + '/api/Complain/applyComplain'

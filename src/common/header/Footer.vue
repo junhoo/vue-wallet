@@ -63,7 +63,7 @@ export default {
     pay_type: Number,
     order_no: Number,
     orderDetailData: Object,
-    pay_info: Array
+    pay_info: Object
   },
   data () {
     return {
@@ -105,8 +105,7 @@ export default {
       let url = this.$api.order + '/api/order/endRechangeOrder'
       post(url, data)
         .then(res => {
-          console.log(res)
-          this.$()
+          this.$router.push({name: 'Order'})
         })
         .catch(e => {
           console.log(e)
@@ -114,8 +113,6 @@ export default {
         })
     },
     appeal () {
-      console.log(this.pay_info)
-      console.log(JSON.stringify(this.pay_info))
       this.$router.push({
         path: '/appeal',
         query: {
