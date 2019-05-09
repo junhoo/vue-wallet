@@ -1,0 +1,36 @@
+加密规则
+必传参数 app-name
+
+接口参数
+eg ： $arr = ['id' => 1, 'name' => 'abc'];
+
+$aes = new AESMcrypt();
+$iv = base64_encode(openssl_random_pseudo_bytes(16)); //生成一个16位的随机字符串
+$res = $aes->set_method('aes-256-cbc')
+    ->set_key($config[$data['app-name']]['app_key'])
+    ->set_iv($iv)->encrypt(json_encode($data)); // 加密数据
+
+//数据签名 
+1.接口参数按照 键值ASCII 排序
+2.参数拼接 id=1&name=abc 的形式
+3.拼接平台的key eg. key = 123456, 拼接后为 id=1&name=abc123456
+4.md5(md5(id=1&name=abc123456)) 得到签名;
+
+最后请求的数据格式为
+{
+    "data": "moreZby8vO7XmkQd6vteeUM/UaAHFR4OsiynHfsWRilLeb7Yyi2X9gn7Uu7K1t1V", 加密后的数据（$res）
+    "sign": "8dcc691d0c498da11ab2ccd4363a99f0", 签名
+    "iv": "UnodAVp9e6rvXXbgOBOanA==",  16位的随机字符串
+    "app-name": "app_name1"  平台名称
+}
+
+
+
+{
+    "data": "REVjOU2Zr7JQID81OL9D/V6l4VE3yHdv6lvkSx5+c0V7YJsnwbIUExvZicr/+x1p3aHwO7WqIxLBY/DUj2nnqthglU49vIMwwPYY/1Zj3JBeNN6PrYVIJimoaiclNt0OuLQZ1MDqCPaQZMyPO6/NUvR45d9to/kSMoOf+mblvDb+MSZQzSyBzZ95C/eX0bdUUy3Rf6ttwi41rva+dDUX4VajeRFT1cJsQxwyGwiqiWwdywHO4n20UPeMtcWYqchnr1lJkBr8VUyaqvaRTcYutH63G6pL+5zVG/cU3b6iKf9fQuHEa+cGrKkz8LXNhsBB0hZ+DM+OThcMRfSJfUd15mo1et+6HRDLOk/b4xiMdEEqqUez1OPak6tI5hRPR1inrX1ZhROoKs/0b7YlReI8xA==",
+    "sign": "a8c3da6708e2232ef24ac09729b7bc60",
+    "iv": "ofb30y30PV+8xIqX5xCknQ==",
+    "app-name": "app_name1"
+}
+
+aes-256-cbc 16位 key=123465
