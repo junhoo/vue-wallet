@@ -21,14 +21,17 @@
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
-      <p>确认收款</p>
-      <p class="appbtn">发起申诉
-        <count-down endTime="1557130889000"
+      <p @click="submit2()">确认收款</p>
+      <p @click="submit2()"  v-if="endCountdown == 0">确认收款</p>
+      <p class="appbtn" v-if="endCountdown == 0">
+        发起申诉
+        <count-down endTime="1557310497000"
           endText=""
           timeType='symbol'
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p>
+      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
     </div>
   </div>
   <div v-else>
@@ -68,12 +71,14 @@ export default {
   data () {
     return {
       show: false,
-      endCountdown: 0
+      endCountdown: 0,
+      endCountdown2: 0
     }
   },
   methods: {
     oncallback (bol) {
       this.endCountdown = 1
+      this.endCountdown2 = 1
     },
     // 取消订单
     cancelOrder (index) {
@@ -112,7 +117,33 @@ export default {
           this.$toast('网络错误4')
         })
     },
+    // 确认收款
+    submit2 () {
+      var data = {
+        token: sessionStorage.getItem('randomcode'),
+        order_no: this.order_no
+      }
+      let url = this.$api.order + '/api/order/confirmOrder'
+      post(url, data)
+        .then(res => {
+          this.$router.push({name: 'Order'})
+        })
+        .catch(e => {
+          console.log(e)
+          this.$toast('网络错误4')
+        })
+    },
     appeal () {
+      if (this.order_type === 2) {
+        this.$router.push({
+          path: '/appeal',
+          query: {
+            orderDetailData: JSON.stringify(this.orderDetailData),
+            order_type: this.order_type
+          }
+        })
+        return false
+      }
       this.$router.push({
         path: '/appeal',
         query: {

@@ -141,12 +141,21 @@ export default {
       if (status === 1) {
         return false
       }
-      this.$router.push({
-        name: 'RechargeDetail',
-        query: {
-          order_no: id
-        }
-      })
+      if (this.active === 0) {
+        this.$router.push({
+          name: 'RechargeDetail',
+          query: {
+            order_no: id
+          }
+        })
+      } else {
+        this.$router.push({
+          name: 'WithdrawalDetail',
+          query: {
+            order_no: id
+          }
+        })
+      }
     }
   }
 }

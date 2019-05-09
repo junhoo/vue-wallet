@@ -155,16 +155,23 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.order_type !== 2) {
+      this.pay_info = ''
+    } else {
+      this.pay_info = JSON.parse(this.$route.query.pay_info)
+      this.payTypeMsg()
+    }
     this.orderDetailData = JSON.parse(this.$route.query.orderDetailData)
-    this.pay_info = JSON.parse(this.$route.query.pay_info)
     this.payway = this.orderDetailData.pay_type
     this.order_no = this.orderDetailData.order_no
-    this.payTypeMsg()
     console.log(this.pay_info)
   },
   methods: {
     // 确定支付信息
     payTypeMsg () {
+      if (this.pay_info === 2) {
+        return false
+      }
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
         this.pay_name = this.pay_info.ali_pay.alipay_name

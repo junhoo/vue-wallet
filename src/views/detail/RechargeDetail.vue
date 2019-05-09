@@ -170,7 +170,7 @@
         </div>
       </section>
     </div>
-    <common-footer :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="order_type" :order_no="order_no" :pay_type="payway"></common-footer>
+    <common-footer :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
   </div>
 </div>
 </template>

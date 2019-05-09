@@ -44,10 +44,10 @@
                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="orderDetailData.order_no" @click="copy()">
              </div>
            </li>
-            <li>
+            <!-- <li>
              <span class="m_left">收款账户</span>
              <i class="m_right">银行卡(Jeney)</i>
-           </li>
+           </li> -->
          </ul>
        </section>
       <!-- 提示信息 -->
@@ -56,7 +56,6 @@
           <span> 注意：</span><br>
           <span>1：当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻</span><br>
           <span>2：如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配其他买方</span>
-          <span>3：提现订单已匹配状态下，您不能取消操作</span>
         </div>
         <div class="tip" v-show="orderType == 7">
           <span> 注意：</span><br>
@@ -66,7 +65,7 @@
         </div>
       </section>
     </div>
-    <common-footer v-if="orderType == 7 || orderType == 5" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
+    <common-footer v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
   </div>
   </div>
 </template>
@@ -87,15 +86,16 @@ export default {
   },
   data () {
     return {
-      payway: '1', // 1.支付宝 2.微信 3.银行卡
-      orderType: 7, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
+      order_type: 2, // 订单类型 1.充值 2.提现
+      payway: '', // 1.支付宝 2.微信 3.银行卡
+      orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
       imgUrl: '~imgurl/copy-icon.png', // 付款二维码
       orderDetailData: {}, // 订单详情信息
-      order_no: '' // 订单编号
+      order_no: 123 // 订单编号
     }
   },
   created () {
-    this.order_no = this.$route.query.order_no
+    this.order_no = Number(this.$route.query.order_no)
     this.getOrderDel()
   },
   methods: {
@@ -104,7 +104,7 @@ export default {
     getOrderDel () {
       var data = {
         token: sessionStorage.getItem('randomcode'),
-        complain_no: this.complain_no
+        order_no: this.order_no
       }
       let url = this.$api.order + '/api/order/drawDetail'
       post(url, data)
