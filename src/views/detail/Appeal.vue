@@ -12,7 +12,7 @@
         <div class="upload" :class="{'isload':isload}">
           <div v-show="!isload">
             <span class="upload_tip">上传支付凭证</span>
-            <input class="upload-file" type="file" accept="image/png, image/jpeg, image/jpg" @change="uploadFile($event)">
+            <input class="upload-file" type="file" accept="image/png, image/jpeg, image/jpg" @change="uploadFile($event,0)">
           </div>
           <img v-show="isload" class="upload_img" :src="Url" alt="" @click="showImgSelec(0)">
         </div>
@@ -20,7 +20,7 @@
        <!-- 图片预览弹框 -->
        <van-popup v-model="show" position="bottom" :close-on-click-overlay="false">
         <span class="loadbtn" @click="showImgSelec(1)">预览</span>
-        <p class="loadbtn">重新上传<input class="upload-file" type="file" @change="uploadFile($event)"></p>
+        <p class="loadbtn">重新上传<input class="upload-file" type="file" @change="uploadFile($event,1)"></p>
         <p class="loadbtn" @click="showImgSelec(0)">取消</p>
       </van-popup>
       <van-dialog v-model="show2" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
@@ -199,6 +199,9 @@ export default {
           this.isload = 1
           this.Url2 = res.data.list.url
           this.Url = res.data.list.img
+          if (i === 1) {
+            this.show = !this.show
+          }
         })
         .catch(e => {
           console.log(e)

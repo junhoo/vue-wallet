@@ -10,7 +10,7 @@ import 'styles/reset.css'
 import 'styles/border.css'
 import 'styles/iconfont.css'
 import 'lib-flexible/flexible'
-import { Popup, RadioGroup, Tab, Tabs, Step, Steps, List } from 'vant'
+import {Popup, RadioGroup, Tab, Tabs, Step, Steps, List, Loading} from 'vant'
 import 'vant/lib/popup/style'
 import 'vant/lib/radio-group/style'
 import 'vant/lib/radio/style'
@@ -21,6 +21,7 @@ const Vue = require('vue')
 Vue.use(Popup)
 Vue.use(RadioGroup)
 Vue.use(List)
+Vue.use(Loading)
 Vue.use(Toast)
 Vue.use(Step).use(Steps)
 
