@@ -78,7 +78,7 @@ export default {
         } else {
           clearInterval(timer)
           self.content = self.endText
-          self._callback()
+          self.$emit('callbackEvent', true)
         }
       }, 1000)
     },

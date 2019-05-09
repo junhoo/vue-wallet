@@ -169,7 +169,7 @@
           </div>
         </section>
     </div>
-    <common-footer :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
+    <common-footer v-on:refreshData='getOrderDel' :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
   </div>
 </div>
 </template>
@@ -386,7 +386,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 36px 30px 350px;
+    padding: 36px 30px 420px;
     ul{
       width: 100%;
       margin-bottom: 24px;

@@ -93,7 +93,7 @@ export default {
       payway: '', // 1.支付宝 2.微信 3.银行卡
       orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
       orderDetailData: {}, // 订单详情信息
-      order_no: 123 // 订单编号
+      order_no: null // 订单编号
     }
   },
   created () {
