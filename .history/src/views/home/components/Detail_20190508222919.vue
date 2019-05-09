@@ -103,7 +103,6 @@ export default {
   },
   methods: {
     clickJump () {
-      this.$emit('onChildDetail', this.type)
     }
   },
   filters: {

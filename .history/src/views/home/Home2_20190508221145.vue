@@ -28,12 +28,7 @@
                   v-on:onChildSubmit='onChildSubmit'>
       </home-submit>
       <!-- 首页-订单详情-->
-      <home-detail
-                  v-show="hasDetail"
-                  :type="detailType"
-                  :detailInfo="detailInfo"
-                  v-on:onChildDetail='onChildDetail'>
-      </home-detail>
+      <home-detail v-show="hasDetail" :type="detailType" :detailInfo="detailInfo"></home-detail>
     </main>
 
     <transition name="fade">
@@ -127,7 +122,7 @@ export default {
         a_status_str: ''
       },
       order_no: '',
-      order_type: '1' // 1充值 2提现
+      order_type: '' // 1充值 2提现
     }
   },
   methods: {
@@ -284,27 +279,6 @@ export default {
       this.showPopup = true
     },
 
-    onChildDetail (type) {
-      console.log('=== 详情点击 ===')
-      console.log(type)
-      if (type.includes('充值')) {
-        this.timerLink = setTimeout(() => {
-          this.$router.push({
-            name: 'RechargeDetail',
-            query: { order_no: this.order_no }
-          })
-        }, 50)
-      }
-      if (type.includes('提现')) {
-        this.timerLink = setTimeout(() => {
-          this.$router.push({
-            name: 'withdrawalDetail',
-            query: { order_no: this.order_no }
-          })
-        }, 50)
-      }
-    },
-
     onChildPopup (val) {
       let type = val
       console.log('=== 弹窗入口 ===')
@@ -324,7 +298,6 @@ export default {
       if (type === '查看订单') {
         type = this.order_type === 1 ? '充值查看订单' : '提现查看订单'
       }
-      console.log(type)
       // 跳转充值详情
       if (type === '立即付款' || type === '充值查看订单') {
         this.timerLink = setTimeout(() => {
@@ -336,12 +309,6 @@ export default {
       }
       // 跳转提现详情
       if (type === '去确认收款' || type === '提现查看订单') {
-        this.timerLink = setTimeout(() => {
-          this.$router.push({
-            name: 'withdrawalDetail',
-            query: { order_no: this.order_no }
-          })
-        }, 50)
       }
     },
 
@@ -383,7 +350,6 @@ export default {
       }
 
       if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
         this.detailType = '充值未到账'
       }
 

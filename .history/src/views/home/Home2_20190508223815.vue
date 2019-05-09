@@ -285,8 +285,6 @@ export default {
     },
 
     onChildDetail (type) {
-      console.log('=== 详情点击 ===')
-      console.log(type)
       if (type.includes('充值')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({

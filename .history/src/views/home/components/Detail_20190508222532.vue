@@ -64,7 +64,7 @@
       <!-- 按钮区 -->
       <div class="button-box" v-show=" type === '充值'">
         <button class="pay-btn" @click="clickJump()">立即付款</button>
-        <button class="cancel-btn" @click="clickJump()"><span class="cancel-text">取消订单</span></button>
+        <button class="cancel-btn"><span class="cancel-text">取消订单</span></button>
       </div>
 
       <div class="button-box" v-show="type === '提现'">
@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     clickJump () {
-      this.$emit('onChildDetail', this.type)
+      this.$router.push({ name: 'Setting2' })
     }
   },
   filters: {

@@ -63,20 +63,20 @@
 
       <!-- 按钮区 -->
       <div class="button-box" v-show=" type === '充值'">
-        <button class="pay-btn" @click="clickJump()">立即付款</button>
-        <button class="cancel-btn" @click="clickJump()"><span class="cancel-text">取消订单</span></button>
+        <button class="pay-btn">立即付款</button>
+        <button class="cancel-btn"><span class="cancel-text">取消订单</span></button>
       </div>
 
       <div class="button-box" v-show="type === '提现'">
-        <button class="look-btn" @click="clickJump()">查看订单</button>
+        <button class="look-btn">查看订单</button>
       </div>
 
       <div class="button-box-not" :class="{'button-top': type === '充值未到账'}" v-show="type === '充值未到账'">
-        <button class="look-btn" @click="clickJump()">查看详情</button>
+        <button class="look-btn">查看详情</button>
       </div>
 
       <div class="button-box-not" v-show="type === '提现未到账'">
-        <button class="look-btn" @click="clickJump()">确认收款</button>
+        <button class="look-btn">确认收款</button>
       </div>
 
     </div>
@@ -99,11 +99,6 @@ export default {
       const sum = parseFloat(this.detailInfo.order_amount) * parseFloat(this.detailInfo.rate)
       const rate = (parseFloat(this.detailInfo.order_amount) - parseFloat(sum)).toFixed(2)
       return rate
-    }
-  },
-  methods: {
-    clickJump () {
-      this.$emit('onChildDetail', this.type)
     }
   },
   filters: {

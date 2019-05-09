@@ -10,9 +10,11 @@ export default {
   name: 'Socket',
   data () {
     return {
-      existServer: false,
+      existServer: true,
       heartTimer: null,
+      relinkTimer: null,
       path: 'ws://192.168.1.249:9508',
+      timeoutnum: null, // 断开 重连倒计时
       websocket: '',
       randomStr: ''
     }
@@ -54,8 +56,7 @@ export default {
         })
     },
     init () {
-      console.log('')
-      console.log('=== socket：inits')
+      console.log('-- socket：inits')
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
       } else {
@@ -69,27 +70,29 @@ export default {
           // 监听socket消息
           this.websocket.onmessage = this.message
         } catch (error) {
+          // this.reconnect()
         }
       }
-      // this.heartbeat()
+    },
+    // 重新连接
+    reconnect () {
+      if (this.existServer) {
+        clearInterval(this.heartTimer)
+        return
+      }
+      this.relinkTimer = setInterval(() => {
+        console.log('>>> 重新连接')
+        this.init()
+      }, 5000)
     },
     heartbeat () {
+      console.log('开启消息')
       this.heartTimer = setInterval(() => {
-        console.log('')
-        console.log('❤ 心跳查看')
-        if (this.existServer) {
-          this.send()
-          console.log('-1 服务器 ok')
-        } else {
-          console.log('-1 服务器 挂了')
-          clearInterval(this.heartTimer)
-          this.init()
-        }
-        console.log('')
-      }, 15000)
+        this.send()
+      }, 5000)
     },
     open () {
-      console.log('1.0 socket打开成功')
+      // console.log('1.0 socket打开成功')
       this.send()
     },
     error () {
@@ -99,12 +102,14 @@ export default {
       let res = msg.data
       console.log('3.0 socket接收')
       console.log(res)
+      res = null
       try {
         if (res) {
           this.existServer = true
           res = JSON.parse(res)
         } else {
           this.existServer = false
+          this.reconnect()
           return
         }
       } catch (error) {
@@ -115,43 +120,43 @@ export default {
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
         console.log('4.0 匹配ok')
       }
-      setTimeout(() => {
-        res = {
-          from_uid: 10000,
-          to_uid: '91940140',
-          type: 301,
-          rand_str: 1557114310.4482,
-          msg: {
-            event_type: 'transaction_rechange',
-            data: {
-              user_id: '91940140',
-              status: 6,
-              seller_status: 0,
-              buyer_id: '91940140',
-              seller_id: '0',
-              order_amount: '200.00',
-              order_no: '1835401557114309',
-              choice_pay_type: '1,3',
-              pay_type: 3,
-              order_type: 1,
-              rate: '0.10',
-              rate_type: 1,
-              cancel_time: 0,
-              add_time: 1557114309,
-              pay_prove_pic: null,
-              update_time: 0,
-              bonus_rate: '0.10',
-              history_user_id: null,
-              real_amount: '200.00',
-              rest_time: 0,
-              account: '银行卡(Mingzi)',
-              a_status: 6,
-              a_status_str: '未到账' // %E5%8C%B9%E9%85%8D%E4%B8%AD
-            }
-          }
-        }
-        this.$emit('onChildSocket', res.msg)
-      }, 1000)
+      // setTimeout(() => {
+      //   res = {
+      //     from_uid: 10000,
+      //     to_uid: '91940140',
+      //     type: 301,
+      //     rand_str: 1557114310.4482,
+      //     msg: {
+      //       event_type: 'transaction_rechange',
+      //       data: {
+      //         user_id: '91940140',
+      //         status: 6,
+      //         seller_status: 0,
+      //         buyer_id: '91940140',
+      //         seller_id: '0',
+      //         order_amount: '200.00',
+      //         order_no: '1835401557114309',
+      //         choice_pay_type: '1,3',
+      //         pay_type: 3,
+      //         order_type: 1,
+      //         rate: '0.10',
+      //         rate_type: 1,
+      //         cancel_time: 0,
+      //         add_time: 1557114309,
+      //         pay_prove_pic: null,
+      //         update_time: 0,
+      //         bonus_rate: '0.10',
+      //         history_user_id: null,
+      //         real_amount: '200.00',
+      //         rest_time: 0,
+      //         account: '银行卡(Mingzi)',
+      //         a_status: 6,
+      //         a_status_str: '匹配成功' // %E5%8C%B9%E9%85%8D%E4%B8%AD
+      //       }
+      //     }
+      //   }
+      //   this.$emit('onChildSocket', res.msg)
+      // }, 1000)
 
       // setTimeout(() => {
       //   res.msg.data.a_status_str = '自动收款'
@@ -178,7 +183,7 @@ export default {
       }
     },
     send () {
-      console.log('2.0 socket发送')
+      // console.log('2.0 socket发送')
       this.randomStr = Math.random().toString(36).substr(2)
       const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
       const data = {

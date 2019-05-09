@@ -28,12 +28,7 @@
                   v-on:onChildSubmit='onChildSubmit'>
       </home-submit>
       <!-- 首页-订单详情-->
-      <home-detail
-                  v-show="hasDetail"
-                  :type="detailType"
-                  :detailInfo="detailInfo"
-                  v-on:onChildDetail='onChildDetail'>
-      </home-detail>
+      <home-detail v-show="hasDetail" :type="detailType" :detailInfo="detailInfo"></home-detail>
     </main>
 
     <transition name="fade">
@@ -285,8 +280,6 @@ export default {
     },
 
     onChildDetail (type) {
-      console.log('=== 详情点击 ===')
-      console.log(type)
       if (type.includes('充值')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
