@@ -1,5 +1,5 @@
 <template>
-  <span class="timer" :endTime='endTime' :callback='callback' :endText='endText'>
+  <span :endTime='endTime' :callback='callback' :endText='endText'>
     <slot>{{content}}</slot>
   </span>
 </template>
@@ -23,7 +23,6 @@ export default {
       type: Function,
       default: () => {
         // 结束后毁回调
-        console.log('???')
       }
     },
     timeType: {
@@ -32,16 +31,18 @@ export default {
     }
   },
   mounted () {
-    if (parseInt(this.endTime) > 0) {
-      this.countdowm(this.endTime, this.timeType)
-    }
+    this.countdowm(this.endTime, this.timeType)
   },
   methods: {
     countdowm (timestamp, timetype) {
       let self = this
       let timer = setInterval(function () {
+        // let jiuTest = timestamp
+        // var createTime = (new Date('2019/04/03 11:30:00')).getTime() // 得到毫秒数
+
         let nowTime = new Date()
         let t = timestamp - nowTime.getTime()
+
         if (t > 0) {
           let day = Math.floor(t / 86400000)
           let hour = Math.floor((t / 3600000) % 24)
@@ -56,12 +57,12 @@ export default {
               format = `${day} ${hour}:${min}:${sec}`
             }
             if (day <= 0 && hour > 0) {
-              format = `${hour}:${min}:${sec}`
+              format = `${hour}:${min}分${sec}`
             }
             if (day <= 0 && hour <= 0) {
               format = `${min}:${sec}`
             }
-            self.content = format
+            self.content = '（倒计时' + format + '）'
           } else {
             if (day > 0) {
               format = `${day}天${hour}小时${min}分${sec}秒`
@@ -72,13 +73,12 @@ export default {
             if (day <= 0 && hour <= 0) {
               format = `${min}分${sec}秒`
             }
-            self.content = '' + format
+            self.content = '剩余：' + format
           }
         } else {
           clearInterval(timer)
           self.content = self.endText
-          self.$emit('callbackEvent', true)
-          // self._callback()
+          self._callback()
         }
       }, 1000)
     },

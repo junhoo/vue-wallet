@@ -5,7 +5,11 @@
     <!-- 订单信息 -->
     <ul class="wrapper">
       <li class="li-tab-box">
+<<<<<<< HEAD
+        <div class="li-tab-text">充值</div>
+=======
         <div class="li-tab-text">提现</div>
+>>>>>>> 9bff8711a6bb73dd7e746dd8c903629ecef06358
         <div class="li-tab-time">
           <template v-if="0">
             <count-down endTime="1554266200000" :callback="callback" endText="已经结束了" timeType='zh'></count-down>
@@ -97,6 +101,22 @@
         <div class="icon"></div>
         <div class="right">1903181149045289796</div>
       </li>
+<<<<<<< HEAD
+
+      <!-- 代付款 -->
+      <div class="text-boxs" v-if="0">
+        <p class="hint">温馨提示：</p>
+        <div>
+          <p>1、平台不支持自动扣款,请用您本人的账号向以上账户转账。</p>
+          <p>2、转账成功后请点击下方“我已完成付款”按钮。</p>
+          <p>3、成功转账后，待卖方确认完成，即可完成这笔充值。</p>
+          <p>4、请尽量保留转账截图，作为纠纷时证据。</p>
+          <p>5、银行转账时，请尽量使用即时到账，以免卖方长时间未收到款项。</p>
+          <p>6、请于30分钟内向卖方指定账户支付款项，并点击“我已完成付款”，超时会被系统自动取消该笔充值订单。</p>
+        </div>
+      </div>
+=======
+>>>>>>> 9bff8711a6bb73dd7e746dd8c903629ecef06358
     </ul>
     <!-- 收款账号 -->
     <div class="account" :class="{'account2': orderStatus==7 || orderStatus==3}" v-if="orderStatus==5 || orderStatus==7 || orderStatus==3">
@@ -269,6 +289,8 @@ export default {
       this.btnQRText = this.showQrcode ? '收起' : '点击查看'
     },
     callback () {
+<<<<<<< HEAD
+=======
     },
     copy () {
       var clipboard = new Clipboard('.tag-read')
@@ -360,6 +382,7 @@ export default {
         value = ''
       }
       return value
+>>>>>>> 9bff8711a6bb73dd7e746dd8c903629ecef06358
     }
   }
 }
@@ -497,6 +520,10 @@ export default {
         margin-bottom: 5px;
       }
     }
+<<<<<<< HEAD
+  }
+=======
+>>>>>>> 9bff8711a6bb73dd7e746dd8c903629ecef06358
   .btn-pay-boxs {
     padding: 0 75px;
     margin-bottom: 27px;
