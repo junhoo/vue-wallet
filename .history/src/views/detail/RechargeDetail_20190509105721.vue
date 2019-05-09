@@ -225,8 +225,8 @@ export default {
       post(url, data)
         .then(res => {
           this.orderDetailData = res.data.list.order_detail
-          this.payway = this.orderDetailData.pay_type || 0
-          this.orderType = this.orderDetailData.status || 0
+          this.payway = this.orderDetailData.pay_type
+          this.orderType = this.orderDetailData.status
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
           this.payTypeMsg()
@@ -305,7 +305,7 @@ export default {
       return value
     },
     orderStatus: function (value) {
-      value = value.toString()
+      value = value.toString() || 0
       if (value === '4' || value === '8') {
         value = '已取消'
       } else if (value === '2' || value === '6') {

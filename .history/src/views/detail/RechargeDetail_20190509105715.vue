@@ -225,8 +225,8 @@ export default {
       post(url, data)
         .then(res => {
           this.orderDetailData = res.data.list.order_detail
-          this.payway = this.orderDetailData.pay_type || 0
-          this.orderType = this.orderDetailData.status || 0
+          this.payway = this.orderDetailData.pay_type
+          this.orderType = this.orderDetailData.status
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
           this.payTypeMsg()

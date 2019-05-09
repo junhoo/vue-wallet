@@ -110,6 +110,7 @@ export default {
       let url = this.$api.order + '/api/order/endRechangeOrder'
       post(url, data)
         .then(res => {
+          // this.$router.push({name: 'Order'})
           this.$router.go(-1)
         })
         .catch(e => {
@@ -126,6 +127,7 @@ export default {
       let url = this.$api.order + '/api/order/confirmOrder'
       post(url, data)
         .then(res => {
+          // this.$router.push({name: 'Order'})
           this.$router.go(-1)
         })
         .catch(e => {

@@ -224,6 +224,8 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
+          console.log(111)
+          console.log(res)
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0

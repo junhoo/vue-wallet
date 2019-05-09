@@ -100,7 +100,6 @@ export default {
         freezing_amount: 2000
       }
     }, 500)
-    this.getCurOrder()
   },
   data () {
     return {
@@ -134,19 +133,19 @@ export default {
   methods: {
     getCurOrder () {
       // http://order.service.168mi.cn
-      console.log(' ')
-      console.log('home: 获取A端订单')
+      console.log('')
+      console.log('获取A端订单')
       const url = this.$api.order + '/api/order/getOrderForA'
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
-          console.log('home: res', res)
+          console.log('res', res)
           const _list = res.data.list
           if (!_list) { return }
           _list.a_status_str = decodeURIComponent(_list.a_status_str)
 
           if (_list.a_status_str === '接单用户取消,匹配中') {
-            console.log('home: rematch')
+            console.log('rematch')
             this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
             this.order_no = _list.order_no
             this.order_type = _list.order_type
@@ -159,7 +158,7 @@ export default {
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           // console.log(pools[_list.a_status_str])
           if (pools.includes(_list.a_status_str)) {
-            console.log('home: yes')
+            console.log('yes')
             this.onmessage(mock)
           }
         })
@@ -169,13 +168,13 @@ export default {
     },
 
     testAes () {
-      console.log('home: === xxx')
+      console.log('=== xxx')
       const addstring = '6666666'
       const encode = encrypt(addstring)
       const decode = decrypt(encode)
-      console.log('home: === 原值' + addstring)
-      console.log('home: === 加密' + encode)
-      console.log('home: === 解密' + decode)
+      console.log('=== 原值' + addstring)
+      console.log('=== 加密' + encode)
+      console.log('=== 解密' + decode)
     },
 
     autoLogin () {
@@ -186,7 +185,7 @@ export default {
 
       post(url, data)
         .then(res => {
-          console.log('home: 1.0登录')
+          console.log('1.0登录')
           const _obj = res.data.list
           if (typeof _obj === 'string') {
             // token 8679Nhv6Un3dlCtgaHencsb0YZA9WN0CLbOXvy8Sf9pakR6SLRon617IlzRqrSXLN3aK7A
@@ -209,7 +208,7 @@ export default {
 
       post(url, data)
         .then(res => {
-          console.log('home: 2.0用户信息')
+          console.log('2.0用户信息')
           const userInfo = res.data.list
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
@@ -231,7 +230,7 @@ export default {
       const url = this.$api.order + '/api/order/cancelRechangeOrder'
       post(url, data)
         .then(res => {
-          console.log('home: 取消订单成功')
+          console.log('取消订单成功')
           this.showMatching = false
         })
         .catch(e => {
@@ -242,7 +241,7 @@ export default {
     },
 
     clickCancel () {
-      console.log('home: 去取消订单')
+      console.log('去取消订单')
       this.cancelOrder()
     },
 
@@ -268,7 +267,7 @@ export default {
 
     onChildSubmit (type) {
       if (type === '去匹配') {
-        console.log('home: home 下单成功-显示匹配')
+        console.log('home 下单成功-显示匹配')
         this.showMatching = true
         return
       }
@@ -288,7 +287,7 @@ export default {
     },
 
     onChildDetail (type) {
-      console.log('home: === 详情点击 ===')
+      console.log('=== 详情点击 ===')
       console.log(type)
       if (type.includes('充值')) {
         this.timerLink = setTimeout(() => {
@@ -310,7 +309,7 @@ export default {
 
     onChildPopup (val) {
       let type = val
-      console.log('home: === 弹窗入口 ===')
+      console.log('=== 弹窗入口 ===')
       if (this.timerLink) {
         clearTimeout(this.timerLink)
       }
@@ -349,7 +348,7 @@ export default {
     },
 
     onmessage (info) {
-      console.log('home: === 消息入口 ===')
+      console.log('=== 消息入口 ===')
       // a_status_str = 匹配中 匹配成功 已取消 交易完成|确认收款 未到账 接单用户取消 重新匹配成功 交易完成 自动收款 ->未知字段
       const orderInfo = info.data
       const orderType = orderInfo.a_status_str
