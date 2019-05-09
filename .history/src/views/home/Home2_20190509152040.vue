@@ -308,7 +308,7 @@ export default {
       if (type.includes('提现')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
@@ -347,9 +347,8 @@ export default {
       // 跳转提现详情
       if (type === '去确认收款' || type === '提现查看订单') {
         this.timerLink = setTimeout(() => {
-          console.log('aaa')
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)

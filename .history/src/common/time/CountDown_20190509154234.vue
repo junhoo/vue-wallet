@@ -31,6 +31,8 @@ export default {
     }
   },
   mounted () {
+    console.log('mmmmmm')
+    console.log(this.endTime)
     this.countdowm(this.endTime, this.timeType)
   },
   methods: {

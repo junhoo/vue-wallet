@@ -31,7 +31,6 @@
       <home-detail
                   v-show="hasDetail"
                   :type="detailType"
-                  :timed="rest_time"
                   :detailInfo="detailInfo"
                   v-on:onChildDetail='onChildDetail'>
       </home-detail>
@@ -129,7 +128,6 @@ export default {
         a_status_str: ''
       },
       order_no: '',
-      rest_time: 0,
       order_type: '1' // 1充值 2提现
     }
   },
@@ -148,8 +146,8 @@ export default {
           _list.a_status_str = decodeURIComponent(_list.a_status_str)
           var nowTime = new Date()
           nowTime = nowTime.getTime()
-          _list.rest_time = parseInt(nowTime) + parseInt(_list.rest_time) * 1000
-          this.rest_time = _list.rest_time
+          console.log('sss ' + _list.rest_time)
+          _list.a_status_str = parseInt(nowTime) + parseInt(_list.rest_time) * 1000
 
           if (_list.a_status_str === '接单用户取消,匹配中') {
             console.log('home: rematch')
@@ -229,7 +227,6 @@ export default {
     },
 
     cancelOrder () {
-      console.log('home: 去取消订单')
       let data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
@@ -238,24 +235,18 @@ export default {
       const url = this.$api.order + '/api/order/cancelRechangeOrder'
       post(url, data)
         .then(res => {
-          if (res.data.list === true) {
-            console.log('home: 取消订单成功')
-            this.showMatching = false
-            this.showPopup = false
-            this.hasDetail = false
-          } else {
-            console.log('home: 取消订单失败')
-            console.log(res.data.list)
-            this.showTopHint('取消订单错误')
-          }
+          console.log('home: 取消订单成功')
+          this.showMatching = false
         })
         .catch(e => {
           console.log(e)
+          // this.showTopHint('网络错误，不能访问1')
           this.showTopHint(e.msg)
         })
     },
 
     clickCancel () {
+      console.log('home: 去取消订单')
       this.cancelOrder()
     },
 
@@ -268,6 +259,16 @@ export default {
     clickMacthing () {
       this.showMatching = !this.showMatching
     },
+
+    // showTopHint () {
+    //   this.showHint = true
+    //   if (this.timerHint) {
+    //     clearTimeout(this.timerHint)
+    //   }
+    //   this.timerHint = setTimeout(() => {
+    //     this.showHint = false
+    //   }, 1500)
+    // },
 
     onChildSubmit (type) {
       if (type === '去匹配') {
@@ -291,12 +292,8 @@ export default {
     },
 
     onChildDetail (type) {
-      console.log('home: >>> 详情点击')
+      console.log('home: === 详情点击 ===')
       console.log(type)
-      if (type === '取消订单') {
-        this.cancelOrder()
-        return
-      }
       if (type.includes('充值')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
@@ -308,7 +305,7 @@ export default {
       if (type.includes('提现')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
@@ -317,7 +314,7 @@ export default {
 
     onChildPopup (val) {
       let type = val
-      console.log('home: >>> 弹窗入口')
+      console.log('home: === 弹窗入口 ===')
       if (this.timerLink) {
         clearTimeout(this.timerLink)
       }
@@ -347,9 +344,8 @@ export default {
       // 跳转提现详情
       if (type === '去确认收款' || type === '提现查看订单') {
         this.timerLink = setTimeout(() => {
-          console.log('aaa')
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
@@ -357,7 +353,7 @@ export default {
     },
 
     onmessage (info) {
-      console.log('home: >>> 消息入口')
+      console.log('home: === 消息入口 ===')
       // a_status_str = 匹配中 匹配成功 已取消 交易完成|确认收款 未到账 接单用户取消 重新匹配成功 交易完成 自动收款 ->未知字段
       const orderInfo = info.data
       const orderType = orderInfo.a_status_str
@@ -403,7 +399,7 @@ export default {
         this.detailType = '提现未到账'
       }
 
-      if (orderType.includes('交易完成')) {
+      if (orderType === '交易完成' || orderType === '确认收款') {
         this.hasDetail = false
         this.popupName = '交易完成'
         this.showPopup = true
@@ -417,6 +413,11 @@ export default {
         return
       }
 
+      // stateName = '交易完成'
+      // if (this.timerPopup) {
+      //   clearTimeout(this.timerPopup)
+      // }
+      // this.timerPopup = setTimeout(() => {
       if (stateName === '结束') { return }
       this.popupAccount = orderInfo.account
       this.showMatching = false
@@ -429,6 +430,7 @@ export default {
       } else {
         this.showPopup = true
       }
+      // }, 1000)
     },
 
     showTopHint (info) {

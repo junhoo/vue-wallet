@@ -9,13 +9,9 @@
           }">
         <span v-if="detailInfo.order_type == 1" class="top-text">{{detailInfo.a_status_str| filterLeftState}}</span>
         <span v-else class="top-text">{{detailInfo.a_status_str| takeoutLeftState}}</span>
+        {{detailInfo.a_status_str.includes('匹配成功')}}
         <template v-if="detailInfo.a_status_str.includes('匹配成功')">
-          <count-down
-            class="top-state"
-            :endTime="timed"
-            endText="xxxx"
-            timeType='zh'>
-          </count-down>
+          <count-down class="top-state" endTime="175266200000" endText="xxxx" timeType='zh'></count-down>
         </template>
         <template v-else-if="detailInfo.order_type == 1" >
           <span class="top-state">充值-{{detailInfo.a_status_str | filterRightState}}</span>
@@ -35,6 +31,7 @@
         </div>
 
       <div class="text-box-3" v-show="type === '提现' || type === '提现未到账'">
+        <!-- {{detailInfo.pay_type | filterCollection}} -->
         <span class="text-left">收款方式</span><span class="text-right">{{detailInfo.account}}</span>
         </div>
       <div class="text-box-4" v-show="type === '充值' || type === '充值未到账'">
@@ -67,7 +64,7 @@
       <!-- 按钮区 -->
       <div class="button-box" v-show=" type === '充值'">
         <button class="pay-btn" @click="clickJump()">立即付款</button>
-        <button class="cancel-btn" @click="clickJump('取消订单')"><span class="cancel-text">取消订单</span></button>
+        <button class="cancel-btn" @click="clickJump()"><span class="cancel-text">取消订单</span></button>
       </div>
 
       <div class="button-box" v-show="type === '提现'">
@@ -92,7 +89,6 @@ export default {
   name: 'HomeDetail',
   props: {
     type: String,
-    timed: Number,
     detailInfo: {}
   },
   components: {
@@ -106,9 +102,8 @@ export default {
     }
   },
   methods: {
-    clickJump (name = '') {
-      const type = name === '取消订单' ? '取消订单' : this.type
-      this.$emit('onChildDetail', type)
+    clickJump () {
+      this.$emit('onChildDetail', this.type)
     }
   },
   filters: {
@@ -133,6 +128,8 @@ export default {
       return pools[name]
     },
     filterRightState (name) {
+      console.log('充值-rrrr')
+      console.log(name)
       const pools = {
         '匹配成功': '定时***',
         '未到账': '等待对方确认收款',
@@ -141,6 +138,7 @@ export default {
       return pools[name]
     },
     takeoutRightState (name) {
+      console.log('提现-rrrr')
       const pools = {
         '匹配成功': '等待买家付款',
         '重新匹配成功': '等待买家付款',

@@ -12,8 +12,8 @@ export default {
   },
   props: {
     endTime: {
-      type: Number,
-      default: 0
+      type: String,
+      default: ''
     },
     endText: {
       type: String,

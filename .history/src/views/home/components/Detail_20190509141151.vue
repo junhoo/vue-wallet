@@ -35,6 +35,7 @@
         </div>
 
       <div class="text-box-3" v-show="type === '提现' || type === '提现未到账'">
+        <!-- {{detailInfo.pay_type | filterCollection}} -->
         <span class="text-left">收款方式</span><span class="text-right">{{detailInfo.account}}</span>
         </div>
       <div class="text-box-4" v-show="type === '充值' || type === '充值未到账'">
@@ -67,7 +68,7 @@
       <!-- 按钮区 -->
       <div class="button-box" v-show=" type === '充值'">
         <button class="pay-btn" @click="clickJump()">立即付款</button>
-        <button class="cancel-btn" @click="clickJump('取消订单')"><span class="cancel-text">取消订单</span></button>
+        <button class="cancel-btn" @click="clickJump()"><span class="cancel-text">取消订单</span></button>
       </div>
 
       <div class="button-box" v-show="type === '提现'">
@@ -106,9 +107,8 @@ export default {
     }
   },
   methods: {
-    clickJump (name = '') {
-      const type = name === '取消订单' ? '取消订单' : this.type
-      this.$emit('onChildDetail', type)
+    clickJump () {
+      this.$emit('onChildDetail', this.type)
     }
   },
   filters: {

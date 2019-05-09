@@ -85,10 +85,10 @@ export default {
         } else {
           console.log('-1 服务器 挂了')
           clearInterval(this.timerHeart)
-          this.restart()
+          this.init()
         }
         console.log('')
-      }, 10000)
+      }, 15000)
     },
     open () {
       console.log('1.0 socket打开成功')
@@ -197,22 +197,11 @@ export default {
         }, 1800)
       }
     },
-    restart () {
-      if (this.timerConnect) {
-        clearTimeout(this.timerConnect)
-      }
-      this.timerConnect = setTimeout(() => {
-        console.log('webs 重新连接')
-        this.init()
-      }, 5000)
-    },
     close () {
       console.log('socket已经关闭')
-      this.restart()
     },
     error () {
       console.log('error 连接错误')
-      this.restart()
     }
   },
   destroyed () {

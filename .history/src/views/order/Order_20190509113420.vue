@@ -96,6 +96,7 @@ export default {
         token: sessionStorage.getItem('randomcode'),
         order_type: index + 1
       }
+      console.log(data.order_type)
       const url = this.$api.order + '/api/order/getOrderList'
       if (this.timer) {
         clearTimeout(this.timer)
@@ -104,12 +105,16 @@ export default {
         post(url, data)
           .then(res => {
             let _list = res.data.list.list
+            console.log(_list)
             for (const val of _list) {
               if (val.status === 4 || val.status === 8) {
                 val.status_str = '已取消'
               }
             }
-            this.showNoImg = _list.length === 0
+            console.log('length ' + _list.length)
+            if (_list.length === 0) {
+              this.showNoImg = true
+            }
             this.orderList = _list
             this.loadingVal = false
           })

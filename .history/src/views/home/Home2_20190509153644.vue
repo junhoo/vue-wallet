@@ -308,7 +308,7 @@ export default {
       if (type.includes('提现')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)

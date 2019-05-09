@@ -1,10 +1,7 @@
 <template>
 <div>
  <common-header title="订单详情"></common-header>
-  <div class="loading" v-if="!orderType">
-    <van-loading type="spinner" color="white"/>
-  </div>
-  <div v-else class="recharge">
+  <div class="recharge">
     <div class="rechargeMain">
        <!-- 订单信息 -->
        <section>
@@ -91,9 +88,10 @@ export default {
     return {
       order_type: 2, // 订单类型 1.充值 2.提现
       payway: '', // 1.支付宝 2.微信 3.银行卡
-      orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)y
+      orderType: 0, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
+      imgUrl: '~imgurl/copy-icon.png', // 付款二维码
       orderDetailData: {}, // 订单详情信息
-      order_no: null // 订单编号
+      order_no: 123 // 订单编号
     }
   },
   created () {
@@ -135,6 +133,8 @@ export default {
   },
   filters: {
     orderStatus: function (value) {
+      console.log('filter')
+      console.log(value)
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '已取消'
@@ -158,28 +158,6 @@ export default {
   content: '';
   display: block;
   clear: both;
-}
-.loadingloading{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  .van-loading{
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    padding: 50px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%);
-    border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    .van-loading__spinner{
-      width: 60px;
-      height: 60px;
-    }
-  }
 }
 .recharge{
   position: fixed;
