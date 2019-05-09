@@ -244,7 +244,7 @@ export default {
       ctx.drawImage(img, 0, 0, width, height)
 
       // 进行最小压缩
-      let ndata = canvas.toDataURL('image/jpeg', 0.1)
+      let ndata = canvas.toDataURL('image/jpeg', 0.8)
       console.log('*******压缩后的图片大小*******')
       // console.log(ndata)
       console.log(ndata.length)
@@ -285,29 +285,26 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 5000) {
-        reads.onloadend = function () {
-          let result = this.result
-          let img = new Image()
-          img.src = result
-          img.onload = function () {
-            let data = self.compress(img)
-            var formData = new FormData()
-            formData.append('file', self.convertBase64UrlToBlob(data), file.name)
+      reads.onloadend = function () {
+        let result = this.result
+        let img = new Image()
+        img.src = result
+        img.onload = function () {
+          let data = self.compress(img)
+          var formData = new FormData()
+          formData.append('file', self.convertBase64UrlToBlob(data), file.name)
 
-            console.log('1.0')
-            console.log(formData.get('file'))
-            self.updateInfo(formData)
-          }
+          console.log('1.0')
+          console.log(formData.get('file'))
+          self.updateInfo(formData)
         }
-      } else {
-        let param = new FormData()
-        param.append('file', file, file.name)
-        param.append('type', '1')
-        console.log('2.0')
-        console.log(param.get('file'))
-        self.updateInfo(param)
       }
+      // let param = new FormData()
+      // param.append('file', file, file.name)
+      // param.append('type', '1')
+      // console.log('2.0')
+      // console.log(param.get('file'))
+      // self.updateInfo(param)
     },
 
     updateInfo (param) {
