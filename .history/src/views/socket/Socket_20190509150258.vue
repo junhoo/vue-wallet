@@ -202,7 +202,6 @@ export default {
         clearTimeout(this.timerConnect)
       }
       this.timerConnect = setTimeout(() => {
-        console.log('webs 重新连接')
         this.init()
       }, 5000)
     },

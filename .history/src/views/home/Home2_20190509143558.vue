@@ -238,19 +238,14 @@ export default {
       const url = this.$api.order + '/api/order/cancelRechangeOrder'
       post(url, data)
         .then(res => {
-          if (res.data.list === true) {
-            console.log('home: 取消订单成功')
-            this.showMatching = false
-            this.showPopup = false
-            this.hasDetail = false
-          } else {
-            console.log('home: 取消订单失败')
-            console.log(res.data.list)
-            this.showTopHint('取消订单错误')
-          }
+          console.log('home: 取消订单成功')
+          this.showMatching = false
+          this.showPopup = false
+          this.hasDetail = false
         })
         .catch(e => {
           console.log(e)
+          // this.showTopHint('网络错误，不能访问1')
           this.showTopHint(e.msg)
         })
     },
@@ -268,6 +263,16 @@ export default {
     clickMacthing () {
       this.showMatching = !this.showMatching
     },
+
+    // showTopHint () {
+    //   this.showHint = true
+    //   if (this.timerHint) {
+    //     clearTimeout(this.timerHint)
+    //   }
+    //   this.timerHint = setTimeout(() => {
+    //     this.showHint = false
+    //   }, 1500)
+    // },
 
     onChildSubmit (type) {
       if (type === '去匹配') {
@@ -308,7 +313,7 @@ export default {
       if (type.includes('提现')) {
         this.timerLink = setTimeout(() => {
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
@@ -347,9 +352,8 @@ export default {
       // 跳转提现详情
       if (type === '去确认收款' || type === '提现查看订单') {
         this.timerLink = setTimeout(() => {
-          console.log('aaa')
           this.$router.push({
-            name: 'WithdrawalDetail',
+            name: 'withdrawalDetail',
             query: { order_no: this.order_no }
           })
         }, 50)
@@ -417,6 +421,11 @@ export default {
         return
       }
 
+      // stateName = '交易完成'
+      // if (this.timerPopup) {
+      //   clearTimeout(this.timerPopup)
+      // }
+      // this.timerPopup = setTimeout(() => {
       if (stateName === '结束') { return }
       this.popupAccount = orderInfo.account
       this.showMatching = false
@@ -429,6 +438,7 @@ export default {
       } else {
         this.showPopup = true
       }
+      // }, 1000)
     },
 
     showTopHint (info) {

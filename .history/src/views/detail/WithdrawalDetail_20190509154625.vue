@@ -133,6 +133,8 @@ export default {
   },
   filters: {
     orderStatus: function (value) {
+      console.log('filter')
+      console.log(value)
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '已取消'

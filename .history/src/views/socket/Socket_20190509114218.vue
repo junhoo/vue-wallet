@@ -13,7 +13,6 @@ export default {
       existServer: false,
       timerHeart: null,
       timerPopup: null,
-      timerConnect: null,
       path: 'ws://192.168.1.249:9508',
       websocket: '',
       randomStr: ''
@@ -85,30 +84,17 @@ export default {
         } else {
           console.log('-1 服务器 挂了')
           clearInterval(this.timerHeart)
-          this.restart()
+          this.init()
         }
         console.log('')
-      }, 10000)
+      }, 15000)
     },
     open () {
       console.log('1.0 socket打开成功')
       this.send()
     },
-    send () {
-      console.log('2.0 socket发送')
-      this.randomStr = Math.random().toString(36).substr(2)
-      const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
-      const data = {
-        'from_uid': userMsg.id, // 用户id
-        'to_uid': 10000, // 接收id
-        'type': 101, // 类型
-        'rand_str': this.randomStr,
-        'msg': {
-          'device': 'android 6.7.8.9' // 设备号
-        }
-      }
-      const params = JSON.stringify(data)
-      this.websocket.send(params)
+    error () {
+      console.log('error 连接错误')
     },
     message (msg) {
       let res = msg.data
@@ -194,25 +180,27 @@ export default {
         this.timerPopup = setTimeout(() => {
           res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
           this.$emit('onChildSocket', res.msg)
-        }, 1800)
+        }, 2000)
       }
     },
-    restart () {
-      if (this.timerConnect) {
-        clearTimeout(this.timerConnect)
+    send () {
+      console.log('2.0 socket发送')
+      this.randomStr = Math.random().toString(36).substr(2)
+      const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
+      const data = {
+        'from_uid': userMsg.id, // 用户id
+        'to_uid': 10000, // 接收id
+        'type': 101, // 类型
+        'rand_str': this.randomStr,
+        'msg': {
+          'device': 'android 6.7.8.9' // 设备号
+        }
       }
-      this.timerConnect = setTimeout(() => {
-        console.log('webs 重新连接')
-        this.init()
-      }, 5000)
+      const params = JSON.stringify(data)
+      this.websocket.send(params)
     },
     close () {
       console.log('socket已经关闭')
-      this.restart()
-    },
-    error () {
-      console.log('error 连接错误')
-      this.restart()
     }
   },
   destroyed () {

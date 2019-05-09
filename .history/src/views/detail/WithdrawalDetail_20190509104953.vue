@@ -9,7 +9,7 @@
            <li>
              <span class="m_left" :class="{'skyblue':orderType == 6, 'blue':orderType == 5, 'orange':orderType == 7, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
               <template>
-                <count-down v-show="orderType == 2" :endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
+                <count-down v-show="orderType == 2" endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
               </template>
               <template>
                 <i v-show="orderType == 6" class="m_right">等待买方付款</i>
@@ -88,7 +88,7 @@ export default {
     return {
       order_type: 2, // 订单类型 1.充值 2.提现
       payway: '', // 1.支付宝 2.微信 3.银行卡
-      orderType: 0, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
+      orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
       imgUrl: '~imgurl/copy-icon.png', // 付款二维码
       orderDetailData: {}, // 订单详情信息
       order_no: 123 // 订单编号
@@ -142,8 +142,6 @@ export default {
         value = '已匹配'
       } else if (value === '7') {
         value = '待确认'
-      } else {
-        value = ''
       }
       return value
     }

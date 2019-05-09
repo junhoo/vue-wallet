@@ -12,8 +12,8 @@ export default {
   },
   props: {
     endTime: {
-      type: Number,
-      default: 0
+      type: String,
+      default: ''
     },
     endText: {
       type: String,
@@ -41,7 +41,9 @@ export default {
         // var createTime = (new Date('2019/04/03 11:30:00')).getTime() // 得到毫秒数
 
         let nowTime = new Date()
-        let t = parseInt(timestamp) - parseInt(nowTime.getTime())
+        let t = timestamp - nowTime.getTime()
+        console.log(timestamp + '' + nowTime.getTime())
+        console.log(t)
         if (t > 0) {
           let day = Math.floor(t / 86400000)
           let hour = Math.floor((t / 3600000) % 24)
