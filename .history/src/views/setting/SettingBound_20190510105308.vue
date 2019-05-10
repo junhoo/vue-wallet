@@ -121,7 +121,6 @@
 <script>
 import axios from 'axios'
 import { post } from '@/assets/js/fetch'
-import { compress, convertBase64UrlToBlob } from '@/assets/js/yasuo'
 // import DialogBox from 'common/dialog/Dialog'
 import OrderPopup from 'common/popup/Popup'
 import CommonHeader from 'common/header/Header'
@@ -255,15 +254,18 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 3000) {
+      if (file.size / 1024 > 5000) {
         reads.onloadend = function () {
           let result = this.result
           let img = new Image()
           img.src = result
           img.onload = function () {
-            let data = compress(img)
+            let data = self.compress(img)
             var formData = new FormData()
-            formData.append('file', convertBase64UrlToBlob(data), file.name)
+            formData.append('file', self.convertBase64UrlToBlob(data), file.name)
+
+            console.log('1.0')
+            console.log(formData.get('file'))
             self.updateInfo(formData)
           }
         }
@@ -271,6 +273,8 @@ export default {
         let param = new FormData()
         param.append('file', file, file.name)
         param.append('type', '1')
+        console.log('2.0')
+        console.log(param.get('file'))
         self.updateInfo(param)
       }
     },
@@ -283,7 +287,9 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-
+      // let param = new FormData()
+      // param.append('file', file, file.name)
+      // param.append('type', '1')
       post(url, param)
         .then(res => {
           // console.log(param, 'azaz')
@@ -307,6 +313,13 @@ export default {
     // 获取绑定信息
     getListInfo (type, isbound) {
       if (isbound !== 'y') return
+      // const data = {
+      //   'app-name': '',
+      //   'merchant_type': '1',
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      // let data = this.postFormat
       const data = { token: sessionStorage.getItem('randomcode') }
       let url = this.$api.user
       if (type === 'bank') {
@@ -316,6 +329,13 @@ export default {
       } else if (type === 'wechat') {
         url += '/api/Bindpay/getWeChatLists'
       }
+      // axios.post(url, data)
+      //   .then(res => {
+      //     res = res.data
+      //     if (res.code === 10000) {
+      //     } else {
+      //       this.showTopHint(res.msg)
+      //     }
 
       post(url, data)
         .then(res => {
@@ -391,6 +411,7 @@ export default {
           return
         }
       }
+      // this.dialogBoxVal = true
       this.showPopup = true
     },
 
@@ -405,6 +426,9 @@ export default {
       if (entryType === 'bank') {
         data = this.apiBank
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/bankInfoUpdate'
@@ -412,6 +436,9 @@ export default {
       } else if (entryType === 'wechat') {
         data = this.apiWechat
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateWeChatInfo'
@@ -419,6 +446,9 @@ export default {
       } else if (entryType === 'alipay') {
         data = this.apiAlipay
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateAlipayInfo'
@@ -427,11 +457,18 @@ export default {
         data = {}
       }
 
+      // axios.post(url, data)
+      //   .then(res => {
+      //       res = res.data
+      //     if (res.code === 10000) {
+      //       } else {
+      //           this.showTopHint(res.msg)
+      //     }
       data.token = sessionStorage.getItem('randomcode')
       post(url, data)
         .then(res => {
           sessionStorage.setItem('istrue', this.istrue.toString())
-          this.toast('保存成功', 1500)
+          this.showTopHint('保存成功', 1500)
           this.getUserMsg()
         })
         .catch(e => {
@@ -441,6 +478,7 @@ export default {
     },
 
     getUserMsg () {
+      // let data = this.postFormat
       const data = { token: sessionStorage.getItem('randomcode') }
       let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
@@ -491,10 +529,8 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
   bottom: 0;
-  overflow-y: scroll;
   box-sizing: border-box;
   background-color: #F5F5F5;
   .hint {

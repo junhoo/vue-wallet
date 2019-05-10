@@ -7,7 +7,7 @@
           <p class="empty"></p>
           <p class="icon-setting"></p>
         </div>
-        <div class="middle" @click="getTotalCoin()">Wallet</div>
+        <div class="middle" @click="getMoney()">Wallet</div>
         <div class="right">
           <p class="empty"></p>
           <p class="icon-option" @click="jumpOrderPage()"></p>
@@ -95,9 +95,6 @@ export default {
     this.postFormat = format
     this.autoLogin()
     sessionStorage.setItem('reqformat', JSON.stringify(format))
-    if (sessionStorage.getItem('randomcode')) {
-      this.getTotalCoin()
-    }
     this.getCurOrder()
   },
   data () {
@@ -162,7 +159,7 @@ export default {
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           // console.log(pools[_list.a_status_str])
           if (pools.includes(_list.a_status_str)) {
-            console.log('home: oldshow')
+            console.log('home: yes')
             this.onmessage(mock)
           }
         })
@@ -211,12 +208,13 @@ export default {
       const url = 'http://user.service.168mi.cn/api/User/getTotalCoin'
       post(url, data)
         .then(res => {
-          console.log('home: 2.1积分')
           console.log(res)
-          this.headerInfo.amount_income = res.data.list
+          console.log('home: 2.1积分')
+          // const _obj = res.data.list
         })
         .catch(e => {
           console.log(e)
+          this.headerInfo.amount_income = e.data.total
           this.showTopHint('网络错误2.1')
         })
     },
@@ -232,7 +230,8 @@ export default {
           const userInfo = res.data.list
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
-          // this.$refs.socket.init()
+          this.$refs.socket.init()
+          // this.getHomeInfo()
         })
         .catch(e => {
           console.log(e)

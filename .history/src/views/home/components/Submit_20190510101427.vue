@@ -23,7 +23,6 @@
     <!-- 输入框 -->
     <div class="input-box">
       <p class="text" v-text="inputHint"></p>
-      <p class="blank"></p>
       <input
           type="text"
           v-model="keyword"
@@ -417,6 +416,7 @@ export default {
   }
   .input-box {
     position: relative;
+    // height: 211px;
     color: #BBBBBB;
     font-size: 26px;
     padding-top: 81px;
@@ -424,17 +424,14 @@ export default {
     .text {
       font-size: 26px;
     }
-    .blank {
-      height: 45px;
-    }
-    .inputs {
-      box-sizing: border-box;
+    .inputs { // 104
+      padding-top: 45px;
       width: 90%;
-      height: 50px;
-      line-height: 50px;
-      margin-bottom: 16px;
+      height: 43px;
+      padding-bottom: 16px;
       font-size: 50px;
-      color: #050505;
+      color: #050505; // #999;
+      border: 1px solid red;
     }
     ::-webkit-input-placeholder { /* WebKit browsers */
       font-size: 26px;

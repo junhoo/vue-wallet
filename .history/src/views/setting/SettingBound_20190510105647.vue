@@ -255,7 +255,7 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 3000) {
+      if (file.size / 1024 > 5000) {
         reads.onloadend = function () {
           let result = this.result
           let img = new Image()
@@ -264,6 +264,9 @@ export default {
             let data = compress(img)
             var formData = new FormData()
             formData.append('file', convertBase64UrlToBlob(data), file.name)
+
+            console.log('1.0')
+            console.log(formData.get('file'))
             self.updateInfo(formData)
           }
         }
@@ -271,6 +274,8 @@ export default {
         let param = new FormData()
         param.append('file', file, file.name)
         param.append('type', '1')
+        console.log('2.0')
+        console.log(param.get('file'))
         self.updateInfo(param)
       }
     },
@@ -431,7 +436,7 @@ export default {
       post(url, data)
         .then(res => {
           sessionStorage.setItem('istrue', this.istrue.toString())
-          this.toast('保存成功', 1500)
+          this.showTopHint('保存成功', 1500)
           this.getUserMsg()
         })
         .catch(e => {
@@ -491,10 +496,8 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
   bottom: 0;
-  overflow-y: scroll;
   box-sizing: border-box;
   background-color: #F5F5F5;
   .hint {
