@@ -431,13 +431,12 @@ export default {
       post(url, data)
         .then(res => {
           sessionStorage.setItem('istrue', this.istrue.toString())
+          this.toast('保存成功', 1500)
           this.getUserMsg()
-          this.$toast('保存成功', 1500)
         })
         .catch(e => {
-          this.getUserMsg()
           console.log(e)
-          this.showTopHint(e.msg)
+          this.showTopHint('网络错误5')
         })
     },
 

@@ -114,7 +114,6 @@
 
 <script>
 import { post } from '@/assets/js/fetch'
-import { compress, convertBase64UrlToBlob } from '@/assets/js/fileTools'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'SettingBound',
@@ -237,17 +236,17 @@ export default {
             let data = compress(img)
             var formData = new FormData()
             formData.append('file', convertBase64UrlToBlob(data), file.name)
-            that.updateInfo(formData, i)
+            self.updateInfo(formData)
           }
         }
       } else {
         let param = new FormData()
         param.append('file', file, file.name)
         param.append('type', '1')
-        that.updateInfo(param, i)
+        self.updateInfo(param)
       }
     },
-    updateInfo (param, i) {
+    updateInfo (param) {
       let url = this.$api.user
       if (this.liActive === 1) {
         url += '/api/Upload/uploadIdCardFile'
@@ -276,7 +275,7 @@ export default {
           }
         })
         .catch(e => {
-          this.$toast(e.msg)
+          this.$toast('网络错误')
         })
     },
     submit (index) {
@@ -337,7 +336,7 @@ export default {
           }
         })
         .catch(e => {
-          this.$toast(e.msg)
+          this.$toast('网络错误')
         })
     },
 

@@ -277,6 +277,7 @@ export default {
         })
         .catch(e => {
           this.$toast(e.msg)
+          // this.$toast('网络错误')
         })
     },
     submit (index) {
@@ -337,7 +338,7 @@ export default {
           }
         })
         .catch(e => {
-          this.$toast(e.msg)
+          this.$toast('网络错误')
         })
     },
 

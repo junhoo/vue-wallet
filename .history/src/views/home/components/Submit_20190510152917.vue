@@ -266,6 +266,15 @@ export default {
           console.log('提交订单成功：')
           console.log(res)
           this.$emit('onChildSubmit', '去匹配')
+          // this.postFormat.choice_pay_type = ''
+          // const matchs = res.data.list.match
+          // const orderNo = res.data.list.order_no
+          // localStorage.setItem('matchOrderState', matchs)
+          // localStorage.setItem('matchOrderNo', orderNo)
+          // this.getOrderInfo('1') // 提交刷新订单
+          // this.getHomeInfo()
+          // 后台匹配订单
+          // this.matchingOrder()
         })
         .catch(e => {
           console.log('提交订单错误：')

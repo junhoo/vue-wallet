@@ -437,6 +437,7 @@ export default {
         .catch(e => {
           this.getUserMsg()
           console.log(e)
+          // alert(JSON.stringify(e))
           this.showTopHint(e.msg)
         })
     },

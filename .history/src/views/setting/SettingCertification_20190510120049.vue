@@ -237,14 +237,14 @@ export default {
             let data = compress(img)
             var formData = new FormData()
             formData.append('file', convertBase64UrlToBlob(data), file.name)
-            that.updateInfo(formData, i)
+            self.updateInfo(formData, item)
           }
         }
       } else {
         let param = new FormData()
-        param.append('file', file, file.name)
+        param.append('file', file, file.name, item)
         param.append('type', '1')
-        that.updateInfo(param, i)
+        self.updateInfo(param, item)
       }
     },
     updateInfo (param, i) {
@@ -276,7 +276,7 @@ export default {
           }
         })
         .catch(e => {
-          this.$toast(e.msg)
+          this.$toast('网络错误')
         })
     },
     submit (index) {
@@ -337,7 +337,7 @@ export default {
           }
         })
         .catch(e => {
-          this.$toast(e.msg)
+          this.$toast('网络错误')
         })
     },
 

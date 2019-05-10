@@ -119,6 +119,13 @@ export default {
       this.getUser()
     }
   },
+  // computed: {
+  //   headerInfo () {
+  //     this.homeInfo = this.headerInfo
+  //     console.log(this.headerInfo)
+  //     console.log(this.homeInfo)
+  //   }
+  // },
   methods: {
     getUser () {
       this.selectAlipay = this.boundState.ali_pay
@@ -211,10 +218,10 @@ export default {
       }
 
       const picktext = this.selectButton === '充值' ? '充值' : '提现'
-      if (parseInt(inputMoney) === 0) {
-        this.showTopHint(picktext + '积分不能为0')
-        return
-      }
+      // if (parseInt(inputMoney) === 0) {
+      //   this.showTopHint(picktext + '积分不能为0')
+      //   return
+      // }
       if (inputMoney === '') {
         var exp = /^(([1-9]\d*)|\d)(\.\d{1,2})?$/
         if (!exp.test(inputMoney)) {
@@ -266,6 +273,15 @@ export default {
           console.log('提交订单成功：')
           console.log(res)
           this.$emit('onChildSubmit', '去匹配')
+          // this.postFormat.choice_pay_type = ''
+          // const matchs = res.data.list.match
+          // const orderNo = res.data.list.order_no
+          // localStorage.setItem('matchOrderState', matchs)
+          // localStorage.setItem('matchOrderNo', orderNo)
+          // this.getOrderInfo('1') // 提交刷新订单
+          // this.getHomeInfo()
+          // 后台匹配订单
+          // this.matchingOrder()
         })
         .catch(e => {
           console.log('提交订单错误：')
