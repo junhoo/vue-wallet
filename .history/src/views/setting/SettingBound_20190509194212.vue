@@ -229,6 +229,23 @@ export default {
     onRead (file) {
       console.log(file)
     },
+    // 通过canvas压缩图片
+    // var reader = new FileReader()
+    // reader.readAsDataURL(file)
+    // var img = new Image()
+    // reader.onload = function (e) {
+    //   var width = 1080 // 图像大小
+    //   var quality = 0.2 // 图像质量
+    //   var canvas = document.createElement('canvas')
+    //   var drawer = canvas.getContext('2d')
+    //   img.src = this.result
+    //   img.onload = function () {
+    //     canvas.width = width
+    //     canvas.height = width * (img.height / img.width)
+    //     drawer.drawImage(img, 0, 0, canvas.width, canvas.height)
+    //     img.src = canvas.toDataURL('image/png', quality)
+    //   }
+    // }
     // 压缩图片
     compress (img) {
       let canvas = document.createElement('canvas')
@@ -245,22 +262,30 @@ export default {
 
       // 进行最小压缩
       let ndata = canvas.toDataURL('image/jpeg', 0.1)
-      console.log('*******压缩后的图片大小*******')
+      // console.log('*******压缩后的图片大小*******')
       // console.log(ndata)
-      console.log(ndata.length)
+      // console.log(ndata.length)
       return ndata
     },
-
-    convertBase64UrlToBlob (urlData) {
-      var bytes = atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
-      var ab = new ArrayBuffer(bytes.length)
-      var ia = new Uint8Array(ab)
-      for (var i = 0; i < bytes.length; i++) {
-        ia[i] = bytes.charCodeAt(i)
+    // base64转成bolb对象
+    dataURItoBlob (base64Data) {
+      var byteString
+      if (base64Data.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(base64Data.split(',')[1])
+      } else {
+        byteString = unescape(base64Data.split(',')[1])
       }
-      return new Blob([ab], { type: 'image/png' })
-    },
 
+      var mimeString = base64Data
+        .split(',')[0]
+        .split(':')[1]
+        .split(';')[0]
+      var ia = new Uint8Array(byteString.length)
+      for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+      return new Blob([ia], { type: mimeString })
+    },
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
@@ -285,32 +310,39 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 5000) {
-        reads.onloadend = function () {
-          let result = this.result
-          let img = new Image()
-          img.src = result
-          img.onload = function () {
-            let data = self.compress(img)
-            var formData = new FormData()
-            formData.append('file', self.convertBase64UrlToBlob(data), file.name)
+      reads.onloadend = function () {
+        let result = this.result
+        let img = new Image()
+        img.src = result
+        // console.log('********未压缩前的图片大小********')
+        // console.log(result.length)
+        img.onload = function () {
+          let data = self.compress(img)
+          // self.imgUrl = result
+          // let blob = self.dataURItoBlob(data)
 
-            console.log('1.0')
-            console.log(formData.get('file'))
-            self.updateInfo(formData)
-          }
+          // console.log('*******base64转blob对象******')
+          // console.log(blob)
+
+          var formData = new FormData()
+          formData.append('file', data)
+          // formData.append('file', blob)
+          console.log('1.0')
+          // console.log(formData)
+          // console.log(formData.get('file'))
+          // self.updateInfo(formData)
         }
-      } else {
-        let param = new FormData()
-        param.append('file', file, file.name)
-        param.append('type', '1')
-        console.log('2.0')
-        console.log(param.get('file'))
-        self.updateInfo(param)
       }
+      let param = new FormData()
+      param.append('file', file, file.name)
+      param.append('type', '1')
+      console.log('2.0')
+      console.log(param.get('file'))
+      return
+      // self.updateInfo(file)
     },
 
-    updateInfo (param) {
+    updateInfo (file) {
       let url = this.$api.user
       const entryType = this.$route.query.type
       if (entryType === 'wechat') {
@@ -318,9 +350,9 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-      // let param = new FormData()
-      // param.append('file', file, file.name)
-      // param.append('type', '1')
+      let param = new FormData()
+      param.append('file', file, file.name)
+      param.append('type', '1')
       post(url, param)
         .then(res => {
           // console.log(param, 'azaz')

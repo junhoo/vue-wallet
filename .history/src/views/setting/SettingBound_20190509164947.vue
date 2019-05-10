@@ -26,7 +26,7 @@
           <input type="text" placeholder="请输入银行卡的开户支行" maxlength="10" v-model="apiBank.bank_sub_branch">
         </li>
         <li class="item">
-          <div class="name">收款备注</div>
+          <div class="name">收款备注1</div>
           <input type="text" placeholder="请输入收款备注" maxlength="20" v-model="apiBank.pay_remarks">
         </li>
       </ul>
@@ -229,44 +229,11 @@ export default {
     onRead (file) {
       console.log(file)
     },
-    // 压缩图片
-    compress (img) {
-      let canvas = document.createElement('canvas')
-      let ctx = canvas.getContext('2d')
-      // let initSize = img.src.length
-      let width = img.width
-      let height = img.height
-      canvas.width = width
-      canvas.height = height
-      // 铺底色
-      ctx.fillStyle = '#fff'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, 0, 0, width, height)
-
-      // 进行最小压缩
-      let ndata = canvas.toDataURL('image/jpeg', 0.1)
-      console.log('*******压缩后的图片大小*******')
-      // console.log(ndata)
-      console.log(ndata.length)
-      return ndata
-    },
-
-    convertBase64UrlToBlob (urlData) {
-      var bytes = atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
-      var ab = new ArrayBuffer(bytes.length)
-      var ia = new Uint8Array(ab)
-      for (var i = 0; i < bytes.length; i++) {
-        ia[i] = bytes.charCodeAt(i)
-      }
-      return new Blob([ab], { type: 'image/png' })
-    },
-
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
-      console.log(file)
       console.log(file.size)
-      console.log(file.size / 1024) // 518
+      console.log(file.size / 1024)
       if (!/image\/\w+/.test(file.type)) {
         this.showTopHint('请选择图片')
         return false
@@ -285,32 +252,25 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 5000) {
-        reads.onloadend = function () {
-          let result = this.result
-          let img = new Image()
-          img.src = result
-          img.onload = function () {
-            let data = self.compress(img)
-            var formData = new FormData()
-            formData.append('file', self.convertBase64UrlToBlob(data), file.name)
-
-            console.log('1.0')
-            console.log(formData.get('file'))
-            self.updateInfo(formData)
-          }
+      // 通过canvas压缩图片
+      var reader = new FileReader()
+      reader.readAsDataURL(file)
+      var img = new Image()
+      reader.onload = function (e) {
+        var width = 1080 // 图像大小
+        var quality = 0.8 // 图像质量
+        var canvas = document.createElement('canvas')
+        var drawer = canvas.getContext('2d')
+        img.src = this.result
+        img.onload = function () {
+          canvas.width = width
+          canvas.height = width * (img.height / img.width)
+          drawer.drawImage(img, 0, 0, canvas.width, canvas.height)
+          img.src = canvas.toDataURL('image/png', quality)
         }
-      } else {
-        let param = new FormData()
-        param.append('file', file, file.name)
-        param.append('type', '1')
-        console.log('2.0')
-        console.log(param.get('file'))
-        self.updateInfo(param)
       }
-    },
+      console.log(file.size)
 
-    updateInfo (param) {
       let url = this.$api.user
       const entryType = this.$route.query.type
       if (entryType === 'wechat') {
@@ -318,12 +278,15 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-      // let param = new FormData()
-      // param.append('file', file, file.name)
-      // param.append('type', '1')
+
+      let param = new FormData()
+      param.append('file', file, file.name)
+      param.append('type', '1')
+      return
+
       post(url, param)
         .then(res => {
-          // console.log(param, 'azaz')
+          console.log(param, 'azaz')
           const imgurl = res.data.list.url
           if (imgurl) {
             if (entryType === 'wechat') {
@@ -509,8 +472,7 @@ export default {
     },
 
     getUserMsg () {
-      // let data = this.postFormat
-      const data = { token: sessionStorage.getItem('randomcode') }
+      let data = this.postFormat
       let url = this.$api.user
       axios.post(url + '/api/user/getUserInfo', data)
         .then(res => {

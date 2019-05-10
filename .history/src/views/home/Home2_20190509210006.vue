@@ -101,7 +101,7 @@ export default {
         freezing_amount: 2000
       }
     }, 500)
-    // this.getCurOrder()
+    this.getCurOrder()
   },
   data () {
     return {
