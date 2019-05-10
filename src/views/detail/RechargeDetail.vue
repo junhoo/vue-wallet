@@ -12,7 +12,7 @@
              <li>
                <span class="m_left" :class="{'skyblue':orderType == 2 || orderType == 6, 'blue':orderType == 5 || orderType == 3 || orderType == 7, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
                 <template v-if="orderType == 2 || orderType == 6" >
-                  <count-down endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
+                  <count-down :endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
                 </template>
                 <template>
                   <i v-show="orderType == 8" class="m_right">超时自动取消</i>
