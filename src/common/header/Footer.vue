@@ -8,29 +8,29 @@
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 1">
     <div class="foote clearfix">
-      <p v-if="endCountdown == 0">
+      <!-- <p v-if="endCountdown == 0">
         发起申诉
         <count-down :endTime="1557130889000"
           endText=""
           timeType='symbol'
           v-on:callbackEvent='oncallback'>
         </count-down>
-      </p>
-      <p @click="appeal()" class="borbtn" v-if="endCountdown == 1">发起申诉</p>
+      </p> -->
+      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
       <p @click="submit2()">确认收款</p>
       <p @click="submit2()"  v-if="endCountdown == 0">确认收款</p>
-      <p class="appbtn" v-if="endCountdown == 0">
+      <!-- <p class="appbtn" v-if="endCountdown == 0">
         发起申诉
         <count-down :endTime="1557310497000"
           endText=""
           timeType='symbol'
           v-on:callbackEvent='oncallback'>
         </count-down>
-      </p>
+      </p> -->
       <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
     </div>
   </div>
@@ -94,6 +94,7 @@ export default {
       post(url, data)
         .then(res => {
           console.log(res)
+          this.$emit('refreshData', true)
         })
         .catch(e => {
           console.log(e)

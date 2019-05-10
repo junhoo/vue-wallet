@@ -1,7 +1,10 @@
 <template>
 <div>
  <common-header title="订单详情"></common-header>
-  <div class="recharge">
+  <div class="loading" v-if="!orderType">
+    <van-loading type="spinner" color="white"/>
+  </div>
+  <div v-else class="recharge">
     <div class="rechargeMain">
        <!-- 订单信息 -->
        <section>
@@ -65,7 +68,7 @@
         </div>
       </section>
     </div>
-    <common-footer v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
+    <common-footer v-on:refreshData='getOrderDel' v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
   </div>
   </div>
 </template>
@@ -88,10 +91,9 @@ export default {
     return {
       order_type: 2, // 订单类型 1.充值 2.提现
       payway: '', // 1.支付宝 2.微信 3.银行卡
-      orderType: 0, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)
-      imgUrl: '~imgurl/copy-icon.png', // 付款二维码
+      orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)y
       orderDetailData: {}, // 订单详情信息
-      order_no: 123 // 订单编号
+      order_no: null // 订单编号
     }
   },
   created () {
@@ -156,6 +158,28 @@ export default {
   content: '';
   display: block;
   clear: both;
+}
+.loadingloading{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  .van-loading{
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    padding: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    .van-loading__spinner{
+      width: 60px;
+      height: 60px;
+    }
+  }
 }
 .recharge{
   position: fixed;
