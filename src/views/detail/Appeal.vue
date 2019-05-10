@@ -155,7 +155,7 @@ export default {
     }
   },
   created () {
-    if (this.$route.query.order_type !== 2) {
+    if (this.$route.query.order_type === 2) {
       this.pay_info = ''
     } else {
       this.pay_info = JSON.parse(this.$route.query.pay_info)

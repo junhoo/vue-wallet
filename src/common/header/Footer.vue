@@ -16,13 +16,14 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p> -->
-      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
+      <!-- <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p> -->
+      <p @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
       <p @click="submit2()">确认收款</p>
-      <p @click="submit2()"  v-if="endCountdown == 0">确认收款</p>
+      <!-- <p @click="submit2()"  v-if="endCountdown == 0">确认收款</p> -->
       <!-- <p class="appbtn" v-if="endCountdown == 0">
         发起申诉
         <count-down :endTime="1557310497000"
@@ -31,7 +32,8 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p> -->
-      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
+      <!-- <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p> -->
+      <p @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else>
@@ -93,8 +95,8 @@ export default {
       let url = this.$api.order + '/api/order/cancelRechangeOrder'
       post(url, data)
         .then(res => {
-          console.log(res)
           this.$emit('refreshData', true)
+          this.show = !this.show
         })
         .catch(e => {
           console.log(e)
@@ -127,7 +129,7 @@ export default {
       let url = this.$api.order + '/api/order/confirmOrder'
       post(url, data)
         .then(res => {
-          this.$router.go(-1)
+          this.$emit('refreshData', true)
         })
         .catch(e => {
           console.log(e)
@@ -140,18 +142,19 @@ export default {
           path: '/appeal',
           query: {
             orderDetailData: JSON.stringify(this.orderDetailData),
-            order_type: this.order_type
+            order_type: 2
           }
         })
         return false
+      } else {
+        this.$router.push({
+          path: '/appeal',
+          query: {
+            orderDetailData: JSON.stringify(this.orderDetailData),
+            pay_info: JSON.stringify(this.pay_info)
+          }
+        })
       }
-      this.$router.push({
-        path: '/appeal',
-        query: {
-          orderDetailData: JSON.stringify(this.orderDetailData),
-          pay_info: JSON.stringify(this.pay_info)
-        }
-      })
     }
   },
   filters: {

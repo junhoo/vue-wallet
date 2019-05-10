@@ -20,9 +20,10 @@
                     <p
                       class="right"
                       :class="{
-                        'orange': item.status === 2 || item.status === 6,
+                        'skyblue': item.status === 2 || item.status === 6,
+                        'orange': item.status === 3 || item.status === 7,
                         'blue': item.status === 1 || item.status === 5,
-                        'red': item.status === 3 || item.status === 4 || item.status === 7}">
+                        'red': item.status === 4 || item.status === 8}">
                         {{item.status_str}}
                     </p>
                   </div>
@@ -213,6 +214,9 @@ export default {
           }
           .orange {
             color: #FF8C01;
+          }
+          .skyblue{
+            color: #3EC0F1
           }
         }
       }
