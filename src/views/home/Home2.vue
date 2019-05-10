@@ -214,7 +214,8 @@ export default {
         .then(res => {
           console.log('home: 2.1积分')
           console.log(res)
-          this.headerInfo.amount_income = res.data.list
+          this.headerInfo.amount_income = res.data.list.total
+          this.headerInfo.freezing_amount = res.data.list.freezing
         })
         .catch(e => {
           console.log(e)
