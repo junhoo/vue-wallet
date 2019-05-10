@@ -110,6 +110,7 @@ export default {
       this.boundState = _obj.pay_info
       this.getUser()
     }
+    // console.log(a)
   },
   watch: {
     userMsg () {

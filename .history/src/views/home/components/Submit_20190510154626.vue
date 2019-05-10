@@ -103,6 +103,7 @@ export default {
     }
   },
   mounted () {
+    console.log('ttt mounted')
     const userInfo = sessionStorage.getItem('userMsg')
     if (userInfo !== null && userInfo !== '') {
       this.hasMsg = true
@@ -110,10 +111,13 @@ export default {
       this.boundState = _obj.pay_info
       this.getUser()
     }
+    // console.log(a)
   },
   watch: {
     userMsg () {
-      if (this.hasMsg) return
+      console.log('ttt watch')
+      console.log(!this.hasMsg)
+      if (!this.hasMsg) return
       this.boundState = this.userMsg.pay_info
       this.getUser()
     }
