@@ -7,7 +7,7 @@
           <p class="empty"></p>
           <p class="icon-setting"></p>
         </div>
-        <div class="middle" @click="getTotalCoin()">Wallet</div>
+        <div class="middle" @click="getMoney()">Wallet</div>
         <div class="right">
           <p class="empty"></p>
           <p class="icon-option" @click="jumpOrderPage()"></p>
@@ -95,10 +95,13 @@ export default {
     this.postFormat = format
     this.autoLogin()
     sessionStorage.setItem('reqformat', JSON.stringify(format))
-    if (sessionStorage.getItem('randomcode')) {
-      this.getTotalCoin()
-    }
-    this.getCurOrder()
+    setTimeout(() => {
+      this.headerInfo = {
+        amount_income: 5000,
+        freezing_amount: 2000
+      }
+    }, 500)
+    // this.getCurOrder()
   },
   data () {
     return {
@@ -162,7 +165,7 @@ export default {
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           // console.log(pools[_list.a_status_str])
           if (pools.includes(_list.a_status_str)) {
-            console.log('home: oldshow')
+            console.log('home: yes')
             this.onmessage(mock)
           }
         })
@@ -181,6 +184,21 @@ export default {
       console.log('home: === 解密' + decode)
     },
 
+    getMoney () {
+      let data = {}
+      const url = 'http://padmin.service.168mi.cn/admin/OutInterface/getTotal/user_id/500'
+      post(url, data)
+        .then(res => {
+          console.log(res)
+          console.log('home: 2.1积分')
+          // const _obj = res.data.list
+        })
+        .catch(e => {
+          console.log(e)
+          this.showTopHint('网络错误2.1')
+        })
+    },
+
     autoLogin () {
       const hasLogin = sessionStorage.getItem('randomcode')
       if (hasLogin !== '' && hasLogin !== null) { return }
@@ -192,8 +210,8 @@ export default {
           console.log('home: 1.0登录')
           const _obj = res.data.list
           if (typeof _obj === 'string') {
+            // token 8679Nhv6Un3dlCtgaHencsb0YZA9WN0CLbOXvy8Sf9pakR6SLRon617IlzRqrSXLN3aK7A
             sessionStorage.setItem('randomcode', _obj)
-            this.getTotalCoin()
             this.getUserMsg()
           } else {
             this.showTopHint(res.msg)
@@ -202,22 +220,6 @@ export default {
         .catch(e => {
           console.log(e)
           this.showTopHint('网络错误1')
-        })
-    },
-
-    getTotalCoin () {
-      // const url = 'http://padmin.service.168mi.cn/admin/OutInterface/getTotal/user_id/500'
-      let data = { token: sessionStorage.getItem('randomcode') }
-      const url = 'http://user.service.168mi.cn/api/User/getTotalCoin'
-      post(url, data)
-        .then(res => {
-          console.log('home: 2.1积分')
-          console.log(res)
-          this.headerInfo.amount_income = res.data.list
-        })
-        .catch(e => {
-          console.log(e)
-          this.showTopHint('网络错误2.1')
         })
     },
 
@@ -232,7 +234,8 @@ export default {
           const userInfo = res.data.list
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
-          // this.$refs.socket.init()
+          this.$refs.socket.init()
+          // this.getHomeInfo()
         })
         .catch(e => {
           console.log(e)

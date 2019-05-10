@@ -232,7 +232,8 @@ export default {
           const userInfo = res.data.list
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
-          // this.$refs.socket.init()
+          this.$refs.socket.init()
+          // this.getHomeInfo()
         })
         .catch(e => {
           console.log(e)

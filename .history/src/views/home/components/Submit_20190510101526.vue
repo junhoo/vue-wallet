@@ -23,7 +23,6 @@
     <!-- 输入框 -->
     <div class="input-box">
       <p class="text" v-text="inputHint"></p>
-      <p class="blank"></p>
       <input
           type="text"
           v-model="keyword"
@@ -424,15 +423,12 @@ export default {
     .text {
       font-size: 26px;
     }
-    .blank {
-      height: 45px;
-    }
     .inputs {
-      box-sizing: border-box;
+      padding-top: 45px;
       width: 90%;
-      height: 50px;
-      line-height: 50px;
-      margin-bottom: 16px;
+      height: 43px;
+      line-height: 43px;
+      padding-bottom: 16px;
       font-size: 50px;
       color: #050505;
     }

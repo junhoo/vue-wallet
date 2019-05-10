@@ -426,15 +426,17 @@ export default {
     }
     .blank {
       height: 45px;
+      border: 1px solid blue;
     }
     .inputs {
-      box-sizing: border-box;
+      // padding-top: 45px;
       width: 90%;
-      height: 50px;
-      line-height: 50px;
-      margin-bottom: 16px;
+      height: 43px;
+      line-height: 43px;
+      padding-bottom: 16px;
       font-size: 50px;
       color: #050505;
+      vertical-align:bottom;
     }
     ::-webkit-input-placeholder { /* WebKit browsers */
       font-size: 26px;

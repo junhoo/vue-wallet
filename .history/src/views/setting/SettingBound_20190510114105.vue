@@ -264,6 +264,9 @@ export default {
             let data = compress(img)
             var formData = new FormData()
             formData.append('file', convertBase64UrlToBlob(data), file.name)
+
+            console.log('1.0')
+            console.log(formData.get('file'))
             self.updateInfo(formData)
           }
         }
@@ -271,6 +274,8 @@ export default {
         let param = new FormData()
         param.append('file', file, file.name)
         param.append('type', '1')
+        console.log('2.0')
+        console.log(param.get('file'))
         self.updateInfo(param)
       }
     },

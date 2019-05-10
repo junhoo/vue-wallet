@@ -241,7 +241,7 @@ export default {
         this.showTopHint('请选择图片')
         return false
       }
-
+ 
       var reads = new FileReader()
       reads.readAsDataURL(file)
       let self = this
@@ -255,15 +255,18 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 3000) {
+      if (file.size / 1024 > 5000) {
         reads.onloadend = function () {
           let result = this.result
           let img = new Image()
           img.src = result
           img.onload = function () {
-            let data = compress(img)
+            let data = self.compress(img)
             var formData = new FormData()
-            formData.append('file', convertBase64UrlToBlob(data), file.name)
+            formData.append('file', self.convertBase64UrlToBlob(data), file.name)
+
+            console.log('1.0')
+            console.log(formData.get('file'))
             self.updateInfo(formData)
           }
         }
@@ -271,6 +274,8 @@ export default {
         let param = new FormData()
         param.append('file', file, file.name)
         param.append('type', '1')
+        console.log('2.0')
+        console.log(param.get('file'))
         self.updateInfo(param)
       }
     },
@@ -283,7 +288,9 @@ export default {
       } else {
         url += '/api/Upload/uploadAliPayFile'
       }
-
+      // let param = new FormData()
+      // param.append('file', file, file.name)
+      // param.append('type', '1')
       post(url, param)
         .then(res => {
           // console.log(param, 'azaz')
@@ -307,6 +314,13 @@ export default {
     // 获取绑定信息
     getListInfo (type, isbound) {
       if (isbound !== 'y') return
+      // const data = {
+      //   'app-name': '',
+      //   'merchant_type': '1',
+      //   'merchant_code': '12345',
+      //   'third_user_id': '1'
+      // }
+      // let data = this.postFormat
       const data = { token: sessionStorage.getItem('randomcode') }
       let url = this.$api.user
       if (type === 'bank') {
@@ -316,6 +330,13 @@ export default {
       } else if (type === 'wechat') {
         url += '/api/Bindpay/getWeChatLists'
       }
+      // axios.post(url, data)
+      //   .then(res => {
+      //     res = res.data
+      //     if (res.code === 10000) {
+      //     } else {
+      //       this.showTopHint(res.msg)
+      //     }
 
       post(url, data)
         .then(res => {
@@ -391,6 +412,7 @@ export default {
           return
         }
       }
+      // this.dialogBoxVal = true
       this.showPopup = true
     },
 
@@ -405,6 +427,9 @@ export default {
       if (entryType === 'bank') {
         data = this.apiBank
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/bankInfoUpdate'
@@ -412,6 +437,9 @@ export default {
       } else if (entryType === 'wechat') {
         data = this.apiWechat
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateWeChatInfo'
@@ -419,6 +447,9 @@ export default {
       } else if (entryType === 'alipay') {
         data = this.apiAlipay
         data['app-name'] = this.postFormat['app-name']
+        // data.merchant_code = this.postFormat.merchant_code
+        // data.merchant_type = this.postFormat.merchant_type
+        // data.third_user_id = this.postFormat.third_user_id
 
         url += isbound === 'y'
           ? '/api/Bindpay/updateAlipayInfo'
@@ -431,7 +462,7 @@ export default {
       post(url, data)
         .then(res => {
           sessionStorage.setItem('istrue', this.istrue.toString())
-          this.toast('保存成功', 1500)
+          this.showTopHint('保存成功', 1500)
           this.getUserMsg()
         })
         .catch(e => {

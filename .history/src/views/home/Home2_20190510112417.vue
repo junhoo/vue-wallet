@@ -162,7 +162,7 @@ export default {
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           // console.log(pools[_list.a_status_str])
           if (pools.includes(_list.a_status_str)) {
-            console.log('home: oldshow')
+            console.log('home: yes')
             this.onmessage(mock)
           }
         })
@@ -232,7 +232,8 @@ export default {
           const userInfo = res.data.list
           this.userMsg = userInfo
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
-          // this.$refs.socket.init()
+          this.$refs.socket.init()
+          // this.getHomeInfo()
         })
         .catch(e => {
           console.log(e)
