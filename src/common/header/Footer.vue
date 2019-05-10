@@ -16,7 +16,8 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p> -->
-      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
+      <!-- <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p> -->
+      <p @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
@@ -31,7 +32,8 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p> -->
-      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
+      <!-- <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p> -->
+      <p @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else>

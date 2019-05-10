@@ -304,9 +304,7 @@ export default {
       data.credentials_type = this.liActive
       post(url + url1, data)
         .then(res => {
-          console.log(res, 'az')
           if (res.code === 10000) {
-            console.log(this.istrue1, this.istrue2, this.istrue3, 'az')
             sessionStorage.setItem('istrue1', JSON.stringify(this.istrue1))
             sessionStorage.setItem('istrue2', JSON.stringify(this.istrue2))
             sessionStorage.setItem('istrue3', JSON.stringify(this.istrue3))
@@ -329,8 +327,8 @@ export default {
       let url = this.$api.user
       post(url + '/api/user/getUserInfo', data)
         .then(res => {
-          res = res.data
           if (res.code === 10000) {
+            console.log()
             this.userMsg = res.data.list
             this.boundState = this.userMsg.pay_info
             this.selectIconVal1 = this.boundState.ali_pay

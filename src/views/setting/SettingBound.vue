@@ -560,8 +560,10 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
+  height: 100%;
   bottom: 0;
+  overflow-y: scroll;
   box-sizing: border-box;
   background-color: #F5F5F5;
   .hint {
