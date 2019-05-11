@@ -249,6 +249,7 @@ export default {
 
     // 提交订单-充值/提现
     submitOrderMatch (type) {
+      this.$emit('onChildSubmit', 'loadingShow')
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
 
@@ -265,11 +266,13 @@ export default {
           console.log('提交订单成功：')
           console.log(res)
           this.$emit('onChildSubmit', '去匹配')
+          this.$emit('onChildSubmit', 'loadingClose')
         })
         .catch(e => {
           console.log('提交订单错误：')
           console.log(e)
           this.showTopHint(e.msg)
+          this.$emit('onChildSubmit', 'loadingClose')
         })
     },
 
@@ -343,8 +346,6 @@ export default {
     transform: translateX(-50%);
     width: 89px;
     height: 89px;
-    // background: url('~imgurl/icon_alipay_s.png') no-repeat center;
-    // background-size: 89px 89px;
   }
   .inside-text {
     position: absolute;

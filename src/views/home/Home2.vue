@@ -15,8 +15,8 @@
       </div>
 
       <!-- 金额区 -->
-      <p class="money-use" @click="clickPopup()">{{headerInfo.amount_income}}</p>
-      <p class="money-ban" @click="clickMacthing()">冻结:{{headerInfo.freezing_amount}}</p>
+      <p class="money-use" >{{headerInfo.amount_income}}</p>
+      <p class="money-ban" >冻结:{{headerInfo.freezing_amount}}</p>
     </header>
 
     <main>
@@ -65,6 +65,7 @@
     </van-popup>
 
     <socket-view ref='socket' v-on:onChildSocket='onmessage'></socket-view>
+    <common-loading :show.sync='loadingVal'></common-loading>
   </div>
 </template>
 
@@ -75,13 +76,15 @@ import HomeSubmit from './components/Submit'
 import HomeDetail from './components/Detail'
 import OrderPopup from 'common/popup/Popup'
 import SocketView from '@/views/socket/Socket.vue'
+import CommonLoading from 'common/loading/Loading'
 export default {
   name: 'Home2',
   components: {
     HomeSubmit,
     HomeDetail,
     OrderPopup,
-    SocketView
+    SocketView,
+    CommonLoading
   },
   created () {
     // ?app_name=123&merchant_type=1&merchant_code=12345&third_user_id=500
@@ -113,6 +116,7 @@ export default {
       showPopup: false,
       showHint: false,
       showMatching: false,
+      loadingVal: false,
       popupMoney: '',
       popupAccount: '',
       popupName: '自动收款', // 去绑定 去实名 禁止交易 充值匹配成功 提现匹配成功 等待确认收款 自动确认收款 被取消 交易完成
@@ -135,12 +139,12 @@ export default {
     getCurOrder () {
       // http://order.service.168mi.cn
       console.log(' ')
-      console.log('home: 获取A端订单')
+      this.loadingVal = true
       const url = this.$api.order + '/api/order/getOrderForA'
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
-          console.log('home: res', res)
+          console.log('home: A端订单', res)
           const _list = res.data.list
           if (!_list) { return }
           _list.a_status_str = decodeURIComponent(_list.a_status_str)
@@ -148,6 +152,7 @@ export default {
           nowTime = nowTime.getTime()
           _list.rest_time = parseInt(nowTime) + parseInt(_list.rest_time) * 1000
           this.rest_time = _list.rest_time
+          this.popupAccount = _list.account
 
           if (_list.a_status_str === '接单用户取消,匹配中') {
             console.log('home: rematch')
@@ -157,18 +162,18 @@ export default {
             this.showMatching = true
             return
           }
-          // _list.a_status_str = '匹配中'
           console.log(_list.a_status_str)
           const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
-          // console.log(pools[_list.a_status_str])
           if (pools.includes(_list.a_status_str)) {
             console.log('home: oldshow')
             this.onmessage(mock)
           }
+          this.loadingVal = false
         })
         .catch(e => {
           console.log(e)
+          this.loadingVal = false
         })
     },
 
@@ -212,8 +217,6 @@ export default {
       const url = 'http://user.service.168mi.cn/api/User/getTotalCoin'
       post(url, data)
         .then(res => {
-          console.log('home: 2.1积分')
-          console.log(res)
           this.headerInfo.amount_income = res.data.list.total
           this.headerInfo.freezing_amount = res.data.list.freezing
         })
@@ -244,6 +247,7 @@ export default {
 
     cancelOrder () {
       console.log('home: 去取消订单')
+      this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
@@ -262,9 +266,11 @@ export default {
             console.log(res.data.list)
             this.showTopHint('取消订单错误')
           }
+          this.loadingVal = false
         })
         .catch(e => {
           console.log(e)
+          this.loadingVal = false
           this.showTopHint(e.msg)
         })
     },
@@ -284,6 +290,14 @@ export default {
     },
 
     onChildSubmit (type) {
+      if (type === 'loadingShow') {
+        this.loadingVal = true
+        return
+      }
+      if (type === 'loadingClose') {
+        this.loadingVal = false
+        return
+      }
       if (type === '去匹配') {
         console.log('home: home 下单成功-显示匹配')
         this.showMatching = true
@@ -475,51 +489,6 @@ export default {
 @bgColor: #f8f8f8;
 @blueColor: #4264FB;
 
-@btnStyle: {
-  width: 273px;
-  height: 90px;
-  line-height: 90px;
-  font-size: 30px;
-  border: 3px solid @blueColor;
-  border-radius: 45px;
-  color: @blueColor;
-  .btn-text {
-    display: inline-block;
-    width: 53%;
-    line-height: 90px;
-    float: left;
-    text-align: right;
-  }
-  .btn-icon {
-    display: inline-block;
-    width: 30%;
-    height: 90px;
-    float: left;
-  }
-};
-
-@iconCommon: {
-  .inside-img {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 89px;
-    height: 89px;
-    // background: url('~imgurl/icon_alipay_s.png') no-repeat center;
-    // background-size: 89px 89px;
-  }
-  .inside-text {
-    position: absolute;
-    top: 143px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 22px;
-    color: #BBBBBB; // #3E57D7
-  }
-};
-
 header {
   box-sizing: border-box;
   width: 100%;
@@ -669,8 +638,8 @@ main {
   font-size: 28px;
   text-align: center;
   color: #ffffff;
-  border: 1px solid rgba(6, 32, 78, 1);
   background: rgba(6, 32, 78, 1);
+  border-bottom: 1px solid rgba(6, 32, 78, 1);
 }
 
 .fade-enter, .fade-leave-to {
