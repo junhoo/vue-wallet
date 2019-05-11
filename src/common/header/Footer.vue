@@ -100,6 +100,7 @@ export default {
         })
         .catch(e => {
           console.log(e)
+          alert(e)
           this.$toast('网络错误4')
         })
     },
