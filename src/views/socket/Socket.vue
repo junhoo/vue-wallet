@@ -193,6 +193,11 @@ export default {
         }
         this.timerPopup = setTimeout(() => {
           res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
+          const orderno = res.msg.data.order_no
+          const orderType = parseInt(res.msg.data.order_type)
+          if (orderType === 1) {
+            sessionStorage.setItem(orderno, '0')
+          }
           this.$emit('onChildSocket', res.msg)
         }, 1800)
       }

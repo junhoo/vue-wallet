@@ -98,7 +98,7 @@ export default {
     }
   },
   created () {
-    this.order_no = Number(this.$route.query.order_no)
+    this.order_no = this.$route.query.order_no
     this.getOrderDel()
   },
   methods: {
@@ -122,7 +122,8 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误4')
+          // this.$toast('网络错误4')
+          this.$toast(e.msg)
         })
     },
     // 复制

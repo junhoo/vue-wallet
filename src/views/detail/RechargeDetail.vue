@@ -46,7 +46,7 @@
            <ul class="wrapper" v-if="orderType != 4 && orderType != 8">
              <li class="li-item">
                <span class="m_left">{{payway|payTypeText}}支付</span>
-                <div v-if="orderType != 3 && orderType != 7" class="m_right" @click="checkoutPay(0)">
+                <div v-if="orderType != 3 && orderType != 7 && orderType != 5" class="m_right" @click="checkoutPay(0)">
                   <i class="right_text">切换支付方式</i>
                   <img src="~imgurl/arrow-right2.png" alt=""  class="right_icon arrow-icon">
                </div>
@@ -210,7 +210,7 @@ export default {
     }
   },
   created () {
-    this.order_no = parseInt(this.$route.query.order_no)
+    this.order_no = this.$route.query.order_no
     this.getOrderDel()
   },
   methods: {
@@ -234,7 +234,8 @@ export default {
         })
         .catch(e => {
           console.log(e)
-          this.$toast('网络错误4')
+          // this.$toast('网络错误4')
+          this.$toast(e.msg)
         })
     },
     // 确定支付信息
