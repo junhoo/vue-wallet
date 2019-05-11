@@ -162,7 +162,16 @@ export default {
             this.showMatching = true
             return
           }
+
+          const orderno = _list.order_no
           console.log(_list.a_status_str)
+          console.log(orderno)
+          if (sessionStorage.getItem(orderno) === '0' && _list.a_status_str === '交易完成') {
+            this.popupName = '交易完成'
+            this.popupMoney = _list.order_amount
+            this.showPopup = true
+            sessionStorage.setItem(orderno, '1')
+          }
           const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
           if (pools.includes(_list.a_status_str)) {
@@ -299,8 +308,11 @@ export default {
         return
       }
       if (type === '去匹配') {
-        console.log('home: home 下单成功-显示匹配')
+        console.log('home: home 下单成功-订单匹配中')
         this.showMatching = true
+        setTimeout(() => {
+          this.showMatching = true
+        }, 80)
         return
       }
       if (type === '去实名') {
@@ -431,10 +443,13 @@ export default {
         this.detailType = '提现未到账'
       }
 
-      if (orderType.includes('交易完成')) {
+      if (orderType === '交易完成') {
         this.hasDetail = false
         this.popupName = '交易完成'
         this.showPopup = true
+        const orderno = orderInfo.order_no
+        sessionStorage.setItem(orderno, '1')
+        this.getTotalCoin()
         return
       }
 
