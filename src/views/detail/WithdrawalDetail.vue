@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="detail-body">
  <common-header title="订单详情"></common-header>
   <div class="loading" v-if="!orderType">
     <van-loading type="spinner" color="white"/>
@@ -68,9 +68,9 @@
         </div>
       </section>
     </div>
-    <common-footer v-on:refreshData='getOrderDel' v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
+    <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
   </div>
-  </div>
+</div>
 </template>
 <script>
 import { post } from '@/assets/js/fetch'
@@ -93,7 +93,8 @@ export default {
       payway: '', // 1.支付宝 2.微信 3.银行卡
       orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)y
       orderDetailData: {}, // 订单详情信息
-      order_no: null // 订单编号
+      order_no: null, // 订单编号
+      rest_time: null
     }
   },
   created () {
@@ -112,9 +113,12 @@ export default {
       post(url, data)
         .then(res => {
           console.log(res)
+          var nowTime = new Date()
+          nowTime = nowTime.getTime()
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
+          this.rest_time = parseInt(nowTime) + parseInt(this.orderDetailData.apply_time) * 1000
         })
         .catch(e => {
           console.log(e)
@@ -153,13 +157,24 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style lang="less">
+.detail-body {
+  position: fixed;
+  overflow-y: scroll;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .header{
+    background-color: #fff;
+  }
 .clearfix:after {
   content: '';
   display: block;
   clear: both;
 }
-.loadingloading{
+.loading{
   position: fixed;
   top: 0;
   left: 0;
@@ -290,5 +305,6 @@ export default {
       margin-bottom: 20px
     }
   }
+}
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="detail-body">
   <common-header title="订单详情"></common-header>
   <div class="loading" v-if="!orderType">
     <van-loading type="spinner" color="white"/>
@@ -169,7 +169,7 @@
           </div>
         </section>
     </div>
-    <common-footer v-on:refreshData='getOrderDel' :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
+    <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
   </div>
 </div>
 </template>
@@ -205,7 +205,8 @@ export default {
       pay_account: '14154sadf', // 支付账号
       pay_url: '', // 支付二维码
       pay_remarks: '', // 付款时备注
-      pay_info: {} // 支持付款方式
+      pay_info: {}, // 支持付款方式
+      rest_time: null
     }
   },
   created () {
@@ -228,6 +229,7 @@ export default {
           this.orderType = this.orderDetailData.status || 0
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
+          this.rest_time = this.orderDetailData.apply_time
           this.payTypeMsg()
         })
         .catch(e => {
@@ -321,12 +323,23 @@ export default {
 </script>
 
 <style lang="less" >
+.detail-body {
+  position: fixed;
+  overflow-y: scroll;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .header{
+    background-color: #fff;
+  }
 .clearfix:after {
   content: '';
   display: block;
   clear: both;
 }
-.loadingloading{
+.loading{
   position: fixed;
   top: 0;
   left: 0;
@@ -486,5 +499,6 @@ export default {
       margin-bottom: 20px
     }
   }
+}
 }
 </style>

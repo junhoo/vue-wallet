@@ -8,16 +8,16 @@
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 1">
     <div class="foote clearfix">
-      <!-- <p v-if="endCountdown == 0">
+      <p v-if="endCountdown == 0">
         发起申诉
-        <count-down :endTime="1557130889000"
+        <count-down :endTime="rest_time"
           endText=""
           timeType='symbol'
           v-on:callbackEvent='oncallback'>
         </count-down>
-      </p> -->
-      <!-- <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p> -->
-      <p @click="appeal()" class="borbtn">发起申诉</p>
+      </p>
+      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉{{rest_time}}</p>
+      <!-- <p @click="appeal()" class="borbtn">发起申诉</p> -->
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
@@ -68,7 +68,8 @@ export default {
     pay_type: Number,
     order_no: Number,
     orderDetailData: Object,
-    pay_info: Object
+    pay_info: Object,
+    rest_time: Number
   },
   data () {
     return {
