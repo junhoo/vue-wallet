@@ -27,7 +27,7 @@ export default {
     bottom: 0;
     width: 100%;
     height: 100%;
-    z-index: 102;
+    z-index: 9000;
 }
 .loading_box {
   position: fixed;
@@ -37,6 +37,7 @@ export default {
   text-align: center;
   background: rgba(0, 0, 0, .7);
   border-radius: 16px;
+  z-index: 9999;
   .loading-icon {
     position: relative;
     width: 150px;

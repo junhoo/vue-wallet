@@ -13,7 +13,7 @@
           <count-down
             class="top-state"
             :endTime="timed"
-            endText="xxxx"
+            endText=""
             timeType='zh'>
           </count-down>
         </template>

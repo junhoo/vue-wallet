@@ -217,7 +217,8 @@ export default {
   },
   destroyed () {
     // 销毁监听
-    this.websocket.onclose = this.close
+    // console.log('=== socket: destroyed')
+    // this.websocket.onclose = this.close
   }
 }
 </script>
