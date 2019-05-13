@@ -113,12 +113,10 @@ export default {
       post(url, data)
         .then(res => {
           console.log(res)
-          var nowTime = new Date()
-          nowTime = nowTime.getTime()
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
-          this.rest_time = parseInt(nowTime) + parseInt(this.orderDetailData.apply_time) * 1000
+          this.rest_time = this.orderDetailData.apply_time
         })
         .catch(e => {
           console.log(e)

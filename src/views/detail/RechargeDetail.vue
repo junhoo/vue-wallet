@@ -1,7 +1,7 @@
 <template>
 <div class="detail-body">
   <common-header title="订单详情"></common-header>
-  <div class="loading" v-if="!orderType">
+  <div class="loading" v-if="!orderType || isloading">
     <van-loading type="spinner" color="white"/>
   </div>
   <div v-else class="recharge">
@@ -206,7 +206,8 @@ export default {
       pay_url: '', // 支付二维码
       pay_remarks: '', // 付款时备注
       pay_info: {}, // 支持付款方式
-      rest_time: null
+      rest_time: null,
+      isloading: false
     }
   },
   created () {
