@@ -195,7 +195,8 @@ export default {
   computed: {
     hasData () {
       if (this.entryType === 'bank') {
-        const pools = [this.apiBank.bank_name, this.apiBank.bank_no, this.apiBank.bank_address, this.apiBank.bank_sub_branch]
+        const inputBox = this.apiBank
+        const pools = [inputBox.bank_name, inputBox.bank_no, inputBox.bank_address, inputBox.bank_sub_branch, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -255,7 +256,7 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 3000) {
+      if (file.size / 1024 > 5000) {
         reads.onloadend = function () {
           let result = this.result
           let img = new Image()
@@ -286,7 +287,6 @@ export default {
 
       post(url, param)
         .then(res => {
-          // console.log(param, 'azaz')
           const imgurl = res.data.list.url
           if (imgurl) {
             if (entryType === 'wechat') {
@@ -435,7 +435,7 @@ export default {
           this.$toast('保存成功', 1500)
         })
         .catch(e => {
-          this.getUserMsg()
+          // this.getUserMsg()
           console.log(e)
           this.showTopHint(e.msg)
         })
