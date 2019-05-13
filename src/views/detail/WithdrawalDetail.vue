@@ -1,10 +1,7 @@
 <template>
 <div class="detail-body">
  <common-header title="订单详情"></common-header>
-  <div class="loading" v-if="!orderType">
-    <van-loading type="spinner" color="white"/>
-  </div>
-  <div v-else class="recharge">
+  <div class="recharge" v-if="!loadingVal">
     <div class="rechargeMain">
        <!-- 订单信息 -->
        <section>
@@ -70,6 +67,7 @@
     </div>
     <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
   </div>
+   <common-loading v-else :show.sync='loadingVal' :mask="true"></common-loading>
 </div>
 </template>
 <script>
@@ -78,6 +76,7 @@ import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
+import CommonLoading from 'common/loading/Loading'
 import Clipboard from 'clipboard'
 export default {
   name: 'WithdrawalDetail',
@@ -85,7 +84,8 @@ export default {
     DialogBox,
     CommonHeader,
     CommonFooter,
-    CountDown
+    CountDown,
+    CommonLoading
   },
   data () {
     return {
@@ -94,7 +94,8 @@ export default {
       orderType: null, // 订单状态 6.已匹配 7.待确认 4.已取消(手动) 5.已完成 8.已取消(自动)y
       orderDetailData: {}, // 订单详情信息
       order_no: null, // 订单编号
-      rest_time: null
+      rest_time: null,
+      loadingVal: true
     }
   },
   created () {
@@ -112,16 +113,17 @@ export default {
       let url = this.$api.order + '/api/order/drawDetail'
       post(url, data)
         .then(res => {
-          console.log(res)
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
           this.rest_time = this.orderDetailData.apply_time
+          this.loadingVal = false
         })
         .catch(e => {
           console.log(e)
           // this.$toast('网络错误4')
           this.$toast(e.msg)
+          this.loadingVal = false
         })
     },
     // 复制

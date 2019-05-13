@@ -303,7 +303,7 @@ export default {
       console.log(type)
       if (type === 'loadingShow' || type === 'loadingClose') {
         this.getTotalCoin()
-        this.loadingVal = type === 'loadingShow' ? true : false
+        this.loadingVal = type === 'loadingShow'
         return
       }
       if (type === '去匹配') {

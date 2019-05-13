@@ -1,5 +1,8 @@
 <template>
   <div class="order-body">
+    <!-- <div class="box">
+      <div class="sma"></div>
+    </div> -->
     <common-header :title="navTitle"></common-header>
 
     <div class="wrapper" ref="bar">
@@ -256,7 +259,25 @@ export default {
     opacity: 0.85;
   }
 }
-
+</style>
+<style lang="less">
+// .box{
+//   .sma{
+//     border: 1px solid;
+//     width: 444px;
+//     height: 445px;
+//     background: url('~imgurl/123.png') no-repeat;
+//     animation: stepAn steps(36) 5s infinite;
+//   }
+//   @keyframes stepAn {
+//     0% {
+//       background-position: 0 0;
+//     }
+//     100% {
+//       background-position: 0 bottom;
+//     }
+//   }
+// }
 </style>
 
 <style>

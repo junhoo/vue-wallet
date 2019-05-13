@@ -1,10 +1,7 @@
 <template>
 <div class="detail-body">
   <common-header title="订单详情"></common-header>
-  <div class="loading" v-if="!orderType || isloading">
-    <van-loading type="spinner" color="white"/>
-  </div>
-  <div v-else class="recharge">
+  <div class="recharge">
     <div class="rechargeMain">
          <!-- 订单信息 -->
          <section>
@@ -170,6 +167,7 @@
         </section>
     </div>
     <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
+    <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
 </div>
 </template>
@@ -207,7 +205,7 @@ export default {
       pay_remarks: '', // 付款时备注
       pay_info: {}, // 支持付款方式
       rest_time: null,
-      isloading: false
+      loadingVal: true
     }
   },
   created () {
@@ -218,6 +216,7 @@ export default {
     callback () {},
     // 获取订单信息
     getOrderDel () {
+      this.loadingVal = true
       var data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
@@ -231,12 +230,14 @@ export default {
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
           this.rest_time = this.orderDetailData.apply_time
+          this.loadingVal = false
           this.payTypeMsg()
         })
         .catch(e => {
           console.log(e)
           // this.$toast('网络错误4')
           this.$toast(e.msg)
+          this.loadingVal = false
         })
     },
     // 确定支付信息
@@ -498,7 +499,7 @@ export default {
     padding: 10px 0 34px;
     span{
       display: inline-block;
-      margin-bottom: 20px
+      margin-bottom: 20px;
     }
   }
 }

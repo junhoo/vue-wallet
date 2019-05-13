@@ -21,7 +21,7 @@
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
-      <p @click="submit2()"  v-if="endCountdown == 0">确认收款</p>
+      <p @click="submit2()">确认收款</p>
       <p class="appbtn" v-if="endCountdown == 0">
         发起申诉
         <count-down :endTime="rest_time"
@@ -280,6 +280,10 @@ export default {
     border-radius: 49px;
     background-color: #4264FB;
     margin-bottom: 35px
+  }
+  .borbtn{
+    background:url('~imgurl/bg-border.png') center / 100% no-repeat;
+    color: #2A2A2A
   }
   .appbtn{
     background-color: transparent;
