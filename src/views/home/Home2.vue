@@ -7,7 +7,7 @@
           <p class="empty"></p>
           <p class="icon-setting"></p>
         </div>
-        <div class="middle" @click="getTotalCoin()">Wallet</div>
+        <div class="middle" >Wallet</div>
         <div class="right">
           <p class="empty"></p>
           <p class="icon-option" @click="jumpOrderPage()"></p>
@@ -215,8 +215,10 @@ export default {
           }
         })
         .catch(e => {
+          console.log('autoLogin')
           console.log(e)
-          this.showTopHint('网络错误1')
+          this.showTopHint(e.msg)
+          alert(JSON.stringify(e))
         })
     },
 
@@ -270,6 +272,7 @@ export default {
             this.showMatching = false
             this.showPopup = false
             this.hasDetail = false
+            this.getTotalCoin()
           } else {
             console.log('home: 取消订单失败')
             console.log(res.data.list)
@@ -309,6 +312,7 @@ export default {
       if (type === '去匹配') {
         console.log('home: home 下单成功-订单匹配中')
         this.showMatching = true
+        this.order_no = sessionStorage.getItem('submitno')
         return
       }
       if (type === '去实名') {
@@ -408,10 +412,12 @@ export default {
 
       var stateName = ''
       // orderType === '接单用户取消'
-      if (orderType.includes('接单用户取消')) { // 接单用户取消,匹配中
+      if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
+        // this.hasDetail = false
+        // this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
+        // this.showPopup = true
         this.hasDetail = false
-        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
-        this.showPopup = true
+        this.showMatching = true
         return
       } else {
         stateName = '结束'
@@ -452,6 +458,13 @@ export default {
       if (orderType === '自动收款') {
         this.hasDetail = false
         this.popupName = '自动确认收款'
+        this.showPopup = true
+        return
+      }
+
+      if (orderType === '自动取消') {
+        this.hasDetail = false
+        this.popupName = '被取消'
         this.showPopup = true
         return
       }
@@ -499,6 +512,15 @@ export default {
 @white: #ffffff;
 @bgColor: #f8f8f8;
 @blueColor: #4264FB;
+
+@keyframes spin {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: right 0;
+  }
+}
 
 header {
   box-sizing: border-box;
@@ -597,6 +619,8 @@ main {
       height: 445px;
       background: url('~imgurl/match_1.png') no-repeat;
       background-size: 445px 445px;
+      // background: url('~imgurl/ppppp.png') no-repeat;
+      // animation: spin steps(36, end) 5s infinite;
     }
   }
   .text-big {
@@ -643,14 +667,16 @@ main {
 }
 
 .popup-hint {
-  width: 750px;
+  box-sizing: border-box;
+  width: 100%;
   height: 179px;
   line-height: 179px;
   font-size: 28px;
   text-align: center;
   color: #ffffff;
-  background: rgba(6, 32, 78, 1);
-  border-bottom: 1px solid rgba(6, 32, 78, 1);
+  border-bottom: 1.1px solid #06204E;
+  background-color:#06204E;
+  opacity: 0.85;
 }
 
 .fade-enter, .fade-leave-to {

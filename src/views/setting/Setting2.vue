@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="set-body">
     <common-header :title="navTitle"></common-header>
     <div class="wrapper">
       <ul>
@@ -92,36 +92,43 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.wrapper {
+.set-body {
   position: fixed;
-  top: 88px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #f5f5f5;
-  box-sizing: border-box;
-  ul {
-    margin-top: 24px;
-    background-color: #ffffff;
-    li {
-      height: 92px;
-      line-height: 92px;
-      padding-left: 48px;
-      font-family: MicrosoftYaHei;
-      font-weight:400;
-      .boxs {
-        display: flex;
-        justify-content: space-between;
-        padding-right: 67px;
-        border-bottom: 1px solid #E9E9E9;
-        font-size: 28px;
-        background: url('~imgurl/set_arrows.png') no-repeat right 28px center;
-        background-size: 15px 25px;
-        .text-left {
-          color: #000000;
-        }
-        .text-right {
-          color: #959595;
+  .wrapper {
+    position: fixed;
+    top: 88px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+    ul {
+      margin-top: 24px;
+      background-color: #ffffff;
+      li {
+        height: 92px;
+        line-height: 92px;
+        padding-left: 48px;
+        font-family: MicrosoftYaHei;
+        font-weight:400;
+        .boxs {
+          display: flex;
+          justify-content: space-between;
+          padding-right: 67px;
+          border-bottom: 1px solid #E9E9E9;
+          font-size: 28px;
+          background: url('~imgurl/set_arrows.png') no-repeat right 28px center;
+          background-size: 15px 25px;
+          .text-left {
+            color: #000000;
+          }
+          .text-right {
+            color: #959595;
+          }
         }
       }
     }

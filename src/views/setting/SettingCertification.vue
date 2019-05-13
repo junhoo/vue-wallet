@@ -1,114 +1,116 @@
 <template>
-  <div class="wrapper">
-    <common-header :title="navTitle"></common-header>
-    <main>
-      <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
-        <div class="hint">实名认证</div>
-        <div class="note2" v-show="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2">*请务必使用您本人的实名账户*</div>
-        <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
-        <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
-        <p v-if="userCertifyMsg.status == 0 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
-        <div class="item">
-          <div class="name">证件类型</div>
-          <input readonly type="text" :value="pap">
-          <div class="btn" @click="selectcard()"><i ></i></div>
-          <!-- 选择证件类型 -->
-          <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
-            <h3>选择证件类型</h3>
-            <ul>
-              <li @click="selecitem(1)"><span>身份证</span><i :class="{'liActive':liActive==1}"></i></li>
-              <li @click="selecitem(2)"><span>护照</span><i :class="{'liActive':liActive==2}"></i></li>
-              <li @click="selecitem(3)"><span>港澳通行证</span><i :class="{'liActive':liActive==3}"></i></li>
-            </ul>
-            <p><span @click="selectcard()">确定</span></p>
-          </van-popup>
-        </div>
-        <div class="item">
-          <div class="name">真实姓名</div>
-          <input v-model="username" type="text" placeholder="请输入真实姓名">
-        </div>
-        <div class="item">
-          <div class="name">证件号码</div>
-          <input v-model="userNo" type="text" placeholder="请输入证件号码" maxlength="18" @input="handleInput">
-        </div>
-        <!-- <p v-if="userCertifyMsg.status != 1" class="note">注：请务必使用您本人的实名账户</p> -->
-      </div>
-      <div v-if="userCertifyMsg.status != 1" class="bottom">
-        <p class="bottom-hint">上传{{pap}}照片</p>
-        <div class="upload">
-          <div class="imgs">
-            <div v-show="cardUrl1 !== ''">
-              <div class="mask">
-                <img  ref="cardimg" :class="[istrue1 ? 'img-width':'img-height']" :src="cardUrl21" alt="">
-                <i>重新上传</i>
-              </div>
-            </div>
-            <div v-show="cardUrl1 === ''">
-              <div v-if="firstUpload" class="picture-top">
-                <img class="img imgG"  v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
-                <img class="img imgG"  v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
-                <img class="img imgG"  v-else src="~imgurl/card1-3.png" alt="">
-              </div>
-              <div v-else>
-                <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
-              </div>
-            </div>
-            <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
+  <div class="cert-body">
+    <div class="wrapper">
+      <common-header :title="navTitle"></common-header>
+      <main>
+        <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
+          <div class="hint">实名认证</div>
+          <div class="note2" v-show="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2">*请务必使用您本人的实名账户*</div>
+          <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
+          <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
+          <p v-if="userCertifyMsg.status == 0 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
+          <div class="item">
+            <div class="name">证件类型</div>
+            <input readonly type="text" :value="pap">
+            <div class="btn" @click="selectcard()"><i ></i></div>
+            <!-- 选择证件类型 -->
+            <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
+              <h3>选择证件类型</h3>
+              <ul>
+                <li @click="selecitem(1)"><span>身份证</span><i :class="{'liActive':liActive==1}"></i></li>
+                <li @click="selecitem(2)"><span>护照</span><i :class="{'liActive':liActive==2}"></i></li>
+                <li @click="selecitem(3)"><span>港澳通行证</span><i :class="{'liActive':liActive==3}"></i></li>
+              </ul>
+              <p><span @click="selectcard()">确定</span></p>
+            </van-popup>
           </div>
-          <div class="imgs">
-            <div v-show="cardUrl2 !== ''">
-              <div class="mask">
-                <img :src="cardUrl22" :class="[istrue2 ? 'img-width':'img-height']" alt="">
-                <i>重新上传</i>
-              </div>
-            </div>
-            <div v-show="cardUrl2 === ''">
-              <div v-if="firstUpload" class="picture-mid">
-                <img class="img imgG" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
-                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
-                <img class="img imgG" v-else src="~imgurl/card2-3.png" alt="">
-              </div>
-              <div v-else>
-                <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
-              </div>
-            </div>
-            <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
+          <div class="item">
+            <div class="name">真实姓名</div>
+            <input v-model="username" type="text" placeholder="请输入真实姓名">
           </div>
-        </div>
-        <!-- <p class="hint">上传手持{{pap}}照片</p> -->
-        <div class="upload">
-          <div class="imgs">
-            <template v-if="cardUrl3">
-              <div class="mask mask1">
-                <img :src="cardUrl23" :class="[istrue3 ? 'img-width':'img-height']" alt="">
-                <i>重新上传</i>
-              </div>
-            </template>
-            <template v-else>
-              <div v-if="firstUpload">
-                <img class="img imgG" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
-                <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
-                <img class="img imgG" v-else src="~imgurl/card3-3.png" alt="">
-              </div>
-              <div v-else>
-                <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
-              </div>
-            </template>
-            <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
+          <div class="item">
+            <div class="name">证件号码</div>
+            <input v-model="userNo" type="text" placeholder="请输入证件号码" maxlength="18" @input="handleInput">
           </div>
+          <!-- <p v-if="userCertifyMsg.status != 1" class="note">注：请务必使用您本人的实名账户</p> -->
         </div>
-        <div class="note-down">注:上传图片内证件号，姓名等信息应确保清晰，切不可修改或覆盖；</div>
-      </div>
-    </main>
-    <footer>
-      <div v-show="hasData">
-        <button v-if="userCertifyMsg.status != 1" :class="{'show-color': hasData}" @click="submit(0)">提交审核</button>
-        <button v-else @click="submit(1)">开始使用</button>
-      </div>
-      <div v-show="!hasData">
-        <button>提交审核</button>
-      </div>
-    </footer>
+        <div v-if="userCertifyMsg.status != 1" class="bottom">
+          <p class="bottom-hint">上传{{pap}}照片</p>
+          <div class="upload">
+            <div class="imgs">
+              <div v-show="cardUrl1 !== ''">
+                <div class="mask">
+                  <img class="xxx" ref="cardimg" :class="[istrue1 ? 'img-width':'img-height']" :src="cardUrl21" alt="">
+                  <i>重新上传</i>
+                </div>
+              </div>
+              <div v-show="cardUrl1 === ''">
+                <div v-if="firstUpload" class="picture-top">
+                  <img class="img imgG"  v-if="liActive==1" src="~imgurl/card1-1.png" alt="">
+                  <img class="img imgG"  v-else-if="liActive==2" src="~imgurl/card1-2.png" alt="">
+                  <img class="img imgG"  v-else src="~imgurl/card1-3.png" alt="">
+                </div>
+                <div v-else>
+                  <img class="img" :src="userCertifyMsg.credentials_asurface" alt="">
+                </div>
+              </div>
+              <input class="inputpo1" type="file" accept="image/png, image/jpeg, image/jpg" @change="tirggerFile($event,1)">
+            </div>
+            <div class="imgs">
+              <div v-show="cardUrl2 !== ''">
+                <div class="mask">
+                  <img :src="cardUrl22" :class="[istrue2 ? 'img-width':'img-height']" alt="">
+                  <i>重新上传</i>
+                </div>
+              </div>
+              <div v-show="cardUrl2 === ''">
+                <div v-if="firstUpload" class="picture-mid">
+                  <img class="img imgG" v-if="liActive==1" src="~imgurl/card2-1.png" alt="">
+                  <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card2-2.png" alt="">
+                  <img class="img imgG" v-else src="~imgurl/card2-3.png" alt="">
+                </div>
+                <div v-else>
+                  <img class="img" :src="userCertifyMsg.credentials_bsurface" alt="">
+                </div>
+              </div>
+              <input class="inputpo2" type="file" @change="tirggerFile($event,2)">
+            </div>
+          </div>
+          <!-- <p class="hint">上传手持{{pap}}照片</p> -->
+          <div class="upload">
+            <div class="imgs">
+              <template v-if="cardUrl3">
+                <div class="mask mask1">
+                  <img :src="cardUrl23" :class="[istrue3 ? 'img-width':'img-height']" alt="">
+                  <i>重新上传</i>
+                </div>
+              </template>
+              <template v-else>
+                <div v-if="firstUpload">
+                  <img class="img imgG" v-if="liActive==1" src="~imgurl/card3-1.png" alt="">
+                  <img class="img imgG" v-else-if="liActive==2" src="~imgurl/card3-2.png" alt="">
+                  <img class="img imgG" v-else src="~imgurl/card3-3.png" alt="">
+                </div>
+                <div v-else>
+                  <img class="img" :src="userCertifyMsg.hold_certificates" alt="">
+                </div>
+              </template>
+              <input class="inputpo3" type="file" @change="tirggerFile($event,3)">
+            </div>
+          </div>
+          <div class="note-down">注:上传图片内证件号，姓名等信息应确保清晰，切不可修改或覆盖；</div>
+        </div>
+      </main>
+      <footer>
+        <div v-show="hasData">
+          <button v-if="userCertifyMsg.status != 1" :class="{'show-color': hasData}" @click="submit(0)">提交审核</button>
+          <button v-else @click="submit(1)">开始使用</button>
+        </div>
+        <div v-show="!hasData">
+          <button>提交审核</button>
+        </div>
+      </footer>
+    </div>
   </div>
 </template>
 
@@ -372,7 +374,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.wrapper{
+.cert-body{
   position: fixed;
   top: 0;
   left: 0;
@@ -380,197 +382,204 @@ export default {
   bottom: 0;
   background-color: #f5f5f5;
   overflow-y: scroll;
-  main {
-    box-sizing: border-box;
-    padding-top: 60px;
-    // margin-bottom: 100px;
-    .hint{
-      font-size: 48px;
-      color: #333333;
-      font-weight: bold;
-      margin-bottom: 38px;
-    }
-    .note2{
-      font-size:24px;
-      color: #FF4F4F;
-      padding-bottom: 25px;
-    }
-    .topBorder{
-      border-bottom: none !important;
-    }
-    .top{
-      position: relative;
-      padding: 0 70px 0 30px;
-      .note0{
-        font-size: 24px;
-        position: absolute;
-        top: 60px;
-      }
-      .note1{
-        color: #FF7777;
-      }
-      .note4{
-        color: #3B67E0;
-      }
-      .note3{
-        color: #4BC766;
-      }
-      .item{
-        position: relative;
-        margin-top: 47px;
-        .name{
-          font-size: 28px;
-          font-weight: bold;
-          color: #333333;
-          margin-bottom: 8px;
-        }
-        input{
-          width: 100%;
-          color: #333333;
-          font-size: 30px;
-          background-color: transparent;
-          border-bottom: 1px solid #E3E3E3;
-          padding: 23px 5px 15px 5px;
-          &::placeholder{
-            color: #999999;
-          }
-        }
-        .btn{
-          width: 50%;
-          height: 50px;
-          position: absolute;
-          bottom: 50px;
-          right: 10px;
-          text-align: right;
-          i{
-            display: inline-block;
-            width: 28px;
-            height: 16px;
-            background: url("~imgurl/todownarrow.png") center / 100% no-repeat;
-          }
-        }
-        .van-overlay{
-          background-color: rgba(49, 49, 109, .25) !important;
-        }
-        ul{
-          background-color: #fff;
-          li{
-            font-size: 28px;
-            color: #000;
-            padding: 41px 56px 42px 49px;
-            border-bottom: 1px solid #F5F4F4;
-            display: flex;
-            justify-content: space-between;
-            i{
-              display: inline-block;
-              height: 38px;
-              width: 38px;
-              background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
-            }
-          }
-          .liActive{
-            background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
-          }
-        }
-      }
-      .note{
-        font-size: 24px;
-        color: #FFA55A;
-        font-weight: bold;
-      }
-    }
-    .bottom{
-      padding: 91px 45px 312px 45px;
-      .bottom-hint {
+  .wrapper {
+    position: relative;
+    main {
+      box-sizing: border-box;
+      padding-top: 60px;
+      // margin-bottom: 100px;
+      .hint{
+        font-size: 48px;
         color: #333333;
-        font-size: 42px;
         font-weight: bold;
+        margin-bottom: 38px;
       }
-      .upload{
+      .note2{
+        font-size:24px;
+        color: #FF4F4F;
+        padding-bottom: 25px;
+      }
+      .topBorder{
+        border-bottom: none !important;
+      }
+      .top{
         position: relative;
-        .imgs{
-          text-align: center;
-          height: 277px;
-          padding-top: 60px;
-          &:first-of-type{
-          }
-          .mask{
-            height: 277px;
-            position: relative;
-            i{
-              display: inline-block;
-              height: 100%;
-              width: 280px;
-              background-color: rgba(0, 0, 0, .4);
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              line-height: 240px;
-              transform: translateX(-50%) translateY(-50%);
-              font-size: 24px;
-              color: #fff;
-            }
-            // .img-width{
-            //   width: 280px;
-            // }
-            // .img-height{
-            //   height: 277px;
-            // }
-          }
-          .mask1{
-            left: 50%;
-            transform: translateX(-50%);
-          }
-          img{
-            box-shadow: 0 0 20px -8px #666;
-          }
-          .img{
-            box-shadow: 0 0 20px -8px #d2d2d2;
-            width: 370px;
-            height: 277px
-          }
-          .imgG{
-            width: 370px;
-            height: 277px;
-          }
-          .img-width{
-              width: 280px;
-          }
-          .img-height{
-            height: 260px;
+        padding: 0 70px 0 30px;
+        .note0{
+          font-size: 24px;
+          position: absolute;
+          top: 60px;
+        }
+        .note1{
+          color: #FF7777;
+        }
+        .note4{
+          color: #3B67E0;
+        }
+        .note3{
+          color: #4BC766;
+        }
+        .item{
+          position: relative;
+          margin-top: 47px;
+          .name{
+            font-size: 28px;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 8px;
           }
           input{
-            margin-top: -295px;
-            width: 370px;
-            height: 277px;
-            opacity: 0;
+            width: 100%;
+            color: #333333;
+            font-size: 30px;
+            background-color: transparent;
+            border-bottom: 1px solid #E3E3E3;
+            padding: 23px 5px 15px 5px;
+            &::placeholder{
+              color: #999999;
+            }
+          }
+          .btn{
+            width: 50%;
+            height: 50px;
+            position: absolute;
+            bottom: 50px;
+            right: 10px;
+            text-align: right;
+            i{
+              display: inline-block;
+              width: 28px;
+              height: 16px;
+              background: url("~imgurl/todownarrow.png") center / 100% no-repeat;
+            }
+          }
+          .van-overlay{
+            background-color: rgba(49, 49, 109, .25) !important;
+          }
+          ul{
+            background-color: #fff;
+            li{
+              font-size: 28px;
+              color: #000;
+              padding: 41px 56px 42px 49px;
+              border-bottom: 1px solid #F5F4F4;
+              display: flex;
+              justify-content: space-between;
+              i{
+                display: inline-block;
+                height: 38px;
+                width: 38px;
+                background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
+              }
+            }
+            .liActive{
+              background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
+            }
           }
         }
+        .note{
+          font-size: 24px;
+          color: #FFA55A;
+          font-weight: bold;
+        }
       }
-      .note-down{
-        font-size: 24px;
-        color: #FF4F4F;
-        margin-top: 88px;
+      .bottom{
+        padding: 91px 45px 312px 45px;
+        .bottom-hint {
+          color: #333333;
+          font-size: 42px;
+          font-weight: bold;
+        }
+        .upload{
+          position: relative;
+          .imgs{
+            text-align: center;
+            height: 277px;
+            padding-top: 60px;
+            &:first-of-type{
+            }
+            .mask{
+              height: 277px;
+              position: relative;
+              i{
+                display: inline-block;
+                height: 100%;
+                // width: 280px;
+                height: 277px;
+                width: 370px;
+                background-color: rgba(0, 0, 0, .4);
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                line-height: 240px;
+                transform: translateX(-50%) translateY(-50%);
+                font-size: 24px;
+                color: #fff;
+              }
+              .img-width{
+                width: 280px;
+              }
+              .img-height{
+                height: 277px;
+              }
+            }
+            .mask1 {
+              left: 50%;
+              transform: translateX(-50%);
+            }
+            img{
+              box-shadow: 0 0 20px -8px #666;
+              height: 277px;
+              width: 370px;
+            }
+            .img{
+              box-shadow: 0 0 20px -8px #d2d2d2;
+              width: 370px;
+              height: 277px;
+            }
+            .imgG{
+              width: 370px;
+              height: 277px;
+            }
+            .img-width{
+                width: 280px;
+            }
+            .img-height{
+              height: 260px;
+            }
+            input{
+              margin-top: -295px;
+              width: 370px;
+              height: 277px;
+              opacity: 0;
+            }
+          }
+        }
+        .note-down{
+          font-size: 24px;
+          color: #FF4F4F;
+          margin-top: 88px;
+        }
       }
     }
-  }
-  footer{
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 62px 68px;
-    background: #fff;
-    button {
-      width: 100%;
-      height: 95px;
-      font-size: 32px;
-      color: #fff;
-      border-radius:47px;
-      background: #E0E0E0;
-    }
-    .show-color {
-      background: #1359D2;
+    footer{
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 62px 68px;
+      background: #fff;
+      button {
+        width: 100%;
+        height: 95px;
+        font-size: 32px;
+        color: #fff;
+        border-radius:47px;
+        background: #E0E0E0;
+      }
+      .show-color {
+        background: #1359D2;
+      }
     }
   }
 }
