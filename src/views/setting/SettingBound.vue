@@ -299,8 +299,9 @@ export default {
           }
         })
         .catch(e => {
+          console.log('updateInfo')
           console.log(e)
-          this.showTopHint('网络错误')
+          this.showTopHint(e.msg)
         })
     },
 

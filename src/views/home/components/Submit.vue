@@ -69,8 +69,8 @@
         <div class="inside-text">银行卡</div>
       </div>
 
-      <button class="submit-btn" @click="verifyWindow()">提交订单</button>
     </div>
+    <button class="submit-btn" @click="verifyWindow()">提交订单</button>
 
     <van-popup v-model="showHint" position="top" :overlay="false">
       <p class="popup-hint" @click="showTopHint('close')">{{textHint}}</p>
@@ -263,8 +263,10 @@ export default {
 
       post(url, data)
         .then(res => {
-          console.log('提交订单成功：')
+          console.log('submit: 提交订单成功：')
           console.log(res)
+          const orderno = res.data.list.order_no
+          sessionStorage.setItem('submitno', orderno)
           this.$emit('onChildSubmit', 'loadingClose')
           setTimeout(() => {
             this.$emit('onChildSubmit', '去匹配')
@@ -448,6 +450,9 @@ export default {
   .check-box {
     position: relative;
     padding-top: 105px; // 65px
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
     .tackout-hint {
       position: absolute;
       top: 35px;
@@ -460,14 +465,12 @@ export default {
     }
     .icon-box {
       display: inline-block;
-      float: left;
       width: 180px;
       height: 210px;
       border-radius: 30px;
     }
     .icon-alipay {
       position: relative;
-      float: left;
       @iconCommon();
       .inside-img {
         background: url('~imgurl/icon_alipay_d.png') no-repeat center;
@@ -487,7 +490,6 @@ export default {
     }
     .icon-bank {
       position: relative;
-      float: right;
       @iconCommon();
       .inside-img {
         background: url('~imgurl/icon_bank_d.png') no-repeat center;
@@ -527,7 +529,7 @@ export default {
   }
   .submit-btn {
     margin-top: 153px;
-    width: 617px;
+    width: 100%;
     height: 97px;
     font-size: 30px;
     text-align: center;
@@ -538,13 +540,14 @@ export default {
 }
 
 .popup-hint {
-  width: 750px;
+  box-sizing: border-box;
+  width: 100%;
   height: 179px;
   line-height: 179px;
   font-size: 28px;
   text-align: center;
   color: #ffffff;
-  border-bottom: 1px solid #06204E;
+  border-bottom: 1.1px solid #06204E;
   background-color:#06204E;
   opacity: 0.85;
 }
