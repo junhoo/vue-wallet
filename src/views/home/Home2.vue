@@ -144,6 +144,7 @@ export default {
       let data = { token: sessionStorage.getItem('randomcode') }
       post(url, data)
         .then(res => {
+          this.loadingVal = false
           console.log('home: A端订单', res)
           const _list = res.data.list
           if (!_list) { return }
@@ -178,7 +179,6 @@ export default {
             console.log('home: oldshow')
             this.onmessage(mock)
           }
-          this.loadingVal = false
         })
         .catch(e => {
           console.log(e)
@@ -299,20 +299,16 @@ export default {
     },
 
     onChildSubmit (type) {
-      if (type === 'loadingShow') {
-        this.loadingVal = true
-        return
-      }
-      if (type === 'loadingClose') {
-        this.loadingVal = false
+      console.log('提交: >>> 返回结果')
+      console.log(type)
+      if (type === 'loadingShow' || type === 'loadingClose') {
+        this.getTotalCoin()
+        this.loadingVal = type === 'loadingShow' ? true : false
         return
       }
       if (type === '去匹配') {
         console.log('home: home 下单成功-订单匹配中')
         this.showMatching = true
-        setTimeout(() => {
-          this.showMatching = true
-        }, 80)
         return
       }
       if (type === '去实名') {
@@ -387,7 +383,6 @@ export default {
       // 跳转提现详情
       if (type === '去确认收款' || type === '提现查看订单') {
         this.timerLink = setTimeout(() => {
-          console.log('aaa')
           this.$router.push({
             name: 'WithdrawalDetail',
             query: { order_no: this.order_no }
@@ -412,9 +407,10 @@ export default {
       }
 
       var stateName = ''
-      if (orderType === '接单用户取消') {
+      // orderType === '接单用户取消'
+      if (orderType.includes('接单用户取消')) { // 接单用户取消,匹配中
         this.hasDetail = false
-        this.popupName = '被取消'
+        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
         this.showPopup = true
         return
       } else {

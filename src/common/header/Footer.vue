@@ -40,30 +40,33 @@
       <span>联系客服 {{showfooter}}</span>
     </div>
   </div>
-<!-- 弹出框 -->
-<van-popup v-model="show" position="bottom" :overlay="false">
-  <h3 class="title_tip">提示</h3>
-  <span class="txt_tip">每天手动或超时取消订单超过3次，将被禁止交易24小时</span>
-  <p class="actBtn submit" @click="cancelOrder(1)">取消订单</p>
-  <p class="actBtn cancel" @click="cancelOrder(0)">继续交易</p>
-</van-popup>
+  <!-- 弹出框 -->
+  <van-popup v-model="show" position="bottom" :overlay="false">
+    <h3 class="title_tip">提示</h3>
+    <span class="txt_tip">每天手动或超时取消订单超过3次，将被禁止交易24小时</span>
+    <p class="actBtn submit" @click="cancelOrder(1)">取消订单</p>
+    <p class="actBtn cancel" @click="cancelOrder(0)">继续交易</p>
+  </van-popup>
+  <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
 </div>
 </template>
 
 <script>
 import { post } from '@/assets/js/fetch'
 import CountDown from 'common/time/CountDown'
+import CommonLoading from 'common/loading/Loading'
 export default {
   name: 'Footer',
   components: {
-    CountDown
+    CountDown,
+    CommonLoading
   },
   props: {
     okTxt: String,
     showfooter: Number,
     order_type: Number,
     pay_type: Number,
-    order_no: Number,
+    order_no: String,
     orderDetailData: Object,
     pay_info: Object,
     rest_time: Number
@@ -71,6 +74,7 @@ export default {
   data () {
     return {
       show: false,
+      loadingVal: false,
       endCountdown: 0,
       endCountdown2: 0
     }
@@ -82,6 +86,7 @@ export default {
     },
     // 取消订单
     cancelOrder (index) {
+      this.loadingVal = true
       if (index === 0) {
         this.show = !this.show
         return false
@@ -94,9 +99,11 @@ export default {
       post(url, data)
         .then(res => {
           this.$emit('refreshData', true)
+          this.loadingVal = false
           this.show = !this.show
         })
         .catch(e => {
+          this.loadingVal = false
           console.log(e)
           alert(e)
           this.$toast('网络错误4')
@@ -104,6 +111,7 @@ export default {
     },
     // 确认付款
     submit () {
+      this.loadingVal = true
       var data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no,
@@ -112,15 +120,18 @@ export default {
       let url = this.$api.order + '/api/order/endRechangeOrder'
       post(url, data)
         .then(res => {
+          this.loadingVal = false
           this.$router.go(-1)
         })
         .catch(e => {
+          this.loadingVal = false
           console.log(e)
           this.$toast('网络错误4')
         })
     },
     // 确认收款
     submit2 () {
+      this.loadingVal = true
       var data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
@@ -129,8 +140,10 @@ export default {
       post(url, data)
         .then(res => {
           this.$emit('refreshData', true)
+          this.loadingVal = false
         })
         .catch(e => {
+          this.loadingVal = false
           console.log(e)
           this.$toast('网络错误4')
         })

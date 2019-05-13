@@ -265,8 +265,10 @@ export default {
         .then(res => {
           console.log('提交订单成功：')
           console.log(res)
-          this.$emit('onChildSubmit', '去匹配')
           this.$emit('onChildSubmit', 'loadingClose')
+          setTimeout(() => {
+            this.$emit('onChildSubmit', '去匹配')
+          }, 500)
         })
         .catch(e => {
           console.log('提交订单错误：')
@@ -290,6 +292,7 @@ export default {
     handleInput (e) {
       this.keyword = this.keyword.replace(/[^\d]/g, '')
       this.keyword = this.keyword.replace('.', '')
+      this.keyword = parseInt(this.keyword) || ''
     },
 
     showTopHint (info) {

@@ -228,7 +228,7 @@ export default {
         }
       }
 
-      if (file.size / 1024 > 3000) {
+      if (file.size / 1024 > 5000) {
         reads.onloadend = function () {
           let result = this.result
           let img = new Image()

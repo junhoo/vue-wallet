@@ -1,6 +1,6 @@
 <template>
   <div v-if="show">
-      <!-- <div class="loading-mask"></div> -->
+      <div class="loading-mask" v-show="mask"></div>
       <div class="loading_box" @click.stop>
         <div class="loading-icon"></div>
         <!-- <div class="loading-text">正在加载...</div> -->
@@ -12,7 +12,14 @@
 export default {
   name: 'loading',
   props: {
-    show: Boolean
+    show: {
+      type: Boolean,
+      default: false
+    },
+    mask: {
+      type: Boolean,
+      default: false
+    }
   }
 }
 </script>
@@ -28,6 +35,7 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 9000;
+    background: rgba(0, 0, 0, .1);
 }
 .loading_box {
   position: fixed;
