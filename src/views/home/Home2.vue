@@ -25,7 +25,7 @@
                   v-show="!hasDetail"
                   :userMsg="userMsg"
                   :headerInfo="headerInfo"
-                  @onChildSubmit='onChildSubmit'>
+                  @onchildsubmit='onChildSubmit'>
       </home-submit>
       <!-- 首页-订单详情-->
       <home-detail
@@ -33,7 +33,7 @@
                   :type="detailType"
                   :timed="rest_time"
                   :detailInfo="detailInfo"
-                  @onChildDetail='onChildDetail'>
+                  @onchilddetail='onChildDetail'>
       </home-detail>
     </main>
 
@@ -57,14 +57,14 @@
                   :name='popupName'
                   :money='popupMoney'
                   :account='popupAccount'
-                  @onChildPopup='onChildPopup'>
+                  @onchildpopup='onChildPopup'>
     </order-popup>
 
     <van-popup v-model="showHint" position="top" :overlay="false">
       <p class="popup-hint" @click="showTopHint('close')">{{textHint}}</p>
     </van-popup>
 
-    <socket-view ref='socket' @onChildSocket='onChildSocket'></socket-view>
+    <socket-view ref='socket' @onchildsocket='onChildSocket'></socket-view>
     <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
 </template>
@@ -403,9 +403,9 @@ export default {
     },
 
     onChildSocket (info) {
-      // setTimeout(() => {
-      this.onmessage(info)
-      // }, 5000)
+      setTimeout(() => {
+        this.onmessage(info)
+      }, 5000)
     },
 
     onmessage (info) {

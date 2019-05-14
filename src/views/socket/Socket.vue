@@ -29,7 +29,7 @@ export default {
       console.log('0.0 消息启动')
       this.init()
     }
-    // this.service()
+    this.service()
   },
   deactivated () {
     console.log('x.x 消息离开')
@@ -39,8 +39,9 @@ export default {
       // console.log('---')
       axios.get(this.$api.socket)
         .then(res => {
-          // console.log('s-222')
-          // console.log(res)
+          console.log('')
+          console.log('=======service==========')
+          console.log(res)
           // {
           //   "status": "success",
           //   "code": 200,
@@ -168,26 +169,26 @@ export default {
       //       }
       //     }
       //   }
-      //   this.$emit('onChildSocket', res.msg)
+      //   this.$emit('onchildsocket', res.msg)
       // }, 1000)
 
       // setTimeout(() => {
       //   res.msg.data.a_status_str = '自动收款'
-      //   this.$emit('onChildSocket', res.msg)
+      //   this.$emit('onchildsocket', res.msg)
       // }, 4000)
 
       // setTimeout(() => {
       //   res.msg.data.a_status_str = '接单用户取消'
-      //   this.$emit('onChildSocket', res.msg)
+      //   this.$emit('onchildsocket', res.msg)
       // }, 4000)
 
       // setTimeout(() => {
       //   res.msg.data.a_status_str = '未到账'
-      //   this.$emit('onChildSocket', res.msg)
+      //   this.$emit('onchildsocket', res.msg)
       // }, 4000)
       // setTimeout(() => {
       //   res.msg.data.a_status_str = '交易完成'
-      //   this.$emit('onChildSocket', res.msg)
+      //   this.$emit('onchildsocket', res.msg)
       // }, 7000)
       // decodeURIComponent
       if (res.type === 301) {
@@ -202,7 +203,7 @@ export default {
         console.log(res)
         console.log(res.msg.data.a_status_str)
         console.log(res.msg.data.order_no)
-        this.$emit('onChildSocket', this.saveMsg)
+        this.$emit('onchildsocket', this.saveMsg)
         const orderno = res.msg.data.order_no
         const orderType = parseInt(res.msg.data.order_type)
         if (orderType === 1) {

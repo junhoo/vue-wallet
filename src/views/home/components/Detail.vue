@@ -9,7 +9,7 @@
           }">
         <span v-if="detailInfo.order_type == 1" class="top-text">{{detailInfo.a_status_str| filterLeftState}}</span>
         <span v-else class="top-text">{{detailInfo.a_status_str| takeoutLeftState}}</span>
-        {{detailInfo.a_status_str}}/{{detailInfo.order_type}}
+        <!-- {{type}}-{{detailInfo.a_status_str}}/{{detailInfo.order_type}}{{timed}} -->
         <template v-if="(detailInfo.a_status_str.includes('匹配成功') && detailInfo.order_type == 1)">
           <count-down
             class="top-state"
@@ -54,7 +54,7 @@
       <div class="note-box" v-show="type === '提现' && detailInfo.a_status_str.includes('匹配成功')">
           <p>1：订单匹配成功，等待买方付款</p>
           <p>2：如果10分钟内，买方未付款，系统将重新为您匹配其他买方</p>
-        </div>
+      </div>
 
       <div class="note-box" v-show="type === '充值未到账'">
         <p>等待对方确认收款，如果10分钟内对方未确认付款，请发起申诉。</p>
@@ -109,7 +109,7 @@ export default {
   methods: {
     clickJump (name = '') {
       const type = name === '取消订单' ? '取消订单' : this.type
-      this.$emit('onChildDetail', type)
+      this.$emit('onchilddetail', type)
     }
   },
   filters: {

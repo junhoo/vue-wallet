@@ -244,6 +244,8 @@ export default {
     },
     // 确定支付信息
     payTypeMsg () {
+      console.log('this.pay_info')
+      console.log(this.pay_info)
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
       } else if (this.payway === 2) {
