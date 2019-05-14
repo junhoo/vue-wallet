@@ -177,6 +177,7 @@ import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import DialogBox from 'common/dialog/Dialog'
 import CountDown from 'common/time/CountDown'
+import CommonLoading from 'common/loading/Loading'
 import Clipboard from 'clipboard'
 export default {
   name: 'RechargeDetail',
@@ -184,7 +185,8 @@ export default {
     DialogBox,
     CommonHeader,
     CommonFooter,
-    CountDown
+    CountDown,
+    CommonLoading
   },
   data () {
     return {
@@ -297,7 +299,8 @@ export default {
     }
   },
   filters: {
-    payTypeText: function (value) {
+    payTypeText: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '1') {
         value = '支付宝'
@@ -308,7 +311,8 @@ export default {
       }
       return value
     },
-    orderStatus: function (value) {
+    orderStatus: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '已取消'
@@ -318,6 +322,8 @@ export default {
         value = '已完成'
       } else if (value === '3' || value === '7') {
         value = '未到账'
+      } else {
+        value = ''
       }
       return value
     }

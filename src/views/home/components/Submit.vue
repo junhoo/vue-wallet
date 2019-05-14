@@ -302,7 +302,7 @@ export default {
         this.showHint = false
         return
       }
-      this.textHint = info
+      this.textHint = info || '网络请求错误'
       this.showHint = true
       if (this.timerHint) {
         clearTimeout(this.timerHint)

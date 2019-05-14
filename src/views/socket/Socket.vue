@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click='send'></button>
+    <button></button>
   </div>
 </template>
 
@@ -16,7 +16,8 @@ export default {
       timerConnect: null,
       path: 'ws://192.168.1.249:9508',
       websocket: '',
-      randomStr: ''
+      randomStr: '',
+      saveMsg: {}
     }
   },
   // props: {
@@ -70,32 +71,34 @@ export default {
           this.websocket.onerror = this.error
           // 监听socket消息
           this.websocket.onmessage = this.message
+          // 1
+          this.websocket.onclose = this.close
         } catch (error) {
         }
       }
-      // this.heartbeat()
+      this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
-        console.log('')
-        console.log('❤ 心跳查看')
+        // console.log('')
+        // console.log('❤ 心跳查看')
         if (this.existServer) {
           this.send()
-          console.log('-1 服务器 ok')
+          // console.log('-1 服务器 ok')
         } else {
-          console.log('-1 服务器 挂了')
+          // console.log('-1 服务器 挂了')
           clearInterval(this.timerHeart)
           this.restart()
         }
-        console.log('')
-      }, 10000)
+        // console.log('')
+      }, 15000)
     },
     open () {
       console.log('1.0 socket打开成功')
       this.send()
     },
     send () {
-      console.log('2.0 socket发送')
+      // console.log('2.0 socket发送')
       this.randomStr = Math.random().toString(36).substr(2)
       const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
       const data = {
@@ -112,8 +115,8 @@ export default {
     },
     message (msg) {
       let res = msg.data
-      console.log('3.0 socket接收')
-      console.log(res)
+      // console.log('3.0 socket接收')
+      // console.log(res)
       try {
         if (res) {
           this.existServer = true
@@ -128,7 +131,7 @@ export default {
       // console.log(res.from_uid, 10000)
       // console.log(this.randomStr, res.rand_str)
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
-        console.log('4.0 匹配ok')
+        // console.log('4.0 匹配ok')
       }
       // setTimeout(() => {
       //   res = {
@@ -188,18 +191,24 @@ export default {
       // }, 7000)
       // decodeURIComponent
       if (res.type === 301) {
-        if (this.timerPopup) {
-          clearTimeout(this.timerPopup)
+        // if (this.timerPopup) {
+        //   clearTimeout(this.timerPopup)
+        // }
+        // this.timerPopup = setTimeout(() => {
+        res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
+        this.saveMsg = res.msg
+        console.log('')
+        console.log('··· message消息 ···')
+        console.log(res)
+        console.log(res.msg.data.a_status_str)
+        console.log(res.msg.data.order_no)
+        this.$emit('onChildSocket', this.saveMsg)
+        const orderno = res.msg.data.order_no
+        const orderType = parseInt(res.msg.data.order_type)
+        if (orderType === 1) {
+          sessionStorage.setItem(orderno, '0')
         }
-        this.timerPopup = setTimeout(() => {
-          res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
-          const orderno = res.msg.data.order_no
-          const orderType = parseInt(res.msg.data.order_type)
-          if (orderType === 1) {
-            sessionStorage.setItem(orderno, '0')
-          }
-          this.$emit('onChildSocket', res.msg)
-        }, 1800)
+        // }, 3000)
       }
     },
     restart () {
@@ -209,7 +218,7 @@ export default {
       this.timerConnect = setTimeout(() => {
         console.log('webs 重新连接')
         this.init()
-      }, 5000)
+      }, 2000)
     },
     close () {
       console.log('socket已经关闭')

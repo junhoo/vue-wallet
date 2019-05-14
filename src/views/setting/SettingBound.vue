@@ -135,6 +135,7 @@ export default {
   data () {
     return {
       istrue: true,
+      oldVal: '',
       showHint: false,
       showPopup: false,
       popupName: '填写绑定',
@@ -194,9 +195,10 @@ export default {
   },
   computed: {
     hasData () {
+      let pools = []
       if (this.entryType === 'bank') {
         const inputBox = this.apiBank
-        const pools = [inputBox.bank_name, inputBox.bank_no, inputBox.bank_address, inputBox.bank_sub_branch, inputBox.pay_remarks]
+        pools = [inputBox.bank_name, inputBox.bank_no, inputBox.bank_address, inputBox.bank_sub_branch, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -205,7 +207,7 @@ export default {
       }
       if (this.entryType === 'alipay') {
         const inputBox = this.apiAlipay
-        const pools = [inputBox.alipay_name, inputBox.alipay_account, inputBox.pay_remarks]
+        pools = [inputBox.alipay_name, inputBox.alipay_account, inputBox.alipay_rq_code, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -214,12 +216,15 @@ export default {
       }
       if (this.entryType === 'wechat') {
         const inputBox = this.apiWechat
-        const pools = [inputBox.wechat_name, inputBox.wechat_account, inputBox.pay_remarks]
+        pools = [inputBox.wechat_name, inputBox.wechat_account, inputBox.wechat_rq_code, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
           }
         }
+      }
+      if (pools.toString() === this.oldVal) {
+        return false
       }
       return true
     },
@@ -328,18 +333,24 @@ export default {
             this.apiBank.bank_sub_branch = _info.bank_sub_branch
             this.apiBank.bank_no = _info.bank_no
             this.apiBank.pay_remarks = _info.pay_remarks
+            const pools = [_info.bank_name, _info.bank_no, _info.bank_address, _info.bank_sub_branch, _info.pay_remarks]
+            this.oldVal = pools.toString()
           } else if (type === 'alipay') {
             this.apiAlipay.alipay_name = _info.alipay_name
             this.apiAlipay.alipay_account = _info.alipay_account
             this.apiAlipay.alipay_rq_code = _info.alipay_rq_code
             this.qrcodeUrl = _info.alipay_rq_code
             this.apiAlipay.pay_remarks = _info.pay_remarks
+            const pools = [_info.alipay_name, _info.alipay_account, _info.alipay_rq_code, _info.pay_remarks]
+            this.oldVal = pools.toString()
           } else if (type === 'wechat') {
             this.apiWechat.wechat_name = _info.wechat_name
             this.apiWechat.wechat_account = _info.wechat_account
             this.apiWechat.wechat_rq_code = _info.wechat_rq_code
             this.qrcodeUrl = res.data.list.wechat_rq_code
             this.apiWechat.pay_remarks = _info.pay_remarks
+            const pools = [_info.wechat_name, _info.wechat_account, _info.wechat_rq_code, _info.pay_remarks]
+            this.oldVal = pools.toString()
           }
         })
         .catch(e => {

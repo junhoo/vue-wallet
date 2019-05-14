@@ -25,7 +25,7 @@
                   v-show="!hasDetail"
                   :userMsg="userMsg"
                   :headerInfo="headerInfo"
-                  v-on:onChildSubmit='onChildSubmit'>
+                  @onChildSubmit='onChildSubmit'>
       </home-submit>
       <!-- 首页-订单详情-->
       <home-detail
@@ -33,7 +33,7 @@
                   :type="detailType"
                   :timed="rest_time"
                   :detailInfo="detailInfo"
-                  v-on:onChildDetail='onChildDetail'>
+                  @onChildDetail='onChildDetail'>
       </home-detail>
     </main>
 
@@ -57,15 +57,15 @@
                   :name='popupName'
                   :money='popupMoney'
                   :account='popupAccount'
-                  v-on:onChildPopup='onChildPopup'>
+                  @onChildPopup='onChildPopup'>
     </order-popup>
 
     <van-popup v-model="showHint" position="top" :overlay="false">
       <p class="popup-hint" @click="showTopHint('close')">{{textHint}}</p>
     </van-popup>
 
-    <socket-view ref='socket' v-on:onChildSocket='onmessage'></socket-view>
-    <common-loading :show.sync='loadingVal'></common-loading>
+    <socket-view ref='socket' @onChildSocket='onChildSocket'></socket-view>
+    <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
 </template>
 
@@ -101,8 +101,8 @@ export default {
     if (sessionStorage.getItem('randomcode')) {
       this.getTotalCoin()
       this.getUserMsg()
+      this.getCurOrder()
     }
-    this.getCurOrder()
   },
   data () {
     return {
@@ -148,14 +148,20 @@ export default {
           console.log('home: A端订单', res)
           const _list = res.data.list
           if (!_list) { return }
-          _list.a_status_str = decodeURIComponent(_list.a_status_str)
-          var nowTime = new Date()
-          nowTime = nowTime.getTime()
-          _list.rest_time = parseInt(nowTime) + parseInt(_list.rest_time) * 1000
-          this.rest_time = _list.rest_time
+
+          // 倒计时
+          let countTimed = parseInt(_list.rest_time)
+          if (countTimed <= 600) {
+            var nowTime = new Date()
+            nowTime = nowTime.getTime()
+            countTimed = parseInt(nowTime) + countTimed * 1000
+          }
+          this.rest_time = countTimed
           this.popupAccount = _list.account
 
-          if (_list.a_status_str === '接单用户取消,匹配中') {
+          // 切换页面逻辑
+          _list.a_status_str = decodeURIComponent(_list.a_status_str)
+          if (_list.a_status_str === '接单用户取消,匹配中' || (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 2)) {
             console.log('home: rematch')
             this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
             this.order_no = _list.order_no
@@ -210,6 +216,7 @@ export default {
             sessionStorage.setItem('randomcode', _obj)
             this.getTotalCoin()
             this.getUserMsg()
+            this.getCurOrder()
           } else {
             this.showTopHint(res.msg)
           }
@@ -263,7 +270,6 @@ export default {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
       }
-      console.log(data)
       const url = this.$api.order + '/api/order/cancelRechangeOrder'
       post(url, data)
         .then(res => {
@@ -283,7 +289,7 @@ export default {
         .catch(e => {
           console.log(e)
           this.loadingVal = false
-          this.showTopHint(e.msg)
+          this.showTopHint(e.msg || '取消网络错误')
         })
     },
 
@@ -357,6 +363,7 @@ export default {
 
     onChildPopup (val) {
       let type = val
+      console.log('')
       console.log('home: >>> 弹窗入口')
       if (this.timerLink) {
         clearTimeout(this.timerLink)
@@ -395,15 +402,30 @@ export default {
       }
     },
 
+    onChildSocket (info) {
+      // setTimeout(() => {
+      this.onmessage(info)
+      // }, 5000)
+    },
+
     onmessage (info) {
-      console.log('home: >>> 消息入口')
+      console.log('')
+      console.log('··· home: >>> 消息入口')
       // a_status_str = 匹配中 匹配成功 已取消 交易完成|确认收款 未到账 接单用户取消 重新匹配成功 交易完成 自动收款 ->未知字段
       const orderInfo = info.data
       const orderType = orderInfo.a_status_str
       console.log(orderType)
+      console.log(orderInfo.order_no)
       this.order_no = orderInfo.order_no
       this.order_type = orderInfo.order_type
       this.popupMoney = orderInfo.order_amount
+      let countTimed = parseInt(orderInfo.rest_time)
+      if (countTimed <= 600) {
+        var nowTime = new Date()
+        nowTime = nowTime.getTime()
+        countTimed = parseInt(nowTime) + countTimed * 1000
+      }
+      this.rest_time = countTimed
 
       if (orderType === '匹配中') {
         this.showMatching = true
@@ -413,10 +435,9 @@ export default {
       var stateName = ''
       // orderType === '接单用户取消'
       if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
-        // this.hasDetail = false
-        // this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
-        // this.showPopup = true
         this.hasDetail = false
+        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
+        this.showPopup = true
         this.showMatching = true
         return
       } else {

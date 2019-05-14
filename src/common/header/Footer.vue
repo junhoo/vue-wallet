@@ -16,7 +16,8 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p>
-      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉{{rest_time}}</p>
+      <!-- <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉{{rest_time}}</p> -->
+      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
@@ -149,6 +150,8 @@ export default {
         })
     },
     appeal () {
+      console.log('link =========')
+      console.log(this.pay_info)
       if (this.order_type === 2) {
         this.$router.push({
           path: '/appeal',
@@ -170,7 +173,8 @@ export default {
     }
   },
   filters: {
-    textW: function (value) {
+    textW: function (val) {
+      let value = val || ''
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '操作失误导致订单被取消？'
