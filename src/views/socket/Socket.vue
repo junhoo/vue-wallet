@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click='send'></button>
+    <button></button>
   </div>
 </template>
 
@@ -16,7 +16,8 @@ export default {
       timerConnect: null,
       path: 'ws://192.168.1.249:9508',
       websocket: '',
-      randomStr: ''
+      randomStr: '',
+      saveMsg: {}
     }
   },
   // props: {
@@ -25,21 +26,18 @@ export default {
   mounted () {
     // 初始化
     if (sessionStorage.getItem('userMsg')) {
-      console.log('0.0 消息启动')
-      this.init()
+      // this.init()
     }
     // this.service()
-  },
-  deactivated () {
-    console.log('x.x 消息离开')
   },
   methods: {
     service () {
       // console.log('---')
       axios.get(this.$api.socket)
         .then(res => {
-          // console.log('s-222')
-          // console.log(res)
+          console.log('')
+          console.log('=======service==========')
+          console.log(res)
           // {
           //   "status": "success",
           //   "code": 200,
@@ -57,6 +55,7 @@ export default {
     },
     init () {
       console.log('')
+      console.log('··· 消息启动')
       console.log('=== socket：inits')
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
@@ -65,37 +64,39 @@ export default {
           // 实例化socket
           this.websocket = new WebSocket(this.path)
           // 监听socket连接
-          this.websocket.onopen = this.open
+          this.websocket.onopen = this.wsopen
           // 监听socket错误信息
-          this.websocket.onerror = this.error
+          this.websocket.onerror = this.wserror
           // 监听socket消息
-          this.websocket.onmessage = this.message
+          this.websocket.onmessage = this.wsmessage
+          // 监听socket关闭
+          this.websocket.onclose = this.wsclose
         } catch (error) {
         }
       }
-      // this.heartbeat()
+      this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
-        console.log('')
-        console.log('❤ 心跳查看')
+        // console.log('')
+        // console.log('❤ 心跳查看')
         if (this.existServer) {
           this.send()
-          console.log('-1 服务器 ok')
+          // console.log('-1 服务器 ok')
         } else {
-          console.log('-1 服务器 挂了')
+          // console.log('-1 服务器 挂了')
           clearInterval(this.timerHeart)
           this.restart()
         }
-        console.log('')
-      }, 10000)
+        // console.log('')
+      }, 15000)
     },
-    open () {
+    wsopen () {
       console.log('1.0 socket打开成功')
       this.send()
     },
     send () {
-      console.log('2.0 socket发送')
+      // console.log('2.0 socket发送')
       this.randomStr = Math.random().toString(36).substr(2)
       const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
       const data = {
@@ -110,10 +111,10 @@ export default {
       const params = JSON.stringify(data)
       this.websocket.send(params)
     },
-    message (msg) {
+    wsmessage (msg) {
       let res = msg.data
-      console.log('3.0 socket接收')
-      console.log(res)
+      // console.log('3.0 socket接收')
+      // console.log(res)
       try {
         if (res) {
           this.existServer = true
@@ -128,78 +129,25 @@ export default {
       // console.log(res.from_uid, 10000)
       // console.log(this.randomStr, res.rand_str)
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
-        console.log('4.0 匹配ok')
+        // console.log('4.0 匹配ok')
       }
-      // setTimeout(() => {
-      //   res = {
-      //     from_uid: 10000,
-      //     to_uid: '91940140',
-      //     type: 301,
-      //     rand_str: 1557114310.4482,
-      //     msg: {
-      //       event_type: 'transaction_rechange',
-      //       data: {
-      //         user_id: '91940140',
-      //         status: 6,
-      //         seller_status: 0,
-      //         buyer_id: '91940140',
-      //         seller_id: '0',
-      //         order_amount: '200.00',
-      //         order_no: '1835401557114309',
-      //         choice_pay_type: '1,3',
-      //         pay_type: 3,
-      //         order_type: 1,
-      //         rate: '0.10',
-      //         rate_type: 1,
-      //         cancel_time: 0,
-      //         add_time: 1557114309,
-      //         pay_prove_pic: null,
-      //         update_time: 0,
-      //         bonus_rate: '0.10',
-      //         history_user_id: null,
-      //         real_amount: '200.00',
-      //         rest_time: 0,
-      //         account: '银行卡(Mingzi)',
-      //         a_status: 6,
-      //         a_status_str: '未到账' // %E5%8C%B9%E9%85%8D%E4%B8%AD
-      //       }
-      //     }
-      //   }
-      //   this.$emit('onChildSocket', res.msg)
-      // }, 1000)
-
-      // setTimeout(() => {
-      //   res.msg.data.a_status_str = '自动收款'
-      //   this.$emit('onChildSocket', res.msg)
-      // }, 4000)
-
-      // setTimeout(() => {
-      //   res.msg.data.a_status_str = '接单用户取消'
-      //   this.$emit('onChildSocket', res.msg)
-      // }, 4000)
-
-      // setTimeout(() => {
-      //   res.msg.data.a_status_str = '未到账'
-      //   this.$emit('onChildSocket', res.msg)
-      // }, 4000)
-      // setTimeout(() => {
-      //   res.msg.data.a_status_str = '交易完成'
-      //   this.$emit('onChildSocket', res.msg)
-      // }, 7000)
       // decodeURIComponent
       if (res.type === 301) {
-        if (this.timerPopup) {
-          clearTimeout(this.timerPopup)
+        res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
+        this.saveMsg = res.msg
+        console.log('')
+        console.log('··· message消息 ···')
+        console.log(res)
+        console.log(res.msg.data.a_status_str)
+        console.log(res.msg.data.order_no)
+        this.$emit('onchildsocket', this.saveMsg)
+        // console.log(this.$emit)
+        console.log(' da da da')
+        const orderno = res.msg.data.order_no
+        const orderType = parseInt(res.msg.data.order_type)
+        if (orderType === 1) {
+          sessionStorage.setItem(orderno, '0')
         }
-        this.timerPopup = setTimeout(() => {
-          res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
-          const orderno = res.msg.data.order_no
-          const orderType = parseInt(res.msg.data.order_type)
-          if (orderType === 1) {
-            sessionStorage.setItem(orderno, '0')
-          }
-          this.$emit('onChildSocket', res.msg)
-        }, 1800)
       }
     },
     restart () {
@@ -209,13 +157,13 @@ export default {
       this.timerConnect = setTimeout(() => {
         console.log('webs 重新连接')
         this.init()
-      }, 5000)
+      }, 2000)
     },
-    close () {
+    wsclose () {
       console.log('socket已经关闭')
       this.restart()
     },
-    error () {
+    wserror () {
       console.log('error 连接错误')
       this.restart()
     }

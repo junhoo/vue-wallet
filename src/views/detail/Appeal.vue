@@ -141,7 +141,7 @@ export default {
       show2: false,
       appealTxt: '',
       isload: 0,
-      payway: 3,
+      payway: 0,
       orderType: 3,
       Url: '',
       Url2: '',
@@ -182,9 +182,11 @@ export default {
         this.pay_name = this.pay_info.wechat_pay.wechat_name
         this.pay_account = this.pay_info.wechat_pay.wechat_account
         this.pay_remarks = this.pay_info.wechat_pay.pay_remarks
-      } else {
+      } else if (this.payway === 3) {
         this.pay_name = this.pay_info.bank_pay.bank_name
         this.pay_remarks = this.pay_info.bank_pay.pay_remarks
+      } else {
+        // none
       }
     },
     // event上传图片

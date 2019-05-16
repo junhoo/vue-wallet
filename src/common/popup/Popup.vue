@@ -96,7 +96,7 @@ export default {
   methods: {
     selectType (type) {
       this.closeDiv()
-      this.$emit('onChildPopup', type) // 定义->子组件声明的事件
+      this.$emit('onchildpopup', type) // 定义->子组件声明的事件
     },
     closeDiv () {
       this.$emit('update:show', false)

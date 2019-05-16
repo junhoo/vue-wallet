@@ -177,6 +177,7 @@ import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import CommonLoading from 'common/loading/Loading'
 import CountDown from 'common/time/CountDown'
+import CommonLoading from 'common/loading/Loading'
 import Clipboard from 'clipboard'
 export default {
   name: 'RechargeDetail',
@@ -184,7 +185,8 @@ export default {
     CommonLoading,
     CommonHeader,
     CommonFooter,
-    CountDown
+    CountDown,
+    CommonLoading
   },
   data () {
     return {
@@ -199,7 +201,7 @@ export default {
       orderType: null, // 订单状态 2.代付款 3.未到账 4.已取消(手动) 5.已完成 8.已取消(自动)
       orderDetailData: {}, // 订单详情信息
       order_no: '', // 订单编号
-      pay_name: 'jeney', // 支付账户名
+      pay_name: '', // 支付账户名
       pay_account: '14154sadf', // 支付账号
       pay_url: '', // 支付二维码
       pay_remarks: '', // 付款时备注
@@ -223,6 +225,7 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
+          alert(JSON.stringify(res))
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0
@@ -242,6 +245,8 @@ export default {
     },
     // 确定支付信息
     payTypeMsg () {
+      console.log('this.pay_info')
+      console.log(this.pay_info)
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
       } else if (this.payway === 2) {
@@ -297,7 +302,8 @@ export default {
     }
   },
   filters: {
-    payTypeText: function (value) {
+    payTypeText: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '1') {
         value = '支付宝'
@@ -308,7 +314,8 @@ export default {
       }
       return value
     },
-    orderStatus: function (value) {
+    orderStatus: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '已取消'
@@ -318,6 +325,8 @@ export default {
         value = '已完成'
       } else if (value === '3' || value === '7') {
         value = '未到账'
+      } else {
+        value = ''
       }
       return value
     }
@@ -498,8 +507,8 @@ export default {
     color: #C2C2C2;
     padding: 10px 0 34px;
     span{
+      line-height: 40px;
       display: inline-block;
-      margin-bottom: 20px;
     }
   }
 }

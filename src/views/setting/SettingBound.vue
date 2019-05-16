@@ -68,9 +68,9 @@
         <!-- <p class="name">请上传收款二维码</p> -->
         <div class="imgs">
           <template v-if="entryIsbound === 'n'">
+            <!-- :class="[istrue?'img-width':'img-height']" -->
             <img v-if="preview !== ''"
                 class="img-down"
-                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
@@ -78,9 +78,9 @@
                 src="~imgurl/upload.png">
           </template>
           <template v-else>
+            <!-- :class="[istrue?'img-width':'img-height']" -->
             <img v-if="preview !== ''"
                 class="img-down"
-                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
@@ -90,7 +90,7 @@
           <!-- <van-uploader class="xxx" :after-read="onRead">
             <van-icon name="photograph" />
           </van-uploader> -->
-          <!-- <div class="mask"><span>重新上传</span></div> -->
+          <div class="mask-box" v-show="showMask"><span>重新上传</span><p class="icon-text"></p></div>
           <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
@@ -109,7 +109,7 @@
 
     <order-popup :show.sync='showPopup'
                   :name='popupName'
-                  v-on:onChildPopup='onChildPopup'>
+                  v-on:onchildpopup='onChildPopup'>
     </order-popup>
 
     <van-popup v-model="showHint" position="top" :overlay="false">
@@ -135,8 +135,10 @@ export default {
   data () {
     return {
       istrue: true,
+      oldVal: '',
       showHint: false,
       showPopup: false,
+      showMask: false,
       popupName: '填写绑定',
       postFormat: {},
       textHint: '',
@@ -194,9 +196,10 @@ export default {
   },
   computed: {
     hasData () {
+      let pools = []
       if (this.entryType === 'bank') {
         const inputBox = this.apiBank
-        const pools = [inputBox.bank_name, inputBox.bank_no, inputBox.bank_address, inputBox.bank_sub_branch, inputBox.pay_remarks]
+        pools = [inputBox.bank_name, inputBox.bank_no, inputBox.bank_address, inputBox.bank_sub_branch, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -205,7 +208,7 @@ export default {
       }
       if (this.entryType === 'alipay') {
         const inputBox = this.apiAlipay
-        const pools = [inputBox.alipay_name, inputBox.alipay_account, inputBox.pay_remarks]
+        pools = [inputBox.alipay_name, inputBox.alipay_account, inputBox.alipay_rq_code, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
@@ -214,12 +217,15 @@ export default {
       }
       if (this.entryType === 'wechat') {
         const inputBox = this.apiWechat
-        const pools = [inputBox.wechat_name, inputBox.wechat_account, inputBox.pay_remarks]
+        pools = [inputBox.wechat_name, inputBox.wechat_account, inputBox.wechat_rq_code, inputBox.pay_remarks]
         for (const item of pools) {
           if (item === '') {
             return false
           }
         }
+      }
+      if (pools.toString() === this.oldVal) {
+        return false
       }
       return true
     },
@@ -289,6 +295,7 @@ export default {
         .then(res => {
           const imgurl = res.data.list.url
           if (imgurl) {
+            this.showMask = true
             if (entryType === 'wechat') {
               this.apiWechat.wechat_rq_code = imgurl
             } else {
@@ -328,18 +335,24 @@ export default {
             this.apiBank.bank_sub_branch = _info.bank_sub_branch
             this.apiBank.bank_no = _info.bank_no
             this.apiBank.pay_remarks = _info.pay_remarks
+            const pools = [_info.bank_name, _info.bank_no, _info.bank_address, _info.bank_sub_branch, _info.pay_remarks]
+            this.oldVal = pools.toString()
           } else if (type === 'alipay') {
             this.apiAlipay.alipay_name = _info.alipay_name
             this.apiAlipay.alipay_account = _info.alipay_account
             this.apiAlipay.alipay_rq_code = _info.alipay_rq_code
             this.qrcodeUrl = _info.alipay_rq_code
             this.apiAlipay.pay_remarks = _info.pay_remarks
+            const pools = [_info.alipay_name, _info.alipay_account, _info.alipay_rq_code, _info.pay_remarks]
+            this.oldVal = pools.toString()
           } else if (type === 'wechat') {
             this.apiWechat.wechat_name = _info.wechat_name
             this.apiWechat.wechat_account = _info.wechat_account
             this.apiWechat.wechat_rq_code = _info.wechat_rq_code
             this.qrcodeUrl = res.data.list.wechat_rq_code
             this.apiWechat.pay_remarks = _info.pay_remarks
+            const pools = [_info.wechat_name, _info.wechat_account, _info.wechat_rq_code, _info.pay_remarks]
+            this.oldVal = pools.toString()
           }
         })
         .catch(e => {
@@ -431,7 +444,7 @@ export default {
       data.token = sessionStorage.getItem('randomcode')
       post(url, data)
         .then(res => {
-          sessionStorage.setItem('istrue', this.istrue.toString())
+          sessionStorage.setItem('istrue', JSON.stringify(this.istrue))
           this.getUserMsg()
           this.$toast('保存成功', 1500)
         })
@@ -526,7 +539,7 @@ export default {
         color: #333333;
         font-size: 28px;
       }
-      input::placeholder{
+      input::placeholder {
         color: #999999;
         opacity: 1;
         font-size: 32px;
@@ -535,8 +548,9 @@ export default {
         width: 100%;
         color: #333333;
         font-size: 30px;
-        padding-top: 36px;
-        padding-bottom: 14px;
+        line-height: 62px;
+        padding-top: 22px;
+        // padding-bottom: 14px;
         border-bottom: 2px solid #E3E3E3;
         background-color: #F5F5F5;
       }
@@ -567,7 +581,8 @@ export default {
         margin-top: 75px;
         width: 245px;
         height: 245px;
-        border: 1px solid #9FA9BA;
+        border-radius: 8px;
+        // border: 1px solid #9FA9BA;
         // background: url('~imgurl/upload.png') no-repeat;
         // background-size: 100%;
         .img-up {
@@ -575,8 +590,9 @@ export default {
           height: 100%;
         }
         .img-down {
-          // width: 288px;
-          // height: 288px;
+          width: 245px;
+          height: 245px;
+          border-radius: 8px;
           // border: 1px solid #9FA9BA;
         }
         .img-width {
@@ -585,32 +601,56 @@ export default {
         .img-height {
           height: 245px;
         }
+        .mask-box {
+          position: relative;
+          margin-top: -245px;
+          height: 245px;
+          // line-height: 245px;
+          width: 245px;
+          position: relative;
+          text-align: center;
+          background-color: rgba(0, 0, 0, .4);
+          border-radius: 8px;
+          z-index: 1000;
+          span {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #ffffff;
+          }
+          .icon-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 26px;
+            height: 32px;
+            background: url('~imgurl/s_upload_again.png') no-repeat center;
+            background-size: 26px 32px;
+          }
+        }
         .img-file {
+          position: relative;
+          z-index: 1001;
           margin-top: -275px;
           width: 245px;
           height: 245px;
           opacity: 0;
           color: transparent;
-        }
-        .mask {
-          margin-top: -245px;
-          height: 245px;
-          width: 245px;
-          position: relative;
-          text-align: center;
-          background-color: rgba(0, 0, 0, .2);
-          span {
-            font-size: 24px;
-            color: #ffffff;
-          }
+          border-radius: 8px;
         }
       }
     }
   }
 
   footer {
+    box-sizing: border-box;
     position: relative;
-    margin-top: 56px;
+    margin-top: 112px;
+    margin-bottom: 129px;
+    height: 88px;
     .buttons {
       position: absolute;
       left: 50%;

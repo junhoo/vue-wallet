@@ -5,14 +5,15 @@
       <main>
         <div class="top" :class="{'topBorder': userCertifyMsg.status == 1}">
           <div class="hint">实名认证</div>
+          <!-- <div class="note2">*请务必使用您本人的实名账户*</div> -->
           <div class="note2" v-show="userCertifyMsg.status != 0 && userCertifyMsg.status != 1 && userCertifyMsg.status != 2">*请务必使用您本人的实名账户*</div>
           <p v-if="userCertifyMsg.status == 2" class="note0 note1">实名认证不通过，请修改后再尝试！</p>
           <p v-if="userCertifyMsg.status == 1" class="note0 note3">审核已通过！</p>
           <p v-if="userCertifyMsg.status == 0 && !firstUpload" class="note0 note4">已提交审核，您仍然可以修改！</p>
           <div class="item">
             <div class="name">证件类型</div>
-            <input readonly type="text" :value="pap">
-            <div class="btn" @click="selectcard()"><i ></i></div>
+            <input class="icon-type" @click="selectcard()" readonly type="text" :value="pap">
+            <!-- <div class="btn" @click="selectcard()"><i ></i></div> -->
             <!-- 选择证件类型 -->
             <van-popup v-model="chenckcard" position="bottom" :close-on-click-overlay="false">
               <h3>选择证件类型</h3>
@@ -40,8 +41,11 @@
             <div class="imgs">
               <div v-show="cardUrl1 !== ''">
                 <div class="mask">
-                  <img class="xxx" ref="cardimg" :class="[istrue1 ? 'img-width':'img-height']" :src="cardUrl21" alt="">
-                  <i>重新上传</i>
+                  <!--  :class="[istrue1 ? 'img-width':'img-height']" -->
+                  <img class="xxx" ref="cardimg" :src="cardUrl21" alt="">
+                  <div class="icon-box"></div>
+                  <div class="icon-bg"></div>
+                  <div class="icon-text">重新上传</div>
                 </div>
               </div>
               <div v-show="cardUrl1 === ''">
@@ -59,8 +63,11 @@
             <div class="imgs">
               <div v-show="cardUrl2 !== ''">
                 <div class="mask">
-                  <img :src="cardUrl22" :class="[istrue2 ? 'img-width':'img-height']" alt="">
-                  <i>重新上传</i>
+                  <!--  :class="[istrue2 ? 'img-width':'img-height']" -->
+                  <img :src="cardUrl22" alt="">
+                  <div class="icon-box"></div>
+                  <div class="icon-bg"></div>
+                  <div class="icon-text">重新上传</div>
                 </div>
               </div>
               <div v-show="cardUrl2 === ''">
@@ -81,8 +88,11 @@
             <div class="imgs">
               <template v-if="cardUrl3">
                 <div class="mask mask1">
-                  <img :src="cardUrl23" :class="[istrue3 ? 'img-width':'img-height']" alt="">
-                  <i>重新上传</i>
+                  <!-- :class="[istrue3 ? 'img-width':'img-height']"  -->
+                  <img :src="cardUrl23" alt="">
+                  <div class="icon-box"></div>
+                  <div class="icon-bg"></div>
+                  <div class="icon-text">重新上传</div>
                 </div>
               </template>
               <template v-else>
@@ -125,6 +135,8 @@ export default {
   },
   data () {
     return {
+      oldVal: '',
+      hasInfo: true,
       postFormat: {},
       firstUpload: true,
       navTitle: '',
@@ -148,13 +160,24 @@ export default {
   },
   computed: {
     hasData () {
-      const pools = [this.username, this.userNo, this.cardUrl1, this.cardUrl2, this.cardUrl3]
-      for (const item of pools) {
-        if (item === '') {
-          return false
+      console.log('=== computed')
+      console.log(this.hasInfo)
+      if (this.hasInfo) { // 有数据
+        // const _info = this.userCertifyMsg
+        // const pools = [this.username, this.userNo, _info.credentials_asurface, _info.credentials_bsurface, _info.hold_certificates]
+        // if (pools.toString() === this.oldVal) {
+        //   return false
+        // }
+        return true
+      } else {
+        const pools = [this.username, this.userNo, this.cardUrl21, this.cardUrl22, this.cardUrl23]
+        for (const item of pools) {
+          if (item === '') {
+            return false
+          }
         }
+        return true
       }
-      return true
     }
   },
   created () {
@@ -172,6 +195,7 @@ export default {
           this.istrue2 = JSON.parse(sessionStorage.getItem('istrue2'))
           this.istrue3 = JSON.parse(sessionStorage.getItem('istrue3'))
           if (res.data.list.length === 0) {
+            this.hasInfo = false
             return false
           }
           this.firstUpload = false
@@ -180,6 +204,8 @@ export default {
           this.userNo = _data.credentials_no
           this.username = _data.name
           this.pap = _data.credentials_type_str
+          const pools = [this.username, this.userNo, _data.credentials_asurface, _data.credentials_bsurface, _data.hold_certificates]
+          this.oldVal = pools.toString()
         })
         .catch(e => {
           this.$toast('网络错误，不能访问')
@@ -387,17 +413,15 @@ export default {
     main {
       box-sizing: border-box;
       padding-top: 60px;
-      // margin-bottom: 100px;
       .hint{
         font-size: 48px;
         color: #333333;
         font-weight: bold;
-        margin-bottom: 38px;
+        padding-bottom: 38px;
       }
       .note2{
         font-size:24px;
         color: #FF4F4F;
-        padding-bottom: 25px;
       }
       .topBorder{
         border-bottom: none !important;
@@ -407,7 +431,6 @@ export default {
         padding: 0 70px 0 30px;
         .note0{
           font-size: 24px;
-          position: absolute;
           top: 60px;
         }
         .note1{
@@ -426,31 +449,36 @@ export default {
             font-size: 28px;
             font-weight: bold;
             color: #333333;
-            margin-bottom: 8px;
           }
           input{
             width: 100%;
             color: #333333;
             font-size: 30px;
+            height: 70px;
+            line-height: 70px;
             background-color: transparent;
-            border-bottom: 1px solid #E3E3E3;
-            padding: 23px 5px 15px 5px;
+            border-bottom: 1.2px solid #E3E3E3;
+            padding: 0 5px;
+            padding-top: 12px;
             &::placeholder{
               color: #999999;
             }
           }
+          .icon-type {
+            background: url("~imgurl/s_right.png") center right 10px no-repeat;
+            background-size: 15px 28px;
+          }
           .btn{
-            width: 50%;
-            height: 50px;
             position: absolute;
-            bottom: 50px;
+            bottom: 20px;
             right: 10px;
             text-align: right;
             i{
               display: inline-block;
-              width: 28px;
-              height: 16px;
-              background: url("~imgurl/todownarrow.png") center / 100% no-repeat;
+              width: 15px;
+              height: 28px;
+              background: url("~imgurl/todownarrow.png") center no-repeat;
+              background-size: 15px 28px;
             }
           }
           .van-overlay{
@@ -484,7 +512,7 @@ export default {
         }
       }
       .bottom{
-        padding: 91px 45px 312px 45px;
+        padding: 91px 45px 312px 30px;
         .bottom-hint {
           color: #333333;
           font-size: 42px;
@@ -499,22 +527,37 @@ export default {
             &:first-of-type{
             }
             .mask{
-              height: 277px;
               position: relative;
-              i{
+              height: 277px;
+              font-size: 24px;
+              color: #fff;
+              .icon-box {
                 display: inline-block;
-                height: 100%;
-                // width: 280px;
-                height: 277px;
-                width: 370px;
-                background-color: rgba(0, 0, 0, .4);
                 position: absolute;
                 top: 50%;
                 left: 50%;
-                line-height: 240px;
                 transform: translateX(-50%) translateY(-50%);
-                font-size: 24px;
-                color: #fff;
+                background-color: rgba(0, 0, 0, .4);
+                display: inline-block;
+                height: 100%;
+                width: 370px;
+                height: 277px;
+              }
+              .icon-bg {
+                position: absolute;
+                top: 35%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 26px;
+                height: 32px;
+                background: url('~imgurl/s_upload_again.png') no-repeat center;
+                background-size: 26px 32px;
+              }
+              .icon-text {
+                position: absolute;
+                top: 55%;
+                left: 50%;
+                transform: translateX(-50%);
               }
               .img-width{
                 width: 280px;
@@ -531,6 +574,7 @@ export default {
               box-shadow: 0 0 20px -8px #666;
               height: 277px;
               width: 370px;
+              border-radius: 8px;
             }
             .img{
               box-shadow: 0 0 20px -8px #d2d2d2;
@@ -559,6 +603,7 @@ export default {
           font-size: 24px;
           color: #FF4F4F;
           margin-top: 88px;
+          line-height: 30px;
         }
       }
     }

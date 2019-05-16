@@ -9,14 +9,14 @@
           :class="{'btn-select': selectButton === '充值'}"
           @click="clickButton('充值')">
         <div class="btn-text" >充值</div>
-        <div class="btn-icon"></div>
+        <div class="btn-icon btn-topup"></div>
       </div>
       <div
           class="btn-style btn-right"
           :class="{'btn-select': selectButton === '提现'}"
           @click="clickButton('提现')">
         <div class="btn-text">提现</div>
-        <div class="btn-icon"></div>
+        <div class="btn-icon icon-tackout"></div>
       </div>
     </div>
 
@@ -173,7 +173,7 @@ export default {
     emitPopupHint (val = '') {
       const arr = ['alipay', 'wechat', 'bank']
       const type = arr[this.goBoundText - 1]
-      this.$emit('onChildSubmit', type) // 定义->子组件声明的事件
+      this.$emit('onchildsubmit', type) // 定义->子组件声明的事件
     },
 
     clickTackout () {
@@ -201,7 +201,7 @@ export default {
     verifyWindow () {
       const inputMoney = this.keyword
       if (parseInt(this.userMsg.status) === 0) { // 0 锁定 1正常
-        this.$emit('onChildSubmit', '禁止交易')
+        this.$emit('onchildsubmit', '禁止交易')
         return
       }
       if (localStorage.getItem('openLoopConfirm') === '1' || localStorage.getItem('openLoopFinish') === '1') {
@@ -222,7 +222,7 @@ export default {
       } else if (!this.selectAlipay && !this.selectWechat && !this.selectBank) {
         this.showTopHint('请至少选择一种支付方式')
       } else if (this.userMsg.is_realname === 0 || this.userMsg.is_realname === 2) { // 0未认证 1审核通过 2审核未通过 3审核中
-        this.$emit('onChildSubmit', '去实名')
+        this.$emit('onchildsubmit', '去实名')
       } else {
         if (this.selectButton === '充值') {
           this.submitOrderMatch('充值')
@@ -249,7 +249,7 @@ export default {
 
     // 提交订单-充值/提现
     submitOrderMatch (type) {
-      this.$emit('onChildSubmit', 'loadingShow')
+      this.$emit('onchildsubmit', 'loadingShow')
       let url = this.$api.order
       url += type === '充值' ? '/api/order/recharge' : '/api/order/draw'
 
@@ -267,16 +267,16 @@ export default {
           console.log(res)
           const orderno = res.data.list.order_no
           sessionStorage.setItem('submitno', orderno)
-          this.$emit('onChildSubmit', 'loadingClose')
+          this.$emit('onchildsubmit', 'loadingClose')
           setTimeout(() => {
-            this.$emit('onChildSubmit', '去匹配')
+            this.$emit('onchildsubmit', '去匹配')
           }, 500)
         })
         .catch(e => {
           console.log('提交订单错误：')
           console.log(e)
           this.showTopHint(e.msg)
-          this.$emit('onChildSubmit', 'loadingClose')
+          this.$emit('onchildsubmit', 'loadingClose')
         })
     },
 
@@ -302,7 +302,7 @@ export default {
         this.showHint = false
         return
       }
-      this.textHint = info
+      this.textHint = info || '网络请求错误'
       this.showHint = true
       if (this.timerHint) {
         clearTimeout(this.timerHint)
@@ -373,11 +373,11 @@ export default {
     height: 90px;
     .btn-style {
       @btnStyle();
-      .btn-icon {
+      .btn-topup {
         background: url('~imgurl/btn_topup_default.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
-      .btn-select {
+      .icon-tackout {
         background: url('~imgurl/btn_tackout_default.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
@@ -393,11 +393,11 @@ export default {
       color: @white;
       background: @blueColor;
       border:2px solid @blueColor;
-      .btn-icon {
+      .btn-topup {
         background: url('~imgurl/btn_topup_select.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
-      .btn-select {
+      .icon-tackout {
         background: url('~imgurl/btn_tackout_select.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
@@ -413,14 +413,14 @@ export default {
       font-size: 26px;
     }
     .blank {
-      height: 45px;
+      height: 35px;
     }
     .inputs {
       box-sizing: border-box;
       width: 90%;
-      height: 50px;
-      line-height: 50px;
-      margin-bottom: 16px;
+      height: 60px;
+      line-height: 60px;
+      margin-bottom: 10px;
       font-size: 50px;
       color: #050505;
     }
@@ -547,8 +547,5 @@ export default {
   font-size: 28px;
   text-align: center;
   color: #ffffff;
-  border-bottom: 1.1px solid #06204E;
-  background-color:#06204E;
-  opacity: 0.85;
 }
 </style>

@@ -113,6 +113,7 @@ export default {
       let url = this.$api.order + '/api/order/drawDetail'
       post(url, data)
         .then(res => {
+          res.data.list.rate = parseFloat(res.data.list.rate) * 100
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status
@@ -139,7 +140,8 @@ export default {
     }
   },
   filters: {
-    orderStatus: function (value) {
+    orderStatus: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '4' || value === '8') {
         value = '已取消'

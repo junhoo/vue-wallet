@@ -104,7 +104,6 @@ main {
     .text {
       font-size: 32px;
       color: #1359D2;
-      font-weight: bold;
       padding-right: 45px;
       background: url('~imgurl/arrow-right.png') no-repeat right 20px center;
       background-size: 16px 28px;
@@ -113,7 +112,7 @@ main {
 
   p {
     padding: 7px 0 0 7px;
-    line-height: 25px;
+    line-height: 30px;
     font-size: 24px;
     font-family: PingFang-SC-Medium;
     color:#FF4F4F;
