@@ -1,7 +1,7 @@
 <template>
 <div class="detail-body">
   <common-header title="订单详情"></common-header>
-  <div class="recharge">
+  <div class="recharge" v-if="!loadingVal">
     <div class="rechargeMain">
          <!-- 订单信息 -->
          <section>
@@ -9,7 +9,7 @@
              <li>
                <span class="m_left" :class="{'skyblue':orderType == 2 || orderType == 6, 'blue':orderType == 5 || orderType == 3 || orderType == 7, 'red':orderType == 4 ||orderType == 8}">{{orderType|orderStatus}}</span>
                 <template v-if="orderType == 2 || orderType == 6" >
-                  <count-down :endTime="1556262542" :callback="callback(0)" endText="" timeType='zh'></count-down>
+                  <count-down :endTime="rest_time2" :callback="callback(0)" endText="" timeType='zh'></count-down>
                 </template>
                 <template>
                   <i v-show="orderType == 8" class="m_right">超时自动取消</i>
@@ -167,21 +167,21 @@
         </section>
     </div>
     <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' :showfooter="orderType" :orderDetailData="orderDetailData" :pay_info="pay_info" :order_type="1" :order_no="order_no" :pay_type="payway"></common-footer>
-    <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
+  <common-loading v-else :show.sync='loadingVal' :mask="true"></common-loading>
 </div>
 </template>
 <script>
 import { post } from '@/assets/js/fetch'
 import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
-import DialogBox from 'common/dialog/Dialog'
+import CommonLoading from 'common/loading/Loading'
 import CountDown from 'common/time/CountDown'
 import Clipboard from 'clipboard'
 export default {
   name: 'RechargeDetail',
   components: {
-    DialogBox,
+    CommonLoading,
     CommonHeader,
     CommonFooter,
     CountDown
@@ -216,7 +216,6 @@ export default {
     callback () {},
     // 获取订单信息
     getOrderDel () {
-      this.loadingVal = true
       var data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
@@ -229,6 +228,7 @@ export default {
           this.orderType = this.orderDetailData.status || 0
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
+          this.rest_time2 = this.orderDetailData.rest_time
           this.rest_time = this.orderDetailData.apply_time
           this.loadingVal = false
           this.payTypeMsg()
