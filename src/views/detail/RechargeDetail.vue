@@ -201,7 +201,7 @@ export default {
       orderType: null, // 订单状态 2.代付款 3.未到账 4.已取消(手动) 5.已完成 8.已取消(自动)
       orderDetailData: {}, // 订单详情信息
       order_no: '', // 订单编号
-      pay_name: 'jeney', // 支付账户名
+      pay_name: '', // 支付账户名
       pay_account: '14154sadf', // 支付账号
       pay_url: '', // 支付二维码
       pay_remarks: '', // 付款时备注
@@ -226,6 +226,7 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
+          alert(JSON.stringify(res))
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0

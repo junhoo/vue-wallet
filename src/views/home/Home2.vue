@@ -290,9 +290,10 @@ export default {
         .then(res => {
           if (res.data.list === true) {
             console.log('home: 取消订单成功')
-            // this.showMatching = false
+            this.showMatching = false
             this.showPopup = false
             this.hasDetail = false
+            this.showTopHint('成功')
             this.getTotalCoin()
           } else {
             console.log('home: 取消订单失败')
@@ -304,6 +305,7 @@ export default {
         .catch(e => {
           console.log(e)
           this.loadingVal = false
+          this.showMatching = false
           this.showTopHint(e.msg || '取消网络错误')
         })
     },
@@ -510,8 +512,6 @@ export default {
       if (stateName === '结束') { return }
       this.popupAccount = orderInfo.account
       this.showMatching = false
-      console.log('>>> showMatching')
-      console.log(this.showMatching)
       this.detailInfo = orderInfo
       // popupName = 充值匹配成功 提现匹配成功 等待确认收款 自动确认收款 被取消 交易完成
       this.hasDetail = true
@@ -591,12 +591,12 @@ export default {
         } catch (error) {
         }
       }
-      this.heartbeat()
+      // this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
         // console.log('')
-        // console.log('❤ 心跳查看')
+        console.log('❤')
         if (this.existServer) {
           this.send()
           // console.log('-1 服务器 ok')
@@ -606,7 +606,7 @@ export default {
           this.restart()
         }
         // console.log('')
-      }, 15000)
+      }, 20000)
     },
     wsopen () {
       console.log('1.0 socket打开成功')
@@ -630,8 +630,8 @@ export default {
     },
     wsmessage (msg) {
       let res = msg.data
-      // console.log('3.0 socket接收')
-      // console.log(res)
+      console.log('3.0 socket接收')
+      console.log(res)
       try {
         if (res) {
           this.existServer = true
@@ -643,12 +643,9 @@ export default {
       } catch (error) {
         console.log('socket接收-解析失败')
       }
-      // console.log(res.from_uid, 10000)
-      // console.log(this.randomStr, res.rand_str)
       if (res.from_uid === 10000 && this.randomStr === res.rand_str) {
         // console.log('4.0 匹配ok')
       }
-      // decodeURIComponent
       if (res.type === 301) {
         res.msg.data.a_status_str = decodeURIComponent(res.msg.data.a_status_str)
         this.saveMsg = res.msg
@@ -657,12 +654,14 @@ export default {
         console.log(res)
         console.log(res.msg.data.a_status_str)
         console.log(res.msg.data.order_no)
-        // this.$emit('onchildsocket', this.saveMsg)
-        // console.log(this.$emit)
         if (res.msg.data.a_status_str === '匹配成功') {
-          this.getCurOrder()
+          setTimeout(() => {
+            this.getCurOrder()
+            console.log('*** 是匹配成功 ***')
+          }, 1500)
+        } else {
+          this.onChildSocket(this.saveMsg)
         }
-        this.onChildSocket(this.saveMsg)
         console.log('---')
         const orderno = res.msg.data.order_no
         const orderType = parseInt(res.msg.data.order_type)
@@ -677,7 +676,7 @@ export default {
       }
       this.timerConnect = setTimeout(() => {
         console.log('webs 重新连接')
-        this.init()
+        this.wsinit()
       }, 2000)
     },
     wsclose () {
