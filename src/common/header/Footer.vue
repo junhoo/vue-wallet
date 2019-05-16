@@ -90,6 +90,7 @@ export default {
       this.loadingVal = true
       if (index === 0) {
         this.show = !this.show
+        this.loadingVal = false
         return false
       }
       var data = {

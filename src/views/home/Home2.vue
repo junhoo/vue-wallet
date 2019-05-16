@@ -5,18 +5,19 @@
       <div class="title-bar clearfix">
         <div class="left" >
           <p class="empty"></p>
-          <p class="icon-setting" @click="jumpSetPage()"></p>
+          <p class="icon-setting" @click="jumpPage('Setting2')"></p>
         </div>
-        <div class="middle" >Wallet</div>
+        <div class="middle">Wallet</div>
         <div class="right">
           <p class="empty"></p>
-          <p class="icon-option" @click="jumpOrderPage()"></p>
+          <p class="icon-option" @click="jumpPage('Order')"></p>
         </div>
       </div>
 
       <!-- 金额区 -->
       <p class="money-use" >{{headerInfo.amount_income}}</p>
       <p class="money-ban" >冻结:{{headerInfo.freezing_amount}}</p>
+      <div class="icon-service" @click="jumpPage('Chat')"></div>
     </header>
 
     <main>
@@ -540,11 +541,8 @@ export default {
       }, 1500)
     },
 
-    jumpSetPage () {
-      this.$router.push({ name: 'Setting2' })
-    },
-    jumpOrderPage () {
-      this.$router.push({ name: 'Order' })
+    jumpPage (name) {
+      this.$router.push({ name: name })
     },
 
     // websocket
@@ -657,7 +655,6 @@ export default {
         if (res.msg.data.a_status_str === '匹配成功') {
           setTimeout(() => {
             this.getCurOrder()
-            console.log('*** 是匹配成功 ***')
           }, 1500)
         } else {
           this.onChildSocket(this.saveMsg)
@@ -706,6 +703,7 @@ export default {
 }
 
 header {
+  position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 339px;
@@ -772,6 +770,15 @@ header {
     color:rgba(151,255,135,1);
     text-align: center;
     width: 100%;
+  }
+  .icon-service {
+    position: absolute;
+    right: 40px;;
+    bottom: 30px;
+    width: 70px;
+    height: 60px;
+    background: url('~imgurl/icon_service.png') center no-repeat;
+    background-size: 50px 40px;
   }
 }
 

@@ -226,7 +226,6 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
-          alert(JSON.stringify(res))
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0
@@ -237,16 +236,14 @@ export default {
           this.payTypeMsg()
         })
         .catch(e => {
+          this.loadingVal = false
           console.log(e)
           // this.$toast('网络错误4')
           this.$toast(e.msg)
-          this.loadingVal = false
         })
     },
     // 确定支付信息
     payTypeMsg () {
-      console.log('this.pay_info')
-      console.log(this.pay_info)
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
       } else if (this.payway === 2) {
