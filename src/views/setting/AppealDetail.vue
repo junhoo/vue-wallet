@@ -1,6 +1,6 @@
 <template>
-<div>
-    <common-header title="申诉详情"></common-header>
+<div class="apdetail-body">
+  <common-header title="申诉详情"></common-header>
   <div class="appeal">
     <div class="rechargeMain">
       <!-- 进步条 -->
@@ -265,15 +265,19 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style>
+.van-overlay{
+  background-color: rgba(49, 49, 109, .25);
+}
+</style>
+
+<style lang="less">
 .clearfix:after {
   content: '';
   display: block;
   clear: both;
 }
-.van-overlay{
-  background-color: rgba(49, 49, 109, .25);
-}
+
 .previewImg{
   z-index: 9999;
   position: absolute;
@@ -281,194 +285,209 @@ export default {
   left: 50%;
   transform: translateX(-50%) translateY(-50%)
 }
-.appeal{
+
+.apdetail-body {
   position: fixed;
-  background-color: #F5F8FA;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  .appealContent{
-    padding: 34px;
-    background-color: #fff;
-    border-radius: 20px;
-    box-sizing: border-box;
-    margin-bottom: 28px;
-    .m_title{
-      font-size: 28px;
-      color: #010101;
-      font-weight: 600;
-      margin-bottom: 27px;
-    }
-    .m_text{
-      font-size: 28px;
-      color: #000
-    }
-  }
-  .upload{
-    border-radius: 20px;
-    margin-bottom: 35px;
-    height: 367px;
-    text-align: center;
-    position: relative;
-    .upload_img{
-      width: 100%;
-      height: 367px
-    }
-  }
-  .rechargeMain{
-    padding: 36px 30px 250px;
-    .step{
-      background-color: #fff;
-      border-radius: 20px;
-      padding: 30px 43px;
-      margin-bottom: 21px;
-      .stepItem{
-        .stepImg{
-          width: 39px;
-          margin-right: 40px
-        }
-        .stepTxt{
-          font-size: 26px;
-          color: #000
-        }
-        .stepTip{
-          font-size: 26px;
-          color: #969696;
-          padding-left: 85px;
-        }
-      }
-      .line{
-        width: 3px;
-        height: 39px;
-        background-color: #D7D7D7;
-        margin: 8px 0;
-        margin-left: 17px
-      }
-      .line_blue{
-        background-color: #0078FF;
-      }
-    }
-    ul{
-      width: 100%;
-      margin-bottom: 24px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .appeal{
+    position: fixed;
+    top: 88px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // width: 100%;
+    // height: 100%;
+    background-color: #F5F8FA;
+    overflow-y: scroll;
+    .appealContent{
+      padding: 34px;
       background-color: #fff;
       border-radius: 20px;
       box-sizing: border-box;
-      li{
-        height: 100px;
-        line-height: 100px;
-        padding: 0 39px;
-        border-bottom: 1px solid #F5F4F4;
-        display: flex;
-        justify-content: space-between;
-        font-size: 26px;
-        &:last-of-type{
-          border: none
-        }
-        .m_center{
-          text-align: center;
-          color: #000;
-          font-size: 28px;
-          width: 100%
-        }
-        .m_left{
-          color: #ABACAF;
-          text-align: left;
-          .left_icon{
-            width: 49px;
-            margin-right: 30px
+      margin-bottom: 28px;
+      .m_title{
+        font-size: 28px;
+        color: #010101;
+        font-weight: 600;
+        margin-bottom: 27px;
+      }
+      .m_text{
+        font-size: 28px;
+        color: #000
+      }
+    }
+    .upload{
+      border-radius: 20px;
+      margin-bottom: 35px;
+      height: 367px;
+      text-align: center;
+      position: relative;
+      .upload_img{
+        width: 100%;
+        height: 367px
+      }
+    }
+    .rechargeMain{
+      padding: 36px 30px 250px;
+      margin-bottom: 80px;
+      .step{
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 30px 43px;
+        margin-bottom: 21px;
+        .stepItem{
+          .stepImg{
+            width: 39px;
+            margin-right: 40px
           }
-          .left_text{
+          .stepTxt{
+            font-size: 26px;
+            color: #000
+          }
+          .stepTip{
+            font-size: 26px;
+            color: #969696;
+            padding-left: 85px;
+          }
+        }
+        .line{
+          width: 3px;
+          height: 39px;
+          background-color: #D7D7D7;
+          margin: 8px 0;
+          margin-left: 17px
+        }
+        .line_blue{
+          background-color: #0078FF;
+        }
+      }
+      ul{
+        width: 100%;
+        margin-bottom: 24px;
+        background-color: #fff;
+        border-radius: 20px;
+        box-sizing: border-box;
+        li{
+          height: 100px;
+          line-height: 100px;
+          padding: 0 39px;
+          border-bottom: 1px solid #F5F4F4;
+          display: flex;
+          justify-content: space-between;
+          font-size: 26px;
+          &:last-of-type{
+            border: none
+          }
+          .m_center{
+            text-align: center;
             color: #000;
-            font-size: 28px
+            font-size: 28px;
+            width: 100%
+          }
+          .m_left{
+            color: #ABACAF;
+            text-align: left;
+            .left_icon{
+              width: 49px;
+              margin-right: 30px
+            }
+            .left_text{
+              color: #000;
+              font-size: 28px
+            }
+          }
+          .m_right{
+            color: #010101;
+            flex: 1;
+            text-align: right;
+            .right_icon{
+              width: 35px;
+              margin-left: 25px
+            }
+            .rightBG_icon{
+              display: inline-block;
+              height: 38px;
+              width: 38px;
+              background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
+            }
+            .Active_pay{
+              background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
+            }
+            .arrow-icon{
+              width: 18px;
+            }
+          }
+          .skyblue{
+            color: #3EC0F1
+          }
+          .blue{
+            color: #4264FB
+          }
+          .red{
+            color: #FF5252
+          }
+          .orange{
+            color: #FFA63D
+          }
+          span.timer{
+            color: #010101 !important
           }
         }
-        .m_right{
-          color: #010101;
-          flex: 1;
-          text-align: right;
-          .right_icon{
-            width: 35px;
-            margin-left: 25px
-          }
-          .rightBG_icon{
-            display: inline-block;
-            height: 38px;
-            width: 38px;
-            background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
-          }
-          .Active_pay{
-            background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
-          }
-          .arrow-icon{
-            width: 18px;
-          }
-        }
-        .skyblue{
-          color: #3EC0F1
-        }
-        .blue{
-          color: #4264FB
-        }
-        .red{
-          color: #FF5252
-        }
-        .orange{
-          color: #FFA63D
-        }
-        span.timer{
-          color: #010101 !important
-        }
-      }
-      .qrcode{
-        height: 400px;
-        position: relative;
-        .m_right{
-          top: 60%;
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%) translateY(-50%);
-          text-align: center;
-          .QR{
-            height: 214px
-          }
-          a{
-            color: #1359D2;
-            border-bottom: 1px solid #1359D2;
-            line-height: auto !important
+        .qrcode{
+          height: 400px;
+          position: relative;
+          .m_right{
+            top: 60%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            text-align: center;
+            .QR{
+              height: 214px
+            }
+            a{
+              color: #1359D2;
+              border-bottom: 1px solid #1359D2;
+              line-height: auto !important
+            }
           }
         }
       }
     }
-  }
-  .tip{
-    font-size: 26px;
-    color: #C2C2C2;
-    padding: 10px 0 34px;
-    span{
-      display: inline-block;
-      margin-bottom: 20px
+    .tip{
+      font-size: 26px;
+      color: #C2C2C2;
+      padding: 10px 0 34px;
+      span{
+        display: inline-block;
+        margin-bottom: 20px
+      }
     }
-  }
-  .cancel{
-    position: fixed;
-    bottom: 0;
-    background-color: #fff;
-    border-radius: 20px 20px 0 0;
-    padding: 45px 65px 69px;
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 100;
-    span{
-      display: inline-block;
-      font-size: 30px;
-      color: #F5F5F5;
-      border-radius: 49px;
-      background-color: #FF5050;
+    .cancel {
+      position: fixed;
+      bottom: 0;
+      background-color: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 45px 65px 69px;
       width: 100%;
-      height: 97px;
-      line-height: 97px;
-      text-align: center
+      box-sizing: border-box;
+      z-index: 100;
+      box-shadow:5px -8px 10px 0px rgba(4,0,0,0.06);
+      border-radius:20px 20px 0px 0px;
+      span{
+        display: inline-block;
+        font-size: 30px;
+        color: #F5F5F5;
+        border-radius: 49px;
+        background-color: #FF5050;
+        width: 100%;
+        height: 97px;
+        line-height: 97px;
+        text-align: center
+      }
     }
   }
 }

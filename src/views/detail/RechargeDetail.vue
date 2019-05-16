@@ -506,8 +506,8 @@ export default {
     color: #C2C2C2;
     padding: 10px 0 34px;
     span{
+      line-height: 40px;
       display: inline-block;
-      margin-bottom: 20px;
     }
   }
 }

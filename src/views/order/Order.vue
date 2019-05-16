@@ -15,8 +15,9 @@
           <div class="orderlist">
             <div
               v-for="(item, index) in orderList"
-              :key="index">
-              <div class="content">
+              :key="index"
+              class="content">
+              <!-- <div class="content"> -->
                 <div class="item" @click="todetail(item.order_no,item.status)">
                   <div class="item-top">
                     <p class="left">{{item.order_amount}}</p>
@@ -34,7 +35,7 @@
                     <p class="left">{{item.real_amount}}<span>CNY</span></p><p class="right">{{item.add_time}}</p>
                   </div>
                 </div>
-              </div>
+              <!-- </div> -->
             </div>
           </div>
         </van-tab>
@@ -181,16 +182,23 @@ export default {
       bottom: 0;
       padding: 0 30px;
       overflow-y: scroll;
+      .content:first-child {
+        margin-top: 26px;
+      }
+      .content:last-child {
+        margin-bottom: 26px;
+      }
       .content {
         box-sizing: border-box;
         width: 100%;
-        padding: 20px 0;
+        margin-top: 20px;
         .item {
           height: 145px;
           padding: 0 42px 0 31px;
           background-color: #ffffff;
           color: #B2B2B2;
           font-size: 26px;
+          border-radius:20px;
           .item-top {
             display: flex;
             justify-content: space-between;
@@ -254,30 +262,8 @@ export default {
     font-size: 28px;
     text-align: center;
     color: #ffffff;
-    border-bottom: 1px solid #06204E;
-    background-color:#06204E;
-    opacity: 0.85;
   }
 }
-</style>
-<style lang="less">
-// .box{
-//   .sma{
-//     border: 1px solid;
-//     width: 444px;
-//     height: 445px;
-//     background: url('~imgurl/123.png') no-repeat;
-//     animation: stepAn steps(36) 5s infinite;
-//   }
-//   @keyframes stepAn {
-//     0% {
-//       background-position: 0 0;
-//     }
-//     100% {
-//       background-position: 0 bottom;
-//     }
-//   }
-// }
 </style>
 
 <style>

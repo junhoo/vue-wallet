@@ -82,6 +82,8 @@ export default {
         value = '已认证'
       } else if (info === 2) {
         value = '认证失败'
+      } else if (info === 3) {
+        value = '审核中'
       } else {
         value = '未认证'
       }

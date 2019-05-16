@@ -38,7 +38,7 @@
     <div class="foot clearfix">
       <p v-if="okTxt">{{okTxt}}</p>
       <p v-else>{{showfooter|textW}}</p>
-      <span>联系客服 {{showfooter}}</span>
+      <span>联系客服</span>
     </div>
   </div>
   <!-- 弹出框 -->
@@ -106,8 +106,8 @@ export default {
         .catch(e => {
           this.loadingVal = false
           console.log(e)
-          alert(e)
-          this.$toast('网络错误4')
+          console.log('网络错误1')
+          this.$toast(e.msg)
         })
     },
     // 确认付款
@@ -127,7 +127,8 @@ export default {
         .catch(e => {
           this.loadingVal = false
           console.log(e)
-          this.$toast('网络错误4')
+          console.log('网络错误2')
+          this.$toast(e.msg)
         })
     },
     // 确认收款
@@ -146,7 +147,8 @@ export default {
         .catch(e => {
           this.loadingVal = false
           console.log(e)
-          this.$toast('网络错误4')
+          console.log('网络错误3')
+          this.$toast(e.msg)
         })
     },
     appeal () {

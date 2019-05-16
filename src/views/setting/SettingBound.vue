@@ -68,9 +68,9 @@
         <!-- <p class="name">请上传收款二维码</p> -->
         <div class="imgs">
           <template v-if="entryIsbound === 'n'">
+            <!-- :class="[istrue?'img-width':'img-height']" -->
             <img v-if="preview !== ''"
                 class="img-down"
-                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
@@ -78,9 +78,9 @@
                 src="~imgurl/upload.png">
           </template>
           <template v-else>
+            <!-- :class="[istrue?'img-width':'img-height']" -->
             <img v-if="preview !== ''"
                 class="img-down"
-                :class="[istrue?'img-width':'img-height']"
                 :src="preview">
             <img
                 v-else
@@ -90,7 +90,7 @@
           <!-- <van-uploader class="xxx" :after-read="onRead">
             <van-icon name="photograph" />
           </van-uploader> -->
-          <!-- <div class="mask"><span>重新上传</span></div> -->
+          <div class="mask-box" v-show="showMask"><span>重新上传</span><p class="icon-text"></p></div>
           <input class="img-file" type="file" @change="uploadFile($event)">
         </div>
       </div>
@@ -109,7 +109,7 @@
 
     <order-popup :show.sync='showPopup'
                   :name='popupName'
-                  v-on:onChildPopup='onChildPopup'>
+                  v-on:onchildpopup='onChildPopup'>
     </order-popup>
 
     <van-popup v-model="showHint" position="top" :overlay="false">
@@ -138,6 +138,7 @@ export default {
       oldVal: '',
       showHint: false,
       showPopup: false,
+      showMask: false,
       popupName: '填写绑定',
       postFormat: {},
       textHint: '',
@@ -294,6 +295,7 @@ export default {
         .then(res => {
           const imgurl = res.data.list.url
           if (imgurl) {
+            this.showMask = true
             if (entryType === 'wechat') {
               this.apiWechat.wechat_rq_code = imgurl
             } else {
@@ -442,7 +444,7 @@ export default {
       data.token = sessionStorage.getItem('randomcode')
       post(url, data)
         .then(res => {
-          sessionStorage.setItem('istrue', this.istrue.toString())
+          sessionStorage.setItem('istrue', JSON.stringify(this.istrue))
           this.getUserMsg()
           this.$toast('保存成功', 1500)
         })
@@ -537,7 +539,7 @@ export default {
         color: #333333;
         font-size: 28px;
       }
-      input::placeholder{
+      input::placeholder {
         color: #999999;
         opacity: 1;
         font-size: 32px;
@@ -546,8 +548,9 @@ export default {
         width: 100%;
         color: #333333;
         font-size: 30px;
-        padding-top: 36px;
-        padding-bottom: 14px;
+        line-height: 62px;
+        padding-top: 22px;
+        // padding-bottom: 14px;
         border-bottom: 2px solid #E3E3E3;
         background-color: #F5F5F5;
       }
@@ -578,7 +581,8 @@ export default {
         margin-top: 75px;
         width: 245px;
         height: 245px;
-        border: 1px solid #9FA9BA;
+        border-radius: 8px;
+        // border: 1px solid #9FA9BA;
         // background: url('~imgurl/upload.png') no-repeat;
         // background-size: 100%;
         .img-up {
@@ -586,8 +590,9 @@ export default {
           height: 100%;
         }
         .img-down {
-          // width: 288px;
-          // height: 288px;
+          width: 245px;
+          height: 245px;
+          border-radius: 8px;
           // border: 1px solid #9FA9BA;
         }
         .img-width {
@@ -596,32 +601,56 @@ export default {
         .img-height {
           height: 245px;
         }
+        .mask-box {
+          position: relative;
+          margin-top: -245px;
+          height: 245px;
+          // line-height: 245px;
+          width: 245px;
+          position: relative;
+          text-align: center;
+          background-color: rgba(0, 0, 0, .4);
+          border-radius: 8px;
+          z-index: 1000;
+          span {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #ffffff;
+          }
+          .icon-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 26px;
+            height: 32px;
+            background: url('~imgurl/s_upload_again.png') no-repeat center;
+            background-size: 26px 32px;
+          }
+        }
         .img-file {
+          position: relative;
+          z-index: 1001;
           margin-top: -275px;
           width: 245px;
           height: 245px;
           opacity: 0;
           color: transparent;
-        }
-        .mask {
-          margin-top: -245px;
-          height: 245px;
-          width: 245px;
-          position: relative;
-          text-align: center;
-          background-color: rgba(0, 0, 0, .2);
-          span {
-            font-size: 24px;
-            color: #ffffff;
-          }
+          border-radius: 8px;
         }
       }
     }
   }
 
   footer {
+    box-sizing: border-box;
     position: relative;
-    margin-top: 56px;
+    margin-top: 112px;
+    margin-bottom: 129px;
+    height: 88px;
     .buttons {
       position: absolute;
       left: 50%;

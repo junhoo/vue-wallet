@@ -113,6 +113,7 @@ export default {
       let url = this.$api.order + '/api/order/drawDetail'
       post(url, data)
         .then(res => {
+          res.data.list.rate = parseFloat(res.data.list.rate) * 100
           this.orderDetailData = res.data.list
           this.payway = this.orderDetailData.pay_type
           this.orderType = this.orderDetailData.status

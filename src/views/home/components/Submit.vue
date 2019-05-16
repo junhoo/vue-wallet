@@ -9,14 +9,14 @@
           :class="{'btn-select': selectButton === '充值'}"
           @click="clickButton('充值')">
         <div class="btn-text" >充值</div>
-        <div class="btn-icon"></div>
+        <div class="btn-icon btn-topup"></div>
       </div>
       <div
           class="btn-style btn-right"
           :class="{'btn-select': selectButton === '提现'}"
           @click="clickButton('提现')">
         <div class="btn-text">提现</div>
-        <div class="btn-icon"></div>
+        <div class="btn-icon icon-tackout"></div>
       </div>
     </div>
 
@@ -373,11 +373,11 @@ export default {
     height: 90px;
     .btn-style {
       @btnStyle();
-      .btn-icon {
+      .btn-topup {
         background: url('~imgurl/btn_topup_default.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
-      .btn-select {
+      .icon-tackout {
         background: url('~imgurl/btn_tackout_default.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
@@ -393,11 +393,11 @@ export default {
       color: @white;
       background: @blueColor;
       border:2px solid @blueColor;
-      .btn-icon {
+      .btn-topup {
         background: url('~imgurl/btn_topup_select.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
-      .btn-select {
+      .icon-tackout {
         background: url('~imgurl/btn_tackout_select.png') no-repeat left 12px center;
         background-size: 38px 44px;
       }
@@ -413,14 +413,14 @@ export default {
       font-size: 26px;
     }
     .blank {
-      height: 45px;
+      height: 35px;
     }
     .inputs {
       box-sizing: border-box;
       width: 90%;
-      height: 50px;
-      line-height: 50px;
-      margin-bottom: 16px;
+      height: 60px;
+      line-height: 60px;
+      margin-bottom: 10px;
       font-size: 50px;
       color: #050505;
     }
@@ -547,8 +547,5 @@ export default {
   font-size: 28px;
   text-align: center;
   color: #ffffff;
-  border-bottom: 1.1px solid #06204E;
-  background-color:#06204E;
-  opacity: 0.85;
 }
 </style>
