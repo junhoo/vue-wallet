@@ -177,12 +177,10 @@ import CommonHeader from 'common/header/Header'
 import CommonFooter from 'common/header/Footer'
 import CommonLoading from 'common/loading/Loading'
 import CountDown from 'common/time/CountDown'
-import CommonLoading from 'common/loading/Loading'
 import Clipboard from 'clipboard'
 export default {
   name: 'RechargeDetail',
   components: {
-    CommonLoading,
     CommonHeader,
     CommonFooter,
     CountDown,
@@ -225,7 +223,6 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
-          alert(JSON.stringify(res))
           this.orderDetailData = res.data.list.order_detail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0
