@@ -1,124 +1,124 @@
 <template>
-<div>
-  <common-header title="发起申诉"></common-header>
-  <div class="appeal">
-    <div class="rechargeMain">
-      <!-- 申诉内容 -->
-      <section>
-        <div class="appealContent">
-          <h3 class="m_title">申诉内容</h3>
-          <textarea class="textarea" v-model="appealTxt" cols="30" rows="5" placeholder="申诉内容"></textarea>
-        </div>
-        <div class="upload" :class="{'isload':isload}">
-          <div v-show="!isload">
-            <span class="upload_tip">上传支付凭证</span>
-            <input class="upload-file" type="file" accept="image/png, image/jpeg, image/jpg" @change="uploadFile($event,0)">
-          </div>
-          <img v-show="isload" class="upload_img" :src="Url" alt="" @click="showImgSelec(0)">
-        </div>
-       </section>
-       <!-- 图片预览弹框 -->
-       <van-popup v-model="show" position="bottom" :close-on-click-overlay="false">
-        <span class="loadbtn" @click="showImgSelec(1)">预览</span>
-        <p class="loadbtn">重新上传<input class="upload-file" type="file" @change="uploadFile($event,1)"></p>
-        <p class="loadbtn" @click="showImgSelec(0)">取消</p>
-      </van-popup>
-      <van-dialog v-model="show2" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
-        <img :src="Url" class="previewImg">
-      </van-dialog>
-       <!-- 订单信息 -->
-       <section>
-         <ul>
-           <li>
-             <span class="m_left" :class="{'orange':orderDetailData.order_type == 2, 'blue':orderDetailData.order_type == 1}">{{orderDetailData.order_type|orderStatus}}</span>
-              <template>
-                <i v-if="orderDetailData.order_type == 1" class="m_right">等待对方确认收款</i>
-                <i v-if="orderDetailData.order_type == 2" class="m_right">请您确认已收到付款</i>
-              </template>
-           </li>
-           <li>
-             <span v-if="orderDetailData.order_type == 1" class="m_left">付款金额</span>
-             <span v-if="orderDetailData.order_type == 2" class="m_left">收款金额</span>
-             <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
-           </li>
-           <li>
-             <span v-if="orderDetailData.order_type == 1" class="m_left">充值积分</span>
-             <span v-if="orderDetailData.order_type == 2" class="m_left">卖出数量</span>
-             <i class="m_right">{{orderDetailData.order_amount}}</i>
-           </li>
-           <li>
-             <span v-if="orderDetailData.order_type == 1" class="m_left">下单时间</span>
-             <span v-if="orderDetailData.order_type == 2" class="m_left">接单时间</span>
-             <i class="m_right">{{orderDetailData.time_str}}</i>
-           </li>
-           <li>
-             <span class="m_left">订单编号</span>
-             <div class="m_right">
-               <i class="right_text">{{order_no}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="order_no" @click="copy()">
-             </div>
-           </li>
-         </ul>
-       </section>
-       <!-- 支付信息 -->
+  <div class="apdetail-body">
+    <common-header title="发起申诉"></common-header>
+    <div class="appeal">
+      <div class="rechargeMain">
+        <!-- 申诉内容 -->
         <section>
-         <ul class="wrapper" v-if="orderDetailData.order_type == 1">
-           <li class="li-item">
-             <span class="m_left">{{payway|payTypeText}}支付</span>
-           </li>
-           <li>
-             <span class="m_left">收款人</span>
-             <div class="m_right">
-               <i class="right_text">{{pay_name}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
-             </div>
-           </li>
-           <!-- 支付宝、微信支付 -->
-           <div class="wxAli" v-if="payway != 3">
-             <li>
-                <span class="m_left">{{payway|payTypeText}}账号</span>
-                <div class="m_right">
-                  <i class="right_text">{{pay_account}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
-                </div>
-              </li>
-           </div>
-           <!--银行卡支付  -->
-           <div class="band" v-else>
-             <li>
-                <span class="m_left">银行名称</span>
-                <div class="m_right">
-                  <i class="right_text">{{pay_info.bank_pay.bank_address}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
-                </div>
-              </li>
+          <div class="appealContent">
+            <h3 class="m_title">申诉内容</h3>
+            <textarea class="textarea" v-model="appealTxt" cols="30" rows="5" placeholder="请填写申诉内容"></textarea>
+          </div>
+          <div class="upload" :class="{'isload':isload}">
+            <div v-show="!isload">
+              <span class="upload_tip">上传支付凭证</span>
+              <input class="upload-file" type="file" accept="image/png, image/jpeg, image/jpg" @change="uploadFile($event,0)">
+            </div>
+            <img v-show="isload" class="upload_img" :src="Url" alt="" @click="showImgSelec(0)">
+          </div>
+        </section>
+        <!-- 图片预览弹框 -->
+        <van-popup v-model="show" position="bottom" :close-on-click-overlay="false">
+          <span class="loadbtn" @click="showImgSelec(1)">预览</span>
+          <p class="loadbtn">重新上传<input class="upload-file" type="file" @change="uploadFile($event,1)"></p>
+          <p class="loadbtn" @click="showImgSelec(0)">取消</p>
+        </van-popup>
+        <van-dialog v-model="show2" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
+          <img :src="Url" class="previewImg">
+        </van-dialog>
+        <!-- 订单信息 -->
+        <section>
+          <ul>
+            <li>
+              <span class="m_left" :class="{'orange':orderDetailData.order_type == 2, 'blue':orderDetailData.order_type == 1}">{{orderDetailData.order_type|orderStatus}}</span>
+                <template>
+                  <i v-if="orderDetailData.order_type == 1" class="m_right">等待对方确认收款</i>
+                  <i v-if="orderDetailData.order_type == 2" class="m_right">请您确认已收到付款</i>
+                </template>
+            </li>
+            <li>
+              <span v-if="orderDetailData.order_type == 1" class="m_left">付款金额</span>
+              <span v-if="orderDetailData.order_type == 2" class="m_left">收款金额</span>
+              <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
+            </li>
+            <li>
+              <span v-if="orderDetailData.order_type == 1" class="m_left">充值积分</span>
+              <span v-if="orderDetailData.order_type == 2" class="m_left">卖出数量</span>
+              <i class="m_right">{{orderDetailData.order_amount}}</i>
+            </li>
+            <li>
+              <span v-if="orderDetailData.order_type == 1" class="m_left">下单时间</span>
+              <span v-if="orderDetailData.order_type == 2" class="m_left">接单时间</span>
+              <i class="m_right">{{orderDetailData.time_str}}</i>
+            </li>
+            <li>
+              <span class="m_left">订单编号</span>
+              <div class="m_right">
+                <i class="right_text">{{order_no}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="order_no" @click="copy()">
+              </div>
+            </li>
+          </ul>
+        </section>
+        <!-- 支付信息 -->
+          <section>
+          <ul class="wrapper" v-if="orderDetailData.order_type == 1">
+            <li class="li-item">
+              <span class="m_left">{{payway|payTypeText}}支付</span>
+            </li>
+            <li>
+              <span class="m_left">收款人</span>
+              <div class="m_right">
+                <i class="right_text">{{pay_name}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney" @click="copy()">
+              </div>
+            </li>
+            <!-- 支付宝、微信支付 -->
+            <div class="wxAli" v-if="payway != 3">
               <li>
-                <span class="m_left">支行名称</span>
-                <div class="m_right">
-                  <i class="right_text">{{pay_info.bank_pay.bank_sub_branch}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="梅陇支行" @click="copy()">
-                </div>
-              </li>
+                  <span class="m_left">{{payway|payTypeText}}账号</span>
+                  <div class="m_right">
+                    <i class="right_text">{{pay_account}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="Jeney1625" @click="copy()">
+                  </div>
+                </li>
+            </div>
+            <!--银行卡支付  -->
+            <div class="band" v-else>
               <li>
-                <span class="m_left">银行卡号</span>
-                <div class="m_right">
-                  <i class="right_text">{{pay_info.bank_pay.bank_no}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
-                </div>
-              </li>
-           </div>
-           <li>
-             <span class="m_left">付款时备注</span>
-             <div class="m_right">
-               <i class="right_text">{{pay_remarks}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
-             </div>
-           </li>
-         </ul>
-       </section>
+                  <span class="m_left">银行名称</span>
+                  <div class="m_right">
+                    <i class="right_text">{{pay_info.bank_pay.bank_address}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="中国银行" @click="copy()">
+                  </div>
+                </li>
+                <li>
+                  <span class="m_left">支行名称</span>
+                  <div class="m_right">
+                    <i class="right_text">{{pay_info.bank_pay.bank_sub_branch}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" data-clipboard-text="梅陇支行" @click="copy()">
+                  </div>
+                </li>
+                <li>
+                  <span class="m_left">银行卡号</span>
+                  <div class="m_right">
+                    <i class="right_text">{{pay_info.bank_pay.bank_no}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="20190415002006005" @click="copy()">
+                  </div>
+                </li>
+            </div>
+            <li>
+              <span class="m_left">付款时备注</span>
+              <div class="m_right">
+                <i class="right_text">{{pay_remarks}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="8898" @click="copy()">
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
     </div>
-  </div>
-  <div class="launchAppeal"><span @click="launchAppeal()">发起申诉</span></div>
+    <div class="launchAppeal"><span @click="launchAppeal()">发起申诉</span></div>
   </div>
 </template>
 <script>
@@ -148,7 +148,7 @@ export default {
       orderDetailData: {},
       pay_info: [],
       order_no: 12,
-      pay_name: 'jeney', // 支付账户名
+      pay_name: '', // 支付账户名
       pay_account: '14154sadf', // 支付账号
       pay_url: '', // 支付二维码
       pay_remarks: '' // 付款时备注
@@ -206,8 +206,10 @@ export default {
           }
         })
         .catch(e => {
+          alert(e)
           console.log(e)
-          this.$toast('网络错误4')
+          console.log('uploadFile')
+          this.$toast(e.msg)
         })
     },
     // 发起申诉
@@ -226,8 +228,9 @@ export default {
           })
         })
         .catch(e => {
+          console.log('applyComplain')
           console.log(e)
-          this.$toast('网络错误4')
+          this.$toast(e.msg)
         })
     },
     // 点击图片弹框
@@ -320,170 +323,182 @@ export default {
     background: #1359D2 !important
   }
 }
-.appeal{
+
+.apdetail-body {
   position: fixed;
-  top: 88px;
-  background-color: #F5F8FA;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  .appealContent{
-    padding: 34px;
-    background-color: #fff;
-    border-radius: 20px;
-    box-sizing: border-box;
-    margin-bottom: 28px;
-    .m_title{
-      font-size: 28px;
-      color: #010101;
-      font-weight: 600;
-      margin-bottom: 27px;
-    }
-    .textarea{
-      background-color: #F5F8FA;
-      padding: 25px 32px;
-      border-radius: 10px;
-      font-size: 28px;
-      color: #000;
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid #E8E5E5
-    }
-  }
-  .upload{
-    border-radius: 20px;
-    margin-bottom: 35px;
-    border: 2px dashed #1359D2;
-    height: 144px;
-    text-align: center;
-    line-height: 144px;
-    position: relative;
-    .upload_tip{
-      font-size: 28px;
-      color: #1359D2;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%)
-    }
-    .upload_img{
-      width: 100%;
-      height: 367px
-    }
-    .upload-file{
-      width: 100%;
-      position: absolute;
-      left: 0;
-      opacity: 0;
-    }
-  }
-  .isload{
-    border: none;
-    height: 367px;
-  }
-  .rechargeMain{
-    padding: 36px 30px 300px;
-    ul{
-      width: 100%;
-      margin-bottom: 24px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  .appeal{
+    position: fixed;
+    top: 88px;
+    background-color: #F5F8FA;
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    .appealContent{
+      padding: 34px;
       background-color: #fff;
       border-radius: 20px;
       box-sizing: border-box;
-      li{
-        height: 100px;
-        line-height: 100px;
-        padding: 0 39px;
-        border-bottom: 1px solid #F5F4F4;
-        display: flex;
-        justify-content: space-between;
-        font-size: 26px;
-        &:last-of-type{
-          border: none
-        }
-        .m_center{
-          text-align: center;
-          color: #000;
-          font-size: 28px;
-          width: 100%
-        }
-        .m_left{
-          color: #ABACAF;
-          .left_icon{
-            width: 49px;
-            margin-right: 30px
-          }
-          .left_text{
-            color: #000;
-            font-size: 28px
-          }
-        }
-        .m_right{
-          color: #010101;
-          flex: 1;
-          text-align: right;
-          .right_icon{
-            width: 35px;
-            margin-left: 25px
-          }
-          .rightBG_icon{
-            display: inline-block;
-            height: 38px;
-            width: 38px;
-            background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
-          }
-          .Active_pay{
-            background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
-          }
-          .arrow-icon{
-            width: 18px;
-          }
-        }
-        .skyblue{
-          color: #3EC0F1
-        }
-        .blue{
-          color: #4264FB
-        }
-        .red{
-          color: #FF5252
-        }
-        .orange{
-          color: #FFA63D
-        }
-        span.timer{
-          color: #010101 !important
-        }
+      margin-bottom: 28px;
+      .m_title{
+        font-size: 28px;
+        color: #010101;
+        font-weight: 600;
+        margin-bottom: 27px;
       }
-      .qrcode{
-        height: 400px;
-        position: relative;
-        .m_right{
-          top: 60%;
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%) translateY(-50%);
-          text-align: center;
-          .QR{
-            height: 214px
+      .textarea{
+        background-color: #F5F8FA;
+        padding: 25px 32px;
+        border-radius: 10px;
+        font-size: 28px;
+        color: #000;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #E8E5E5
+      }
+    }
+    .upload{
+      border-radius: 20px;
+      margin-bottom: 35px;
+      border: 2px dashed #1359D2;
+      height: 144px;
+      text-align: center;
+      line-height: 144px;
+      position: relative;
+      .upload_tip{
+        font-size: 28px;
+        color: #1359D2;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%)
+      }
+      .upload_img{
+        width: 100%;
+        height: 367px
+      }
+      .upload-file{
+        width: 100%;
+        position: absolute;
+        left: 0;
+        opacity: 0;
+      }
+    }
+    .isload{
+      border: none;
+      height: 367px;
+    }
+    .rechargeMain{
+      padding: 36px 30px 300px;
+      ul{
+        width: 100%;
+        margin-bottom: 24px;
+        background-color: #fff;
+        border-radius: 20px;
+        box-sizing: border-box;
+        li{
+          height: 100px;
+          line-height: 100px;
+          padding: 0 39px;
+          border-bottom: 1px solid #F5F4F4;
+          display: flex;
+          justify-content: space-between;
+          font-size: 26px;
+          &:last-of-type{
+            border: none
           }
-          a{
-            color: #1359D2;
-            border-bottom: 1px solid #1359D2;
-            line-height: auto !important
+          .m_center{
+            text-align: center;
+            color: #000;
+            font-size: 28px;
+            width: 100%
+          }
+          .m_left{
+            color: #ABACAF;
+            .left_icon{
+              width: 49px;
+              margin-right: 30px
+            }
+            .left_text{
+              color: #000;
+              font-size: 28px
+            }
+          }
+          .m_right{
+            color: #010101;
+            flex: 1;
+            text-align: right;
+            .right_icon{
+              width: 35px;
+              margin-left: 25px
+            }
+            .rightBG_icon{
+              display: inline-block;
+              height: 38px;
+              width: 38px;
+              background: url('~imgurl/radio-0-icon.png') center / 100% no-repeat
+            }
+            .Active_pay{
+              background: url('~imgurl/radio-1-icon.png') center / 100% no-repeat
+            }
+            .arrow-icon{
+              width: 18px;
+            }
+          }
+          .skyblue{
+            color: #3EC0F1
+          }
+          .blue{
+            color: #4264FB
+          }
+          .red{
+            color: #FF5252
+          }
+          .orange{
+            color: #FFA63D
+          }
+          span.timer{
+            color: #010101 !important
+          }
+        }
+        .qrcode{
+          height: 400px;
+          position: relative;
+          .m_right{
+            top: 60%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            text-align: center;
+            .QR{
+              height: 214px
+            }
+            a{
+              color: #1359D2;
+              border-bottom: 1px solid #1359D2;
+              line-height: auto !important
+            }
           }
         }
       }
     }
-  }
-  .tip{
-    font-size: 26px;
-    color: #C2C2C2;
-    padding: 10px 0 34px;
-    span{
-      display: inline-block;
-      margin-bottom: 20px
+    .tip{
+      font-size: 26px;
+      color: #C2C2C2;
+      padding: 10px 0 34px;
+      span{
+        display: inline-block;
+        margin-bottom: 20px
+      }
     }
   }
 }
+
 .launchAppeal{
   background-color: #fff;
   position: fixed;
