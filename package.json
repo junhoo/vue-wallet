@@ -26,6 +26,8 @@
     "vant": "^1.6.12",
     "vue": "^2.5.2",
     "vue-bus": "^1.2.1",
+    "vue-html5plus": "^1.0.0",
+    "vue-qr": "^2.1.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

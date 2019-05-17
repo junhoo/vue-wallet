@@ -138,8 +138,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-import moment from 'moment'
 import CommonHeader from 'common/header/Header'
 import { post } from '@/assets/js/fetch'
 import DialogBox from 'common/dialog/Dialog'
@@ -240,8 +238,21 @@ export default {
   },
   filters: {
     formatDate: function (value) {
-      const timed = parseInt(value) * 1000
-      return moment(timed).format('YYYY-MM-DD hh:mm')
+      var time = new Date(value * 1000)
+      function timeAdd0 (str) {
+        if (str < 10) {
+          str = '0' + str
+        }
+        return str
+      }
+      var y = time.getFullYear()
+      var m = time.getMonth() + 1
+      var d = time.getDate()
+      var h = time.getHours()
+      var mm = time.getMinutes()
+      // var s = time.getSeconds()
+      // return y + '-' + timeAdd0(m) + '-' + timeAdd0(d) + ' ' + timeAdd0(h) + ':' + timeAdd0(mm) + ':' + timeAdd0(s)
+      return y + '-' + timeAdd0(m) + '-' + timeAdd0(d) + ' ' + timeAdd0(h) + ':' + timeAdd0(mm)
     },
     payTypeText: function (value) {
       // value = value.toString()

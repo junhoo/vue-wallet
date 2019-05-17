@@ -1,6 +1,6 @@
 <template>
   <div class="alistdetail-body">
-    <common-header title="申诉管理"></common-header>
+    <common-header title="申诉管理"></common-header>s
     <div class="appeal-list">
       <div class="no-data" v-if="itemData.length == 0">
         <img src="~imgurl/no_order.png" alt="">

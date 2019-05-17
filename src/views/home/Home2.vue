@@ -148,7 +148,8 @@ export default {
       path: '', // ws://192.168.1.249:9508
       websocket: '',
       randomStr: '',
-      saveMsg: {}
+      saveMsg: {},
+      tests: '1558063270'
     }
   },
   methods: {
@@ -589,12 +590,12 @@ export default {
         } catch (error) {
         }
       }
-      this.heartbeat()
+      // this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
         // console.log('')
-        console.log('❤')
+        // console.log('❤')
         if (this.existServer) {
           this.send()
           // console.log('-1 服务器 ok')
