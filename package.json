@@ -23,6 +23,7 @@
     "lib-flexible": "^0.3.2",
     "moment": "^2.24.0",
     "px2rem-loader": "^0.1.9",
+    "qrcodejs2": "0.0.2",
     "vant": "^1.6.12",
     "vue": "^2.5.2",
     "vue-bus": "^1.2.1",
