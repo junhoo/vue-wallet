@@ -41,7 +41,6 @@
                   @onchilddetail='onChildDetail'>
       </home-detail>
     </main>
-
     <transition name="fade">
       <div class="order-matching" v-show="showMatching">
         <div class="img-box">
@@ -92,30 +91,11 @@ export default {
     SocketView,
     CommonLoading
   },
-  created () {
-    // ?app_name=123&merchant_type=1&merchant_code=12345&third_user_id=500
-    const format = {
-      'app-name': this.$route.query.app_name,
-      'merchant_type': this.$route.query.merchant_type, // 1:A端 2:B端
-      'merchant_code': this.$route.query.merchant_code,
-      'third_user_id': this.$route.query.third_user_id,
-      'choice_pay_type': ''
-    }
-    this.postFormat = format
-    // this.wbservice()
-    this.autoLogin()
-    sessionStorage.setItem('reqformat', JSON.stringify(format))
-    if (sessionStorage.getItem('randomcode')) {
-      this.getTotalCoin()
-      this.getUserMsg()
-      this.getCurOrder()
-      this.wsinit()
-    }
-  },
   data () {
     return {
       pay_url: 'https://desk-fd.zol-img.com.cn/t_s144x90c5/g2/M00/0F/07/ChMlWlzSob-IDqyyAAQWLsmmYHIAAJ3pgPoeNMABBZG795.jpg',
       // pay_url: 'http://user.service.168mi.cn/uploads/ali_pay/20190507/17d5cdd704f0cfa6b355a2d5e0ecfdbf.jpg',
+      ttt: null,
       timerLink: null,
       timerHint: null,
       textHint: '',
@@ -128,7 +108,7 @@ export default {
       loadingVal: false,
       popupMoney: '',
       popupAccount: '',
-      popupName: '自动收款', // 去绑定 去实名 禁止交易 充值匹配成功 提现匹配成功 等待确认收款 自动确认收款 被取消 交易完成
+      popupName: '', // 去绑定 去实名 禁止交易 充值匹配成功 提现匹配成功 等待确认收款 自动确认收款 被取消 交易完成
       postFormat: {},
       userMsg: {},
       headerInfo: {
@@ -151,6 +131,26 @@ export default {
       randomStr: '',
       saveMsg: {},
       tests: '1558063270'
+    }
+  },
+  created () {
+    // ?app_name=123&merchant_type=1&merchant_code=12345&third_user_id=500
+    const format = {
+      'app-name': this.$route.query.app_name,
+      'merchant_type': this.$route.query.merchant_type, // 1:A端 2:B端
+      'merchant_code': this.$route.query.merchant_code,
+      'third_user_id': this.$route.query.third_user_id,
+      'choice_pay_type': ''
+    }
+    this.postFormat = format
+    // this.wbservice()
+    this.autoLogin()
+    sessionStorage.setItem('reqformat', JSON.stringify(format))
+    if (sessionStorage.getItem('randomcode')) {
+      this.getTotalCoin()
+      this.getUserMsg()
+      this.getCurOrder()
+      this.wsinit()
     }
   },
   methods: {
@@ -444,6 +444,7 @@ export default {
       this.order_no = orderInfo.order_no
       this.order_type = orderInfo.order_type
       this.popupMoney = orderInfo.order_amount
+      this.popupAccount = orderInfo.account
       let countTimed = parseInt(orderInfo.rest_time)
       if (countTimed <= 600) {
         var nowTime = new Date()
@@ -461,12 +462,15 @@ export default {
       // orderType === '接单用户取消'
 
       if (orderType === '交易完成') {
-        this.hasDetail = false
-        this.popupName = '交易完成'
         this.showPopup = true
+        this.popupName = '交易完成'
+        this.hasDetail = false
         const orderno = orderInfo.order_no
         sessionStorage.setItem(orderno, '1')
-        this.getTotalCoin()
+        // this.getTotalCoin()
+        console.log('this.popupName')
+        console.log(this.popupName)
+        console.log('=== 进来交易完成')
         return
       }
 
@@ -494,33 +498,44 @@ export default {
         stateName = '结束'
       }
 
-      if (orderInfo.order_type === 1) { // 1充值 2提现
-        if (orderType.includes('匹配成功')) {
-          stateName = '充值匹配成功'
-          this.hasDetail = true
-          this.popupName = '充值匹配成功'
-        }
-        this.detailType = '充值'
-      } else {
-        if (orderType.includes('匹配成功')) {
-          stateName = '提现匹配成功'
-          this.hasDetail = true
-          this.popupName = '提现匹配成功'
-        }
-        this.detailType = '提现'
-      }
-      console.log('--------')
-      console.log(orderInfo.order_type)
-      console.log(orderType.includes('匹配成功'))
+      if (orderInfo.order_type === 1 && orderType.includes('匹配成功')) { // 1充值 2提现
+        stateName = '充值匹配成功'
+        this.hasDetail = true
+        this.popupName = '充值匹配成功'
+        this.showMatching = false
+        this.showPopup = true
 
-      if (orderType === '未到账' && orderInfo.order_type === 1) {
+        this.detailType = '充值'
+        this.detailInfo = orderInfo
+        console.log(this.popupName)
+        console.log('** 是充值')
+        return
+      }
+
+      if (orderInfo.order_type === 2 && orderType.includes('匹配成功')) {
+        stateName = '提现匹配成功'
+        this.hasDetail = true
+        this.popupName = '提现匹配成功'
+        this.showMatching = false
+        this.showPopup = true
+
+        this.detailType = '提现'
+        this.detailInfo = orderInfo
+        console.log('** 是提现')
+        return
+      }
+
+      if (orderType === '未到账' && parseInt(orderInfo.order_type) === 1) {
         stateName = '充值未到账'
+        this.popupName = '充值未到账'
         this.detailType = '充值未到账'
       }
 
-      if (orderType === '未到账' && orderInfo.order_type === 2) {
+      if (orderType === '未到账' && parseInt(orderInfo.order_type) === 2) {
         stateName = '等待确认收款'
+        this.popupName = '等待确认收款'
         this.detailType = '提现未到账'
+        this.showPopup = true
       }
 
       console.log(stateName)
@@ -584,19 +599,21 @@ export default {
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
       } else {
-        try {
-          // 实例化socket
-          this.websocket = new WebSocket(this.path)
-          // 监听socket连接
-          this.websocket.onopen = this.wsopen
-          // 监听socket错误信息
-          this.websocket.onerror = this.wserror
-          // 监听socket消息
-          this.websocket.onmessage = this.wsmessage
-          // 监听socket关闭
-          this.websocket.onclose = this.wsclose
-        } catch (error) {
-        }
+        // try {
+        // 实例化socket
+        const path = sessionStorage.getItem('wbp')
+        this.websocket = new WebSocket(path)
+        // 监听socket连接
+        this.websocket.onopen = this.wsopen
+        // 监听socket错误信息
+        this.websocket.onerror = this.wserror
+        // 监听socket消息
+        this.websocket.onmessage = this.wsmessage
+        // 监听socket关闭
+        this.websocket.onclose = this.wsclose
+        // } catch (error) {
+        // this.restart()
+        // }
       }
       // this.heartbeat()
     },
@@ -661,9 +678,11 @@ export default {
         console.log(res)
         console.log(res.msg.data.a_status_str)
         console.log(res.msg.data.order_no)
-        if (res.msg.data.a_status_str === '匹配成功') {
-          setTimeout(() => {
-            this.getCurOrder()
+        const name = res.msg.data.a_status_str
+        if (name === '匹配成功' || name === '交易完成') {
+          const self = this
+          this.ttt = setTimeout(() => {
+            self.getCurOrder()
           }, 1500)
         } else {
           this.onChildSocket(this.saveMsg)
@@ -677,14 +696,13 @@ export default {
       }
     },
     restart () {
-      this.websocket.close()
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }
       this.timerConnect = setTimeout(() => {
         console.log('socket 重新连接')
         this.wsinit()
-      }, 2000)
+      }, 5000)
     },
     wsclose () {
       console.log('socket 已经关闭')
@@ -801,15 +819,17 @@ header {
 }
 
 main {
+  // position: relative;
   box-sizing: border-box;
 }
 
 .order-matching {
-  position: fixed;
+  position: absolute;
   top: 319px;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100%;
   text-align: center;
   box-sizing: border-box;
   z-index: 2000;
@@ -832,22 +852,25 @@ main {
     }
   }
   .text-big {
+    position: relative;
     padding-top: 64px;
     font-weight:bold;
     font-size:38px;
     color: #000;
   }
   .text-small {
+    position: relative;
     padding-top: 33px;
     font-size:26px;
     color: #6D6D6D;
   }
   .cancel-btn {
     position: relative;
-    margin-top: 99px;
+    padding-top: 99px;
     height: 232px;
     // margin-bottom: 105px;
     width: 100%;
+    padding-bottom: 120px;
     .content {
       box-sizing:border-box;
       position: absolute;

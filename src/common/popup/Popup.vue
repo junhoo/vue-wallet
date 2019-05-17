@@ -8,66 +8,66 @@
     <van-popup v-model="show" position="bottom" :overlay="false">
       <div class="popup-box">
 
-        <p class="text-1">{{ name | filterTitle }}</p>
+        <p class="text-1">{{ changeName | filterTitle }}</p>
 
-        <template v-if="name === '填写绑定'">
+        <template v-if="changeName === '填写绑定'">
           <p class="text-2">为确保交易顺利，请如实填写信息。</p>
         </template>
 
-        <template v-else-if="name === '被取消'">
+        <template v-else-if="changeName === '被取消'">
           <p class="text-2">有一笔充值到订单超时未付款被取消！</p>
         </template>
 
-        <template v-else-if="name === '用户充值取消'">
+        <template v-else-if="changeName === '用户充值取消'">
           <p class="text-2">有一笔充值订单已被对方取消！</p>
         </template>
 
-        <template v-else-if="name === '用户提现取消'">
+        <template v-else-if="changeName === '用户提现取消'">
           <p class="text-2">有一笔提现订单已被对方取消！</p>
         </template>
 
-        <template v-else-if="name === '去绑定'">
+        <template v-else-if="changeName === '去绑定'">
           <p class="text-2">您未绑定该支付方式，是否现在去绑定？</p>
         </template>
 
-        <template v-else-if="name === '去实名'">
+        <template v-else-if="changeName === '去实名'">
           <p class="text-2">请先完成实名认证再进行交易</p>
         </template>
 
-        <template v-else-if="name === '禁止交易'">
+        <template v-else-if="changeName === '禁止交易'">
           <p class="text-2">您已被禁止交易，小时后解禁</p>
         </template>
 
-        <template v-else-if="name === '交易完成'">
+        <template v-else-if="changeName === '交易完成'">
           <p class="text-2">有一笔充值到账，请查看积分余额！</p>
           <p class="text-moeny">+{{money}}</p>
         </template>
 
-        <template v-else-if="name === '充值匹配成功'">
-          <p class="text-2" v-show="name === '充值匹配成功'">请于10分钟内完成付款，否则将被取消</p>
-          <p class="text-moeny" v-show="name === '充值匹配成功'">{{money}}<span class="symbol">CNY</span></p>
+        <template v-else-if="changeName === '充值匹配成功'">
+          <p class="text-2" v-show="changeName === '充值匹配成功'">请于10分钟内完成付款，否则将被取消</p>
+          <p class="text-moeny" v-show="changeName === '充值匹配成功'">{{money}}<span class="symbol">CNY</span></p>
         </template>
 
         <template v-else>
-          <p class="text-2">{{ name | filterText }}</p>
-          <p class="text-3" v-show="name === '等待确认收款' || name === '自动确认收款'">收款账号：{{account}}</p>
+          <p class="text-2">{{ changeName | filterText }}</p>
+          <p class="text-3" v-show="changeName === '等待确认收款' || changeName === '自动确认收款'">收款账号：{{account}}</p>
         </template>
 
-        <div class="btn-box" :class="{'ban-box': name === '禁止交易'}">
+        <div class="btn-box" :class="{'ban-box': changeName === '禁止交易'}">
 
-          <template v-if="name !== '禁止交易'">
+          <template v-if="changeName !== '禁止交易'">
             <div class="finish-btn">
-              <button class="content" v-if="name === '填写绑定'" @click="selectType('填写绑定')">确认</button>
-              <button class="content" v-else-if="name === '充值匹配成功'" @click="selectType('立即付款')">立即付款</button>
-              <button class="content" v-else-if="name === '去绑定'" @click="selectType('去绑定')">去绑定</button>
-              <button class="content" v-else-if="name === '去实名'" @click="selectType('去实名')">去实名</button>
-              <button class="content" v-else-if="name === '等待确认收款'" @click="selectType('去确认收款')">去确认收款</button>
+              <button class="content" v-if="changeName === '填写绑定'" @click="selectType('填写绑定')">确认</button>
+              <button class="content" v-else-if="changeName === '充值匹配成功'" @click="selectType('立即付款')">立即付款</button>
+              <button class="content" v-else-if="changeName === '去绑定'" @click="selectType('去绑定')">去绑定</button>
+              <button class="content" v-else-if="changeName === '去实名'" @click="selectType('去实名')">去实名</button>
+              <button class="content" v-else-if="changeName === '等待确认收款'" @click="selectType('去确认收款')">去确认收款</button>
               <button class="content" v-else @click="selectType('查看订单')">查看订单</button>
             </div>
 
             <div class="cancel-btn">
               <div class="content" @click="closeDiv()">
-                <button class="box">{{ name | filterCancel }}</button>
+                <button class="box">{{ changeName | filterCancel }}</button>
               </div>
             </div>
           </template>
@@ -92,6 +92,18 @@ export default {
     name: '',
     money: '',
     account: ''
+  },
+  data () {
+    return {
+      changeName: ''
+    }
+  },
+  watch: {
+    name: function (val) {
+      console.log('======== watch')
+      this.changeName = val
+      console.log(this.changeName)
+    }
   },
   methods: {
     selectType (type) {
