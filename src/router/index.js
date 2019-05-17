@@ -11,6 +11,7 @@ import SettingCertification from '@/views/setting/SettingCertification'
 import SettingPay from '@/views/setting/SettingPay'
 import SettingBound from '@/views/setting/SettingBound'
 import Order from '@/views/order/Order'
+import Chat from '@/views/chat/Chat'
 
 import Setting2 from '@/views/setting/Setting2'
 
@@ -84,6 +85,11 @@ export default new Router({
       path: '/setting2',
       name: 'Setting2',
       component: Setting2
+    },
+    {
+      path: '/chat',
+      name: 'Chat',
+      component: Chat
     }
   ],
   scrollBehavior (to, from, savedPosition) {

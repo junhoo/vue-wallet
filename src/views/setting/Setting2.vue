@@ -25,7 +25,7 @@
           </div>
         </li>
         <li>
-          <div class="boxs">
+          <div class="boxs" @click="jumpIn(4)">
             <span class="text-left">在线客服</span>
             <span class="text-right"></span>
           </div>
@@ -61,6 +61,9 @@ export default {
         this.$router.push({ path: '/setting/pay' })
       } else if (i === 3) {
         this.$router.push({ path: '/appealList' })
+      } else if (i === 4) {
+        this.$router.push({ name: 'Chat' })
+      } else {
       }
     }
   },

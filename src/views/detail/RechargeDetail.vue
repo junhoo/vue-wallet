@@ -273,10 +273,10 @@ export default {
           this.payTypeMsg()
         })
         .catch(e => {
+          this.loadingVal = false
           console.log(e)
           // this.$toast('网络错误4')
           this.$toast(e.msg)
-          this.loadingVal = false
         })
     },
     // 确定支付信息

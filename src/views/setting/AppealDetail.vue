@@ -1,141 +1,142 @@
 <template>
-<div class="apdetail-body">
-  <common-header title="申诉详情"></common-header>
-  <div class="appeal">
-    <div class="rechargeMain">
-      <!-- 进步条 -->
-      <section>
-        <div class="step">
-          <div class="stepItem">
-            <img class="stepImg" src="~imgurl/icon_sta0_1.png" alt="">
-            <span class="stepTxt">等待平台客服处理  {{appealData.add_time | formatDate}}</span>
-          </div>
-          <div class="line" :class="{'line_blue':appealStatus != 1}"></div>
-          <div class="stepItem">
-            <img v-if="appealStatus!=1" class="stepImg" src="~imgurl/icon_sta0_2.png" alt="">
-            <img v-else class="stepImg" src="~imgurl/icon_sta1_2.png" alt="">
-            <span class="stepTxt">处理中</span>
-            <p v-if="appealStatus!=1" class="stepTip">客服专员{{appealData.customer_id}}正在核实信息</p>
-          </div>
-          <div class="line" :class="{'line_blue':appealStatus == 3}"></div>
-          <div class="stepItem">
-            <img v-if="appealStatus==3" class="stepImg" src="~imgurl/icon_sta0_3.png" alt="">
-            <img v-else class="stepImg" src="~imgurl/icon_sta1_3.png" alt="">
-            <span class="stepTxt">已完成</span>
-            <p v-if="appealStatus==3 && orderType ==1" class="stepTip">已联系卖方确认收款</p>
-            <p v-else-if="appealStatus==3 && orderType ==2" class="stepTip">已通知买方处理</p>
-          </div>
-        </div>
-      </section>
-      <!-- 申诉内容 -->
-      <section>
-        <div class="appealContent">
-          <h3 class="m_title">申诉内容</h3>
-          <span class="m_text">{{appealData.content}}</span>
-        </div>
-        <div class="upload" v-if="orderType == 1">
-          <img class="upload_img" :src="appealData.pay_prove_pic_img" alt="" @click="showImgSelec()">
-        </div>
-      </section>
-       <!-- 图片预览弹框 -->
-      <van-dialog v-model="show" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
-       <img :src="appealData.pay_prove_pic_img" class="previewImg">
-      </van-dialog>
-       <!-- 订单信息 -->
-      <section>
-        <ul>
-          <li>
-            <span class="m_left" :class="{'orange':orderType == 2, 'blue':orderType == 1}">{{orderType|orderStatus}}</span>
-             <template>
-               <i v-if="orderType == 1" class="m_right">等待对方确认收款</i>
-               <i v-if="orderType == 2" class="m_right">请您确认已收到付款</i>
-             </template>
-          </li>
-          <li>
-            <span v-if="orderType == 1" class="m_left">付款金额</span>
-            <span v-if="orderType == 2" class="m_left">收款金额</span>
-            <i class="m_right">{{appealData.amount}}CNY</i>
-          </li>
-          <li>
-            <span v-if="orderType == 1" class="m_left">充值积分</span>
-            <span v-if="orderType == 2" class="m_left">卖出数量</span>
-            <i class="m_right">{{appealData.order_amount}}</i>
-          </li>
-          <li>
-            <span v-if="orderType == 1" class="m_left">下单时间</span>
-            <span v-if="orderType == 2" class="m_left">接单时间</span>
-            <i class="m_right">{{appealData.order_time}}</i>
-          </li>
-          <li>
-            <span class="m_left">订单编号</span>
-            <div class="m_right">
-              <i class="right_text">{{appealData.order_no}}</i>
-              <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="appealData.order_no" @click="copy()">
-            </div>
-          </li>
-        </ul>
-      </section>
-       <!-- 支付信息 -->
+  <div class="apdetail-body">
+    <common-header title="申诉详情"></common-header>
+    <div class="appeal">
+      <div class="rechargeMain">
+        <!-- 进步条 -->
         <section>
-         <ul class="wrapper" v-if="orderType == 1">
-           <li class="li-item">
-             <span class="m_left">{{payType|payTypeText}}支付</span>
-           </li>
-           <li>
-             <span class="m_left">收款人</span>
-             <div class="m_right">
-               <i class="right_text">{{payee}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payee" @click="copy()">
-             </div>
-           </li>
-           <!-- 支付宝、微信支付 -->
-           <div class="wxAli" v-if="payType != 3">
-             <li>
-                <span class="m_left">{{payType|payTypeText}}账号</span>
-                <div class="m_right">
-                  <i class="right_text">{{accountNumber}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="accountNumber" @click="copy()">
-                </div>
-              </li>
-           </div>
-           <!--银行卡支付  -->
-           <div class="band" v-else>
-             <li>
-                <span class="m_left">银行名称</span>
-                <div class="m_right">
-                  <i class="right_text">{{payInfo.address}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.address" @click="copy()">
-                </div>
-              </li>
+          <div class="step">
+            <div class="stepItem">
+              <img class="stepImg" src="~imgurl/icon_sta0_1.png" alt="">
+              <span class="stepTxt">等待平台客服处理  {{appealData.add_time | formatDate}}</span>
+            </div>
+            <div class="line" :class="{'line_blue':appealStatus != 1}"></div>
+            <div class="stepItem">
+              <img v-if="appealStatus!=1" class="stepImg" src="~imgurl/icon_sta0_2.png" alt="">
+              <img v-else class="stepImg" src="~imgurl/icon_sta1_2.png" alt="">
+              <span class="stepTxt">处理中</span>
+              <p v-if="appealStatus!=1" class="stepTip">客服专员{{appealData.customer_id}}正在核实信息</p>
+            </div>
+            <div class="line" :class="{'line_blue':appealStatus == 3}"></div>
+            <div class="stepItem">
+              <img v-if="appealStatus==3" class="stepImg" src="~imgurl/icon_sta0_3.png" alt="">
+              <img v-else class="stepImg" src="~imgurl/icon_sta1_3.png" alt="">
+              <span class="stepTxt">已完成</span>
+              <p v-if="appealStatus==3 && orderType ==1" class="stepTip">已联系卖方确认收款</p>
+              <p v-else-if="appealStatus==3 && orderType ==2" class="stepTip">已通知买方处理</p>
+            </div>
+          </div>
+        </section>
+        <!-- 申诉内容 -->
+        <section>
+          <div class="appealContent">
+            <h3 class="m_title">申诉内容</h3>
+            <span class="m_text">{{appealData.content}}</span>
+          </div>
+          <div class="upload" v-if="orderType == 1">
+            <img class="upload_img" :src="appealData.pay_prove_pic_img" alt="" @click="showImgSelec()">
+          </div>
+        </section>
+        <!-- 图片预览弹框 -->
+        <van-dialog v-model="show" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
+        <img :src="appealData.pay_prove_pic_img" class="previewImg">
+        </van-dialog>
+        <!-- 订单信息 -->
+        <section>
+          <ul>
+            <li>
+              <span class="m_left" :class="{'orange':orderType == 2, 'blue':orderType == 1}">{{orderType|orderStatus}}</span>
+              <template>
+                <i v-if="orderType == 1" class="m_right">等待对方确认收款</i>
+                <i v-if="orderType == 2" class="m_right">请您确认已收到付款</i>
+              </template>
+            </li>
+            <li>
+              <span v-if="orderType == 1" class="m_left">付款金额</span>
+              <span v-if="orderType == 2" class="m_left">收款金额</span>
+              <i class="m_right">{{appealData.amount}}CNY</i>
+            </li>
+            <li>
+              <span v-if="orderType == 1" class="m_left">充值积分</span>
+              <span v-if="orderType == 2" class="m_left">卖出数量</span>
+              <i class="m_right">{{appealData.order_amount}}</i>
+            </li>
+            <li>
+              <span v-if="orderType == 1" class="m_left">下单时间</span>
+              <span v-if="orderType == 2" class="m_left">接单时间</span>
+              <i class="m_right">{{appealData.order_time}}</i>
+            </li>
+            <li>
+              <span class="m_left">订单编号</span>
+              <div class="m_right">
+                <i class="right_text">{{appealData.order_no}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="appealData.order_no" @click="copy()">
+              </div>
+            </li>
+          </ul>
+        </section>
+        <!-- 支付信息 -->
+          <section>
+          <ul class="wrapper" v-if="orderType == 1">
+            <li class="li-item">
+              <span class="m_left">{{payType|payTypeText}}支付</span>
+            </li>
+            <li>
+              <span class="m_left">收款人</span>
+              <div class="m_right">
+                <i class="right_text">{{payee}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payee" @click="copy()">
+              </div>
+            </li>
+            <!-- 支付宝、微信支付 -->
+            <div class="wxAli" v-if="payType != 3">
               <li>
-                <span class="m_left">支行名称</span>
-                <div class="m_right">
-                  <i class="right_text">{{payInfo.bank_sub_branch}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_sub_branch" @click="copy()">
-                </div>
-              </li>
+                  <span class="m_left">{{payType|payTypeText}}账号</span>
+                  <div class="m_right">
+                    <i class="right_text">{{accountNumber}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="accountNumber" @click="copy()">
+                  </div>
+                </li>
+            </div>
+            <!--银行卡支付  -->
+            <div class="band" v-else>
               <li>
-                <span class="m_left">银行卡号</span>
-                <div class="m_right">
-                  <i class="right_text">{{payInfo.bank_no}}</i>
-                  <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_no" @click="copy()">
-                </div>
-              </li>
-           </div>
-           <li>
-             <span class="m_left">付款时备注</span>
-             <div class="m_right">
-               <i class="right_text">{{pay_remarks}}</i>
-               <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="pay_remarks" @click="copy()">
-             </div>
-           </li>
-         </ul>
-       </section>
+                  <span class="m_left">银行名称</span>
+                  <div class="m_right">
+                    <i class="right_text">{{payInfo.address}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.address" @click="copy()">
+                  </div>
+                </li>
+                <li>
+                  <span class="m_left">支行名称</span>
+                  <div class="m_right">
+                    <i class="right_text">{{payInfo.bank_sub_branch}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_sub_branch" @click="copy()">
+                  </div>
+                </li>
+                <li>
+                  <span class="m_left">银行卡号</span>
+                  <div class="m_right">
+                    <i class="right_text">{{payInfo.bank_no}}</i>
+                    <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="payInfo.bank_no" @click="copy()">
+                  </div>
+                </li>
+            </div>
+            <li>
+              <span class="m_left">付款时备注</span>
+              <div class="m_right">
+                <i class="right_text">{{pay_remarks}}</i>
+                <img src="~imgurl/copy-icon.png" alt=""  class="right_icon tag-copy" :data-clipboard-text="pay_remarks" @click="copy()">
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+      <div v-if="appealStatus==1 || appealStatus==2" class="cancel"><span @click="deleteA()">删除</span></div>
     </div>
-    <div v-if="appealStatus==1 || appealStatus==2" class="cancel"><span @click="deleteA()">删除</span></div>
-  </div>
   </div>
 </template>
+
 <script>
 import CommonHeader from 'common/header/Header'
 import { post } from '@/assets/js/fetch'
