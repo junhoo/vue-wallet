@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home2-body">
     <header>
       <!-- 标题 -->
       <div class="title-bar clearfix">
@@ -109,6 +109,7 @@ export default {
       this.getTotalCoin()
       this.getUserMsg()
       this.getCurOrder()
+      this.wsinit()
     }
   },
   data () {
@@ -458,37 +459,6 @@ export default {
 
       let stateName = ''
       // orderType === '接单用户取消'
-      if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
-        this.hasDetail = false
-        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
-        this.showPopup = true
-        this.showMatching = true
-        return
-      } else {
-        stateName = '结束'
-      }
-
-      if (orderInfo.order_type === 1) { // 1充值 2提现
-        if (orderType === '匹配成功' || orderType === '重新匹配成功') {
-          stateName = '充值匹配成功'
-        }
-        this.detailType = '充值'
-      } else {
-        if (orderType === '匹配成功' || orderType === '重新匹配成功') {
-          stateName = '提现匹配成功'
-        }
-        this.detailType = '提现'
-      }
-
-      if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
-        this.detailType = '充值未到账'
-      }
-
-      if (orderType === '未到账' && orderInfo.order_type === 2) {
-        stateName = '等待确认收款'
-        this.detailType = '提现未到账'
-      }
 
       if (orderType === '交易完成') {
         this.hasDetail = false
@@ -512,6 +482,45 @@ export default {
         this.popupName = '被取消'
         this.showPopup = true
         return
+      }
+
+      if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
+        this.hasDetail = false
+        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
+        this.showPopup = true
+        this.showMatching = true
+        return
+      } else {
+        stateName = '结束'
+      }
+
+      if (orderInfo.order_type === 1) { // 1充值 2提现
+        if (orderType.includes('匹配成功')) {
+          stateName = '充值匹配成功'
+          this.hasDetail = true
+          this.popupName = '充值匹配成功'
+        }
+        this.detailType = '充值'
+      } else {
+        if (orderType.includes('匹配成功')) {
+          stateName = '提现匹配成功'
+          this.hasDetail = true
+          this.popupName = '提现匹配成功'
+        }
+        this.detailType = '提现'
+      }
+      console.log('--------')
+      console.log(orderInfo.order_type)
+      console.log(orderType.includes('匹配成功'))
+
+      if (orderType === '未到账' && orderInfo.order_type === 1) {
+        stateName = '充值未到账'
+        this.detailType = '充值未到账'
+      }
+
+      if (orderType === '未到账' && orderInfo.order_type === 2) {
+        stateName = '等待确认收款'
+        this.detailType = '提现未到账'
       }
 
       console.log(stateName)
@@ -571,8 +580,7 @@ export default {
     },
     wsinit () {
       console.log('')
-      console.log('··· 消息启动')
-      console.log('=== socket：inits')
+      console.log('··· 监听消息')
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
       } else {
@@ -608,7 +616,7 @@ export default {
       }, 20000)
     },
     wsopen () {
-      console.log('1.0 socket打开成功')
+      console.log('1.0 socket打开成功*')
       this.send()
     },
     send () {
@@ -669,16 +677,17 @@ export default {
       }
     },
     restart () {
+      this.websocket.close()
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }
       this.timerConnect = setTimeout(() => {
-        console.log('webs 重新连接')
+        console.log('socket 重新连接')
         this.wsinit()
       }, 2000)
     },
     wsclose () {
-      console.log('socket已经关闭')
+      console.log('socket 已经关闭')
       this.restart()
     },
     wserror () {
@@ -705,6 +714,10 @@ export default {
 
 /deep/ .van-popup--top {
   background: rgba(0, 32, 78, .9);
+}
+
+.home2-body {
+  position: relative;
 }
 
 header {
@@ -793,7 +806,7 @@ main {
 
 .order-matching {
   position: fixed;
-  top: 339px;
+  top: 319px;
   left: 0;
   right: 0;
   bottom: 0;

@@ -267,6 +267,7 @@ export default {
           this.orderType = this.orderDetailData.status || 0
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
+          console.log(res.data.list)
           this.rest_time2 = this.orderDetailData.rest_time
           this.rest_time = this.orderDetailData.apply_time
           this.loadingVal = false
