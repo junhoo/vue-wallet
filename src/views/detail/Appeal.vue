@@ -288,6 +288,15 @@ export default {
 .van-overlay{
   background-color: rgba(49, 49, 109, .25);
 }
+
+/deep/ .van-overlay{
+  background-color: rgba(49, 49, 109, .25);
+}
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .previewImg{
   z-index: 9999;
   position: absolute;
@@ -295,7 +304,8 @@ export default {
   left: 50%;
   transform: translateX(-50%) translateY(-50%)
 }
-.van-popup{
+
+/deep/ .van-popup{
   border-radius: 20px 20px 0 0;
   padding: 61px 66px 42px;
   box-sizing: border-box;

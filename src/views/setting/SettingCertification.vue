@@ -400,6 +400,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .cert-body{
   position: fixed;
   top: 0;
@@ -628,10 +632,10 @@ export default {
     }
   }
 }
-.van-overlay{
+/deep/ .van-overlay{
   background-color: rgba(49, 49, 109, .25) !important;
 }
-.van-popup--bottom{
+/deep/ .van-popup--bottom{
   border-radius: 20px 20px 0 0;
   h3{
     color: #010101;

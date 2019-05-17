@@ -320,6 +320,10 @@ export default {
 @bgColor: #f8f8f8;
 @blueColor: #4264FB;
 
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 @btnStyle: {
   width: 273px;
   height: 90px;
@@ -450,6 +454,7 @@ export default {
   .check-box {
     position: relative;
     padding-top: 105px; // 65px
+    padding-bottom: 153px;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -528,7 +533,6 @@ export default {
     }
   }
   .submit-btn {
-    margin-top: 153px;
     width: 100%;
     height: 97px;
     font-size: 30px;

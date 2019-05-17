@@ -2,7 +2,7 @@
 <div class="detail-body">
   <common-header title="订单详情"></common-header>
   <div class="recharge" v-if="!loadingVal">
-    <div class="rechargeMain">
+    <div class="rechargeMain" id="Top3Img" ref="Top3Img">
          <!-- 订单信息 -->
          <section>
            <ul>
@@ -67,8 +67,12 @@
                 <li class="qrcode">
                   <span class="m_left">收款二维码</span>
                   <div class="m_right">
-                    <img class="QR" :src="pay_url" alt=""><br>
-                    <a :href="pay_url" download="">保存二维码</a>
+                    <div id="captureId">
+                      <img class="QR" :src="pay_url">
+                    </div>
+                    <!-- <a :href="pay_url" download="">保存二维码</a> -->
+                    <!-- <p @click="saveImage('Top3Img', '保存二维码')">保存二维码</p> -->
+                    <!-- <div class="save_btn" @click="savecanvas">保存图片</div> -->
                   </div>
                 </li>
              </div>
@@ -368,11 +372,11 @@ export default {
     }
   }
 }
-.van-popup--bottom{
+/deep/ .van-popup--bottom{
   height: 671px;
   border-radius: 20px 20px 0 0;
 }
-.van-overlay{
+/deep/ .van-overlay{
   background-color: rgba(49, 49, 109, .25);
 }
 .btn-pay-boxs{
@@ -486,7 +490,8 @@ export default {
           text-align: center;
           .QR{
             width: 214px;
-            height: 214px
+            height: 214px;
+            border: 1px solid red;
           }
           a{
             color: #1359D2;

@@ -298,7 +298,7 @@ export default {
     color: #BDBDBD
   }
 }
-.van-popup--bottom{
+/deep/ .van-popup--bottom{
   height: auto;
   border-radius: 20px 20px 0 0;
   padding: 45px 65px 75px;

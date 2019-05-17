@@ -15,6 +15,10 @@
       </div>
 
       <!-- 金额区 -->
+      <!-- <div class="save_btn" @click="savecanvas">保存图片</div>
+      <div class="canvas" ref="canvas">
+        <img :src="pay_url" style="width: 200px; height: 200px;">
+      </div> -->
       <p class="money-use" >{{headerInfo.amount_income}}</p>
       <p class="money-ban" >冻结:{{headerInfo.freezing_amount}}</p>
       <div class="icon-service" @click="jumpPage('Chat')"></div>
@@ -65,7 +69,7 @@
       <p class="popup-hint" @click="showTopHint('close')">{{textHint}}</p>
     </van-popup>
 
-    <socket-view ref='socket' @onchildsocket='onChildSocket'></socket-view>
+    <!-- <socket-view ref='socket' @onchildsocket='onChildSocket'></socket-view> -->
     <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
 </template>
@@ -98,17 +102,19 @@ export default {
       'choice_pay_type': ''
     }
     this.postFormat = format
+    // this.wbservice()
     this.autoLogin()
     sessionStorage.setItem('reqformat', JSON.stringify(format))
     if (sessionStorage.getItem('randomcode')) {
       this.getTotalCoin()
       this.getUserMsg()
       this.getCurOrder()
-      this.wsinit()
     }
   },
   data () {
     return {
+      pay_url: 'https://desk-fd.zol-img.com.cn/t_s144x90c5/g2/M00/0F/07/ChMlWlzSob-IDqyyAAQWLsmmYHIAAJ3pgPoeNMABBZG795.jpg',
+      // pay_url: 'http://user.service.168mi.cn/uploads/ali_pay/20190507/17d5cdd704f0cfa6b355a2d5e0ecfdbf.jpg',
       timerLink: null,
       timerHint: null,
       textHint: '',
@@ -139,7 +145,7 @@ export default {
       timerHeart: null,
       timerPopup: null,
       timerConnect: null,
-      path: 'ws://192.168.1.249:9508',
+      path: '', // ws://192.168.1.249:9508
       websocket: '',
       randomStr: '',
       saveMsg: {}
@@ -147,7 +153,6 @@ export default {
   },
   methods: {
     getCurOrder () {
-      // http://order.service.168mi.cn
       console.log(' ')
       this.loadingVal = true
       const url = this.$api.order + '/api/order/getOrderForA'
@@ -235,17 +240,15 @@ export default {
           console.log('autoLogin')
           console.log(e)
           this.showTopHint(e.msg)
-          alert(JSON.stringify(e))
         })
     },
 
     getTotalCoin () {
       // const url = 'http://padmin.service.168mi.cn/admin/OutInterface/getTotal/user_id/500'
       let data = { token: sessionStorage.getItem('randomcode') }
-      const url = 'http://user.service.168mi.cn/api/User/getTotalCoin'
+      const url = this.$api.user + '/api/User/getTotalCoin'
       post(url, data)
         .then(res => {
-          console.log(typeof res.data.list.total)
           const total = res.data.list.total || 0
           const freezing = res.data.list.freezing || 0
           this.headerInfo.amount_income = parseFloat(total).toFixed(2)
@@ -269,7 +272,8 @@ export default {
           this.userMsg = userInfo
           if (sessionStorage.getItem('userMsg') === null) { // 没数据
             // this.$refs.socket.init()
-            this.wsinit()
+            // this.wsinit()
+            this.wbservice()
           }
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
         })
@@ -545,27 +549,23 @@ export default {
       this.$router.push({ name: name })
     },
 
-    // websocket
-    service () {
-      // console.log('---')
+    // websocket-url
+    wbservice () {
+      if (sessionStorage.getItem('wbp') !== null && sessionStorage.getItem('wbp') !== '') {
+        return
+      }
       axios.get(this.$api.socket)
         .then(res => {
           console.log('')
           console.log('=======service==========')
           console.log(res)
-          // {
-          //   "status": "success",
-          //   "code": 200,
-          //   "msg": "成功",
-          //   "time": 1554959616,
-          //   "data": {
-          //     "url": "ws://192.168.1.249:9508"
-          //   }
-          // }
+          this.path = res.data.data.url
+          sessionStorage.setItem('wbp', this.path)
+          this.wsinit()
         })
         .catch(e => {
-          // console.log('e-333')
-          // console.log(e)
+          console.log('get wb request error')
+          console.log(e)
         })
     },
     wsinit () {
@@ -589,7 +589,7 @@ export default {
         } catch (error) {
         }
       }
-      // this.heartbeat()
+      this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
@@ -700,6 +700,10 @@ export default {
   100% {
     background-position: right 0;
   }
+}
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
 }
 
 header {
@@ -878,7 +882,7 @@ main {
 </style>
 
 <style>
-.van-popup--top {
+/* .van-popup--top {
   background: rgba(0, 32, 78, .9);
-}
+} */
 </style>
