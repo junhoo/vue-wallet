@@ -68,7 +68,8 @@
                   <span class="m_left">收款二维码</span>
                   <div class="m_right">
                     <img class="QR" :src="pay_url" alt=""><br>
-                    <a :href="pay_url" download="">保存二维码</a>
+                    <a href="javascript:void(0);" @click="savePicture()">保存二维码</a>
+                    <!-- <a :href="pay_url" :download="pay_url">保存二维码</a> -->
                   </div>
                 </li>
              </div>
@@ -213,6 +214,44 @@ export default {
     this.getOrderDel()
   },
   methods: {
+    // 图片下载
+    savePicture () {
+      this.onPlusReady(function () {
+        var picurl = this.pay_url
+        var picname = '_downloads/erwei.png'
+        var dtask = this.plus.downloader.createDownload(picurl, {}, function (d, status) {
+          if (status === 200) {
+            this.plus.gallery.save(picname, function () {
+              alert('已保存到手机相册')
+            }, function () {
+              alert('保存失败，请重试！')
+            })
+          } else {}
+        })
+        dtask.start()
+      })
+    },
+    // createIframe (imgSrc) {
+    //   console.log(2)
+    //   if (document.getElementById('IframeReportImg').length === 0) {
+    //     window.html('<iframe style="display:none;" id="IframeReportImg" name="IframeReportImg" onload="downloadImg();" width="0" height="0" src="about:blank"></iframe>')
+    //   }
+    //   if (document.getElementById('IframeReportImg').attr('src') !== imgSrc) {
+    //     document.getElementById('IframeReportImg').attr('src')
+    //   } else {
+    //     this.downloadImg()
+    //   }
+    // },
+    // downloadImg () {
+    //   console.log(3)
+    //   if (document.getElementById('IframeReportImg').src !== 'about:blank') {
+    //     window.frames['IframeReportImg'].document.execCommand('SaveAs')
+    //   }
+    // },
+    // download (imgSrc) {
+    //   console.log(1)
+    //   this.createIframe(this.pay_url)
+    // },
     callback () {},
     // 获取订单信息
     getOrderDel () {
@@ -242,8 +281,6 @@ export default {
     },
     // 确定支付信息
     payTypeMsg () {
-      console.log('this.pay_info')
-      console.log(this.pay_info)
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
       } else if (this.payway === 2) {
@@ -331,7 +368,7 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 .detail-body {
   position: fixed;
   overflow-y: scroll;

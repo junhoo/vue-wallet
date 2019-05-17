@@ -35,6 +35,24 @@ Vue.prototype.$api = JSON.parse(process.env.api)
 Vue.config.productionTip = false
 fastClick.attach(document.body)
 
+var onPlusReady = function (callback, context = this) {
+  if (window.plus) {
+    callback.call(context)
+  } else {
+    document.addEventListener('plusready', callback.bind(context))
+  }
+}
+Vue.mixin({
+  beforeCreate () {
+    onPlusReady(() => {
+      this.plusReady = true
+    }, this)
+  },
+  methods: {
+    onPlusReady: onPlusReady
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -141,7 +141,8 @@ export default {
       path: 'ws://192.168.1.249:9508',
       websocket: '',
       randomStr: '',
-      saveMsg: {}
+      saveMsg: {},
+      tests: '1558063270'
     }
   },
   methods: {
