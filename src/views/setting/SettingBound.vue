@@ -139,7 +139,7 @@ export default {
       showHint: false,
       showPopup: false,
       showMask: false,
-      popupName: '填写绑定',
+      popupName: '',
       postFormat: {},
       textHint: '',
       preview: '',
@@ -405,6 +405,7 @@ export default {
           return
         }
       }
+      this.popupName = '填写绑定'
       this.showPopup = true
     },
 

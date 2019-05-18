@@ -30,7 +30,7 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p>
-      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 0">发起申诉</p>
+      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
     </div>
   </div>
   <div v-else>
