@@ -502,6 +502,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .wrapper {
   position: fixed;
   top: 0;

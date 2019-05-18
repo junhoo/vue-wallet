@@ -153,6 +153,14 @@ export default {
   border-radius:20px 20px 0px 0px;
 }
 
+/deep/ .van-popup {
+  border-radius:20px 20px 0px 0px;
+}
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .mask {
   position: fixed;
   top: 0;

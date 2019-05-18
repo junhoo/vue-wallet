@@ -164,6 +164,36 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .van-tabs--line {
+  padding-top: 88px;
+}
+
+/deep/ .van-tabs--line .van-tabs__wrap {
+  height: 88px;
+}
+
+/deep/ .van-tabs__nav {
+  background-color: #f5f5f5;
+}
+
+/deep/ .van-ellipsis {
+  height: 88px;
+  line-height: 88px;
+  font-size: 30px;
+  font-weight:bold;
+}
+
+/deep/ .van-tabs__line {
+  height: 8px !important;
+  background:#4264FB;
+  border-radius: 4px !important;
+  width: 50% !important;
+}
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .order-body {
   position: fixed;
   top: 0;
@@ -267,7 +297,7 @@ export default {
 </style>
 
 <style>
-.van-tabs--line {
+/* .van-tabs--line {
   padding-top: 88px;
 }
 
@@ -291,5 +321,5 @@ export default {
   background:#4264FB;
   border-radius: 4px !important;
   width: 50% !important;
-}
+} */
 </style>

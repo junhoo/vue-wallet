@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home2-body">
     <header>
       <!-- 标题 -->
       <div class="title-bar clearfix">
@@ -15,6 +15,10 @@
       </div>
 
       <!-- 金额区 -->
+      <!-- <div class="save_btn" @click="savecanvas">保存图片</div>
+      <div class="canvas" ref="canvas">
+        <img :src="pay_url" style="width: 200px; height: 200px;">
+      </div> -->
       <p class="money-use" >{{headerInfo.amount_income}}</p>
       <p class="money-ban" >冻结:{{headerInfo.freezing_amount}}</p>
       <div class="icon-service" @click="jumpPage('Chat')"></div>
@@ -65,7 +69,7 @@
       <p class="popup-hint" @click="showTopHint('close')">{{textHint}}</p>
     </van-popup>
 
-    <socket-view ref='socket' @onchildsocket='onChildSocket'></socket-view>
+    <!-- <socket-view ref='socket' @onchildsocket='onChildSocket'></socket-view> -->
     <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
   </div>
 </template>
@@ -98,6 +102,7 @@ export default {
       'choice_pay_type': ''
     }
     this.postFormat = format
+    // this.wbservice()
     this.autoLogin()
     sessionStorage.setItem('reqformat', JSON.stringify(format))
     if (sessionStorage.getItem('randomcode')) {
@@ -109,10 +114,12 @@ export default {
   },
   data () {
     return {
+      pay_url: 'https://desk-fd.zol-img.com.cn/t_s144x90c5/g2/M00/0F/07/ChMlWlzSob-IDqyyAAQWLsmmYHIAAJ3pgPoeNMABBZG795.jpg',
+      // pay_url: 'http://user.service.168mi.cn/uploads/ali_pay/20190507/17d5cdd704f0cfa6b355a2d5e0ecfdbf.jpg',
       timerLink: null,
       timerHint: null,
       textHint: '',
-      detailType: '充值', // 充值 提现 未到账
+      detailType: '', // 充值 提现 未到账
       boundType: '',
       hasDetail: false,
       showPopup: false,
@@ -139,7 +146,7 @@ export default {
       timerHeart: null,
       timerPopup: null,
       timerConnect: null,
-      path: 'ws://192.168.1.249:9508',
+      path: '', // ws://192.168.1.249:9508
       websocket: '',
       randomStr: '',
       saveMsg: {},
@@ -148,7 +155,6 @@ export default {
   },
   methods: {
     getCurOrder () {
-      // http://order.service.168mi.cn
       console.log(' ')
       this.loadingVal = true
       const url = this.$api.order + '/api/order/getOrderForA'
@@ -236,17 +242,15 @@ export default {
           console.log('autoLogin')
           console.log(e)
           this.showTopHint(e.msg)
-          alert(JSON.stringify(e))
         })
     },
 
     getTotalCoin () {
       // const url = 'http://padmin.service.168mi.cn/admin/OutInterface/getTotal/user_id/500'
       let data = { token: sessionStorage.getItem('randomcode') }
-      const url = 'http://user.service.168mi.cn/api/User/getTotalCoin'
+      const url = this.$api.user + '/api/User/getTotalCoin'
       post(url, data)
         .then(res => {
-          console.log(typeof res.data.list.total)
           const total = res.data.list.total || 0
           const freezing = res.data.list.freezing || 0
           this.headerInfo.amount_income = parseFloat(total).toFixed(2)
@@ -270,7 +274,8 @@ export default {
           this.userMsg = userInfo
           if (sessionStorage.getItem('userMsg') === null) { // 没数据
             // this.$refs.socket.init()
-            this.wsinit()
+            // this.wsinit()
+            this.wbservice()
           }
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
         })
@@ -454,37 +459,6 @@ export default {
 
       let stateName = ''
       // orderType === '接单用户取消'
-      if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
-        this.hasDetail = false
-        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
-        this.showPopup = true
-        this.showMatching = true
-        return
-      } else {
-        stateName = '结束'
-      }
-
-      if (orderInfo.order_type === 1) { // 1充值 2提现
-        if (orderType === '匹配成功' || orderType === '重新匹配成功') {
-          stateName = '充值匹配成功'
-        }
-        this.detailType = '充值'
-      } else {
-        if (orderType === '匹配成功' || orderType === '重新匹配成功') {
-          stateName = '提现匹配成功'
-        }
-        this.detailType = '提现'
-      }
-
-      if (orderType === '未到账' && orderInfo.order_type === 1) {
-        stateName = '充值未到账'
-        this.detailType = '充值未到账'
-      }
-
-      if (orderType === '未到账' && orderInfo.order_type === 2) {
-        stateName = '等待确认收款'
-        this.detailType = '提现未到账'
-      }
 
       if (orderType === '交易完成') {
         this.hasDetail = false
@@ -508,6 +482,44 @@ export default {
         this.popupName = '被取消'
         this.showPopup = true
         return
+      }
+
+      if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
+        this.hasDetail = false
+        this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
+        this.showPopup = true
+        this.showMatching = true
+        return
+      } else {
+        stateName = '结束'
+      }
+      if (orderInfo.order_type === 1) { // 1充值 2提现
+        if (orderType.includes('匹配成功')) {
+          stateName = '充值匹配成功'
+          this.hasDetail = true
+          this.popupName = '充值匹配成功'
+        }
+        this.detailType = '充值'
+      } else {
+        if (orderType.includes('匹配成功')) {
+          stateName = '提现匹配成功'
+          this.hasDetail = true
+          this.popupName = '提现匹配成功'
+        }
+        this.detailType = '提现'
+      }
+      console.log('--------')
+      console.log(orderInfo.order_type)
+      console.log(orderType.includes('匹配成功'))
+
+      if (orderType === '未到账' && orderInfo.order_type === 1) {
+        stateName = '充值未到账'
+        this.detailType = '充值未到账'
+      }
+
+      if (orderType === '未到账' && orderInfo.order_type === 2) {
+        stateName = '等待确认收款'
+        this.detailType = '提现未到账'
       }
 
       console.log(stateName)
@@ -546,33 +558,28 @@ export default {
       this.$router.push({ name: name })
     },
 
-    // websocket
-    service () {
-      // console.log('---')
+    // websocket-url
+    wbservice () {
+      if (sessionStorage.getItem('wbp') !== null && sessionStorage.getItem('wbp') !== '') {
+        return
+      }
       axios.get(this.$api.socket)
         .then(res => {
           console.log('')
           console.log('=======service==========')
           console.log(res)
-          // {
-          //   "status": "success",
-          //   "code": 200,
-          //   "msg": "成功",
-          //   "time": 1554959616,
-          //   "data": {
-          //     "url": "ws://192.168.1.249:9508"
-          //   }
-          // }
+          this.path = res.data.data.url
+          sessionStorage.setItem('wbp', this.path)
+          this.wsinit()
         })
         .catch(e => {
-          // console.log('e-333')
-          // console.log(e)
+          console.log('get wb request error')
+          console.log(e)
         })
     },
     wsinit () {
       console.log('')
-      console.log('··· 消息启动')
-      console.log('=== socket：inits')
+      console.log('··· 监听消息')
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
       } else {
@@ -595,7 +602,7 @@ export default {
     heartbeat () {
       this.timerHeart = setInterval(() => {
         // console.log('')
-        console.log('❤')
+        // console.log('❤')
         if (this.existServer) {
           this.send()
           // console.log('-1 服务器 ok')
@@ -608,7 +615,7 @@ export default {
       }, 20000)
     },
     wsopen () {
-      console.log('1.0 socket打开成功')
+      console.log('1.0 socket打开成功*')
       this.send()
     },
     send () {
@@ -669,16 +676,17 @@ export default {
       }
     },
     restart () {
+      this.websocket.close()
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }
       this.timerConnect = setTimeout(() => {
-        console.log('webs 重新连接')
+        console.log('socket 重新连接')
         this.wsinit()
       }, 2000)
     },
     wsclose () {
-      console.log('socket已经关闭')
+      console.log('socket 已经关闭')
       this.restart()
     },
     wserror () {
@@ -701,6 +709,14 @@ export default {
   100% {
     background-position: right 0;
   }
+}
+
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
+.home2-body {
+  position: relative;
 }
 
 header {
@@ -789,7 +805,7 @@ main {
 
 .order-matching {
   position: fixed;
-  top: 339px;
+  top: 319px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -879,7 +895,7 @@ main {
 </style>
 
 <style>
-.van-popup--top {
+/* .van-popup--top {
   background: rgba(0, 32, 78, .9);
-}
+} */
 </style>

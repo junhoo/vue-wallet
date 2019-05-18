@@ -120,18 +120,21 @@
           <button>提交审核</button>
         </div>
       </footer>
+      <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
     </div>
   </div>
 </template>
 
 <script>
+import CommonLoading from 'common/loading/Loading'
 import { post } from '@/assets/js/fetch'
 import { compress, convertBase64UrlToBlob } from '@/assets/js/fileTools'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'SettingBound',
   components: {
-    CommonHeader
+    CommonHeader,
+    CommonLoading
   },
   data () {
     return {
@@ -155,7 +158,8 @@ export default {
       istrue1: true,
       istrue2: true,
       istrue3: true,
-      userCertifyMsg: {}
+      userCertifyMsg: {},
+      loadingVal: false
     }
   },
   computed: {
@@ -308,6 +312,7 @@ export default {
         })
     },
     submit (index) {
+      this.loadingVal = true
       if (index === 1) {
         this.$router.go(-1)
         return false
@@ -351,6 +356,7 @@ export default {
       data.credentials_type = this.liActive
       post(url + url1, data)
         .then(res => {
+          this.loadingVal = false
           if (res.code === 10000) {
             sessionStorage.setItem('istrue1', JSON.stringify(this.istrue1))
             sessionStorage.setItem('istrue2', JSON.stringify(this.istrue2))
@@ -363,6 +369,7 @@ export default {
           }
         })
         .catch(e => {
+          this.loadingVal = false
           this.$toast(e.msg)
         })
     },
@@ -400,6 +407,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .cert-body{
   position: fixed;
   top: 0;
@@ -628,10 +639,10 @@ export default {
     }
   }
 }
-.van-overlay{
+/deep/ .van-overlay{
   background-color: rgba(49, 49, 109, .25) !important;
 }
-.van-popup--bottom{
+/deep/ .van-popup--bottom{
   border-radius: 20px 20px 0 0;
   h3{
     color: #010101;

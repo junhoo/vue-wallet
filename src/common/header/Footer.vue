@@ -16,14 +16,13 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p>
-      <!-- <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉{{rest_time}}</p> -->
-      <p v-if="endCountdown == 0" @click="appeal()" class="borbtn">发起申诉</p>
+      <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
       <p @click="submit2()">确认收款</p>
-      <p class="appbtn" v-if="endCountdown == 0">
+      <p class="appbtn" v-if="endCountdown2 == 0">
         发起申诉
         <count-down :endTime="rest_time"
           endText=""
@@ -298,7 +297,7 @@ export default {
     color: #BDBDBD
   }
 }
-.van-popup--bottom{
+/deep/ .van-popup--bottom{
   height: auto;
   border-radius: 20px 20px 0 0;
   padding: 45px 65px 75px;

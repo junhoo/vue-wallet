@@ -155,16 +155,15 @@ export default {
     }
   },
   created () {
+    this.orderDetailData = JSON.parse(this.$route.query.orderDetailData)
+    this.payway = this.orderDetailData.pay_type
+    this.order_no = this.orderDetailData.order_no
     if (this.$route.query.order_type === 2) {
       this.pay_info = ''
     } else {
       this.pay_info = JSON.parse(this.$route.query.pay_info)
       this.payTypeMsg()
     }
-    this.orderDetailData = JSON.parse(this.$route.query.orderDetailData)
-    this.payway = this.orderDetailData.pay_type
-    this.order_no = this.orderDetailData.order_no
-    console.log(this.pay_info)
   },
   methods: {
     // 确定支付信息
@@ -172,6 +171,7 @@ export default {
       if (this.pay_info === 2) {
         return false
       }
+      console.log(this.pay_info)
       if (this.payway === 1) {
         this.pay_url = this.pay_info.ali_pay.pay_url
         this.pay_name = this.pay_info.ali_pay.alipay_name
@@ -279,7 +279,7 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 .clearfix:after {
   content: '';
   display: block;
@@ -288,13 +288,24 @@ export default {
 .van-overlay{
   background-color: rgba(49, 49, 109, .25);
 }
+
+.van-overlay{
+  background-color: rgba(49, 49, 109, .25);
+}
+
+.van-popup--top {
+  background: rgba(0, 32, 78, .9);
+}
+
 .previewImg{
+  width: 100%;
   z-index: 9999;
   position: absolute;
-  top: 50%;
+  top: 30%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%)
 }
+
 .van-popup{
   border-radius: 20px 20px 0 0;
   padding: 61px 66px 42px;

@@ -64,7 +64,7 @@
             <li>
               <span v-if="orderType == 1" class="m_left">下单时间</span>
               <span v-if="orderType == 2" class="m_left">接单时间</span>
-              <i class="m_right">{{appealData.order_time}}</i>
+              <i class="m_right">{{appealData.order_time | formatDate}}</i>
             </li>
             <li>
               <span class="m_left">订单编号</span>
@@ -278,17 +278,15 @@ export default {
 }
 </script>
 
-<style>
-.van-overlay{
-  background-color: rgba(49, 49, 109, .25);
-}
-</style>
-
 <style lang="less">
 .clearfix:after {
   content: '';
   display: block;
   clear: both;
+}
+
+/deep/ .van-overlay{
+  background-color: rgba(49, 49, 109, .25);
 }
 
 .previewImg{
