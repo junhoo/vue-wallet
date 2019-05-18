@@ -188,6 +188,7 @@ export default {
           }
 
           const orderno = _list.order_no
+          this.order_no = orderno
           console.log(_list.a_status_str)
           console.log(orderno)
           if (sessionStorage.getItem(orderno) === '0' && _list.a_status_str === '交易完成') {
@@ -696,6 +697,7 @@ export default {
       }
     },
     restart () {
+       this.websocket = null
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }
