@@ -93,6 +93,7 @@ export default {
   },
   data () {
     return {
+      loopOrder: '',
       pay_url: 'https://desk-fd.zol-img.com.cn/t_s144x90c5/g2/M00/0F/07/ChMlWlzSob-IDqyyAAQWLsmmYHIAAJ3pgPoeNMABBZG795.jpg',
       // pay_url: 'http://user.service.168mi.cn/uploads/ali_pay/20190507/17d5cdd704f0cfa6b355a2d5e0ecfdbf.jpg',
       ttt: null,
@@ -143,6 +144,7 @@ export default {
       'choice_pay_type': ''
     }
     this.postFormat = format
+    // 说要暂时关闭 > 用轮训
     // this.wbservice()
     this.autoLogin()
     sessionStorage.setItem('reqformat', JSON.stringify(format))
@@ -150,10 +152,116 @@ export default {
       this.getTotalCoin()
       this.getUserMsg()
       this.getCurOrder()
-      this.wsinit()
+      // 说要暂时关闭 > 用轮训
+      // this.wsinit()
     }
   },
+  mounted () {
+    const orderno = sessionStorage.getItem('submitno')
+    console.log(sessionStorage.getItem(orderno))
+    const isfinish = sessionStorage.getItem(orderno)
+    const islogin = sessionStorage.getItem('randomcode')
+    if (isfinish !== '1' && islogin !== '' && islogin !== null) {
+      console.log('======= keepwatch =======')
+      if (sessionStorage.getItem('errlogin') === '1') {
+        // none
+      } else {
+        this.fnloops()
+      }
+    }
+  },
+  beforeDestroy () {
+    console.log('=== 1234')
+    clearInterval(this.timerHeart)
+    clearTimeout(this.timerConnect)
+    // this.timerHeart = null
+    // this.timerConnect = null
+    clearInterval(this.loopOrder)
+  },
   methods: {
+    fnloops () {
+      this.loopOrder = setInterval(() => {
+        this.loopCurOrder()
+      }, 8000)
+    },
+
+    loopCurOrder () {
+      // this.loadingVal = true
+      const url = this.$api.order + '/api/order/getOrderForA'
+      let data = { token: sessionStorage.getItem('randomcode') }
+      post(url, data)
+        .then(res => {
+          const _list = res.data.list
+          if (!_list) { return }
+
+          // 倒计时
+          let countTimed = parseInt(_list.rest_time)
+          if (countTimed <= 600) {
+            var nowTime = new Date()
+            nowTime = nowTime.getTime()
+            countTimed = parseInt(nowTime) + countTimed * 1000
+          }
+          this.rest_time = countTimed
+          this.popupAccount = _list.account
+
+          // 切换页面逻辑
+          _list.a_status_str = decodeURIComponent(_list.a_status_str)
+          const userno = sessionStorage.getItem('submitno')
+          const stateval = userno + _list.a_status_str
+          if (sessionStorage.getItem(stateval) !== '1') {
+            sessionStorage.setItem(stateval, '0')
+          }
+
+          if (_list.a_status_str === '接单用户取消,匹配中' || (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 2)) {
+            console.log('')
+            console.log('=== home: rematch')
+            if (!this.showMatching) {
+              this.showTopHint('订单被取消')
+            }
+            this.detailType = parseInt(_list.order_type) === 1 ? '充值' : '提现'
+            this.order_no = _list.order_no
+            this.order_type = _list.order_type
+            this.showMatching = true
+            return
+          }
+
+          const orderno = _list.order_no
+          // console.log('')
+          // console.log('loopCurOrder ')
+          // console.log('1.0 ' + _list.a_status_str)
+          // console.log('2.0 ' + orderno)
+          if (_list.a_status_str === '交易完成') {
+            this.order_no = _list.order_no
+            this.popupName = '交易完成'
+            this.popupMoney = _list.order_amount
+            this.hasDetail = false
+            this.showPopup = true
+            sessionStorage.setItem(orderno, '1')
+          }
+
+          console.log(_list.a_status_str.includes('交易完成'))
+          if (_list.a_status_str.includes('交易完成')) {
+            clearInterval(this.loopOrder)
+            this.loopOrder = null
+          }
+
+          // 往下走
+          const mock = { data: _list }
+          this.onmessage(mock)
+        })
+        .catch(e => {
+          console.log(e)
+          this.loadingVal = false
+          if (e.msg === '用户未登录') {
+            this.showTopHint('登录账号已在其他设备登录，请重新登录')
+            sessionStorage.setItem('randomcode', '')
+          } else {
+            this.showTopHint(e.msg)
+          }
+          clearInterval(this.loopOrder)
+        })
+    },
+
     getCurOrder () {
       console.log(' ')
       this.loadingVal = true
@@ -187,10 +295,15 @@ export default {
             return
           }
 
+          if (_list.a_status_str.includes('交易完成')) {
+            clearInterval(this.loopOrder)
+          }
+
           const orderno = _list.order_no
           console.log(_list.a_status_str)
           console.log(orderno)
           if (sessionStorage.getItem(orderno) === '0' && _list.a_status_str === '交易完成') {
+            this.order_no = _list.order_no
             this.popupName = '交易完成'
             this.popupMoney = _list.order_amount
             this.showPopup = true
@@ -204,6 +317,7 @@ export default {
           }
         })
         .catch(e => {
+          this.showTopHint('网络错误2.2')
           console.log(e)
           this.loadingVal = false
         })
@@ -235,6 +349,7 @@ export default {
             this.getUserMsg()
             this.getCurOrder()
           } else {
+            sessionStorage.setItem('randomcode', '')
             this.showTopHint(res.msg)
           }
         })
@@ -242,6 +357,8 @@ export default {
           console.log('autoLogin')
           console.log(e)
           this.showTopHint(e.msg)
+          sessionStorage.setItem('randomcode', '')
+          sessionStorage.setItem('errlogin', '1')
         })
     },
 
@@ -273,9 +390,8 @@ export default {
           const userInfo = res.data.list
           this.userMsg = userInfo
           if (sessionStorage.getItem('userMsg') === null) { // 没数据
-            // this.$refs.socket.init()
-            // this.wsinit()
-            this.wbservice()
+            // 说要暂时关闭 > 用轮训
+            // this.wbservice()
           }
           sessionStorage.setItem('userMsg', JSON.stringify(userInfo))
         })
@@ -334,7 +450,13 @@ export default {
     onChildSubmit (type) {
       console.log('提交: >>> 返回结果')
       console.log(type)
+      if (type === 'loadingClose') {
+        // 提交订单启动轮训
+        this.fnloops()
+      }
       if (type === 'loadingShow' || type === 'loadingClose') {
+        const subval = sessionStorage.getItem('subval')
+        this.detailType = parseInt(subval) === 1 ? '充值' : '提现'
         this.getTotalCoin()
         this.loadingVal = type === 'loadingShow'
         return
@@ -427,20 +549,20 @@ export default {
     },
 
     onChildSocket (info) {
-      console.log('return home')
+      console.log('>onmessage')
       setTimeout(() => {
         this.onmessage(info)
       }, 3000)
     },
 
     onmessage (info) {
-      console.log('')
-      console.log('··· home: >>> 消息入口')
+      // console.log('')
+      // console.log('··· home: >>> 消息入口')
       // a_status_str = 匹配中 匹配成功 已取消 交易完成|确认收款 未到账 接单用户取消 重新匹配成功 交易完成 自动收款 ->未知字段
       const orderInfo = info.data
       const orderType = orderInfo.a_status_str
-      console.log(orderType)
-      console.log(orderInfo.order_no)
+      // console.log(orderType)
+      // console.log(orderInfo.order_no)
       this.order_no = orderInfo.order_no
       this.order_type = orderInfo.order_type
       this.popupMoney = orderInfo.order_amount
@@ -461,37 +583,49 @@ export default {
       let stateName = ''
       // orderType === '接单用户取消'
 
+      const userno = sessionStorage.getItem('submitno')
+      const stateval = userno + orderType
+      // console.log('A:')
+      // console.log(stateval)
+      const getcurval = sessionStorage.getItem(stateval)
+      sessionStorage.setItem(stateval, '1')
+      // console.log('B:')
+      // console.log(getcurval)
+      // console.log(getcurval === '0')
+
       if (orderType === '交易完成') {
-        this.showPopup = true
+        this.showPopup = getcurval === '0'
         this.popupName = '交易完成'
         this.hasDetail = false
         const orderno = orderInfo.order_no
         sessionStorage.setItem(orderno, '1')
         // this.getTotalCoin()
         console.log('this.popupName')
-        console.log(this.popupName)
-        console.log('=== 进来交易完成')
+        console.log('=== 交易完成')
         return
       }
 
       if (orderType === '自动收款') {
         this.hasDetail = false
         this.popupName = '自动确认收款'
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
         return
       }
 
       if (orderType === '自动取消') {
         this.hasDetail = false
         this.popupName = '被取消'
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
         return
       }
 
       if (orderType.includes('接单用户取消,匹配中')) { // 接单用户取消,匹配中
         this.hasDetail = false
         this.popupName = orderInfo.order_type === 1 ? '用户充值取消' : '用户提现取消'
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
         this.showMatching = true
         return
       } else {
@@ -503,12 +637,13 @@ export default {
         this.hasDetail = true
         this.popupName = '充值匹配成功'
         this.showMatching = false
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
 
         this.detailType = '充值'
         this.detailInfo = orderInfo
-        console.log(this.popupName)
-        console.log('** 是充值')
+        // console.log(this.popupName)
+        // console.log('** 是充值')
         return
       }
 
@@ -517,11 +652,12 @@ export default {
         this.hasDetail = true
         this.popupName = '提现匹配成功'
         this.showMatching = false
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
 
         this.detailType = '提现'
         this.detailInfo = orderInfo
-        console.log('** 是提现')
+        // console.log('** 是提现')
         return
       }
 
@@ -535,23 +671,23 @@ export default {
         stateName = '等待确认收款'
         this.popupName = '等待确认收款'
         this.detailType = '提现未到账'
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
       }
 
-      console.log(stateName)
+      // console.log(stateName)
       if (stateName === '结束') { return }
       this.popupAccount = orderInfo.account
       this.showMatching = false
       this.detailInfo = orderInfo
       // popupName = 充值匹配成功 提现匹配成功 等待确认收款 自动确认收款 被取消 交易完成
       this.hasDetail = true
-      console.log('this.hasDetail')
-      console.log(this.hasDetail)
       this.popupName = stateName
       if (orderType === '未到账' && parseInt(orderInfo.order_type) === 1) {
         this.showPopup = false
       } else {
-        this.showPopup = true
+        // this.showPopup = true
+        this.showPopup = getcurval === '0'
       }
     },
 
@@ -560,7 +696,7 @@ export default {
         this.showHint = false
         return
       }
-      this.textHint = info
+      this.textHint = info || '网络访问错误'
       this.showHint = true
       if (this.timerHint) {
         clearTimeout(this.timerHint)
@@ -596,6 +732,7 @@ export default {
     wsinit () {
       console.log('')
       console.log('··· 监听消息')
+      this.websocket = null
       if (typeof (WebSocket) === 'undefined') {
         console.log('环境不支持socket')
       } else {
@@ -615,14 +752,14 @@ export default {
         // this.restart()
         // }
       }
-      // this.heartbeat()
+      this.heartbeat()
     },
     heartbeat () {
       this.timerHeart = setInterval(() => {
         // console.log('')
-        // console.log('❤')
+        console.log('❤')
         if (this.existServer) {
-          this.send()
+          this.checkS()
           // console.log('-1 服务器 ok')
         } else {
           // console.log('-1 服务器 挂了')
@@ -631,6 +768,22 @@ export default {
         }
         // console.log('')
       }, 20000)
+    },
+    checkS () {
+      // console.log('2.0 socket发送')
+      this.randomStr = Math.random().toString(36).substr(2)
+      const userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
+      const data = {
+        'from_uid': userMsg.id, // 用户id
+        'to_uid': 10000, // 接收id
+        'type': 102, // 类型
+        'rand_str': this.randomStr,
+        'msg': {
+          'device': '' // 设备号
+        }
+      }
+      const params = JSON.stringify(data)
+      this.websocket.send(params)
     },
     wsopen () {
       console.log('1.0 socket打开成功*')
@@ -646,7 +799,7 @@ export default {
         'type': 101, // 类型
         'rand_str': this.randomStr,
         'msg': {
-          'device': 'android 6.7.8.9' // 设备号
+          'device': '' // 设备号
         }
       }
       const params = JSON.stringify(data)
@@ -654,8 +807,8 @@ export default {
     },
     wsmessage (msg) {
       let res = msg.data
-      console.log('3.0 socket接收')
-      console.log(res)
+      // console.log('3.0 socket接收')
+      // console.log(res)
       try {
         if (res) {
           this.existServer = true
@@ -702,7 +855,7 @@ export default {
       this.timerConnect = setTimeout(() => {
         console.log('socket 重新连接')
         this.wsinit()
-      }, 5000)
+      }, 10000)
     },
     wsclose () {
       console.log('socket 已经关闭')

@@ -100,9 +100,7 @@ export default {
   },
   watch: {
     name: function (val) {
-      console.log('======== watch')
       this.changeName = val
-      console.log(this.changeName)
     }
   },
   methods: {

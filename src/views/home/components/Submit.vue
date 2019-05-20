@@ -260,6 +260,8 @@ export default {
         'choice_pay_type': selectPay
       }
       console.log(data)
+      const judge = type === '充值' ? 1 : 2
+      sessionStorage.setItem('subval', judge)
 
       post(url, data)
         .then(res => {
