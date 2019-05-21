@@ -260,6 +260,8 @@ export default {
         'choice_pay_type': selectPay
       }
       console.log(data)
+      const judge = type === '充值' ? 1 : 2
+      sessionStorage.setItem('subval', judge)
 
       post(url, data)
         .then(res => {
@@ -422,8 +424,8 @@ export default {
     .inputs {
       box-sizing: border-box;
       width: 90%;
-      height: 60px;
-      line-height: 60px;
+      height: 65px;
+      line-height: 65px;
       margin-bottom: 10px;
       font-size: 50px;
       color: #050505;

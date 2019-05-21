@@ -152,8 +152,6 @@ export default {
         })
     },
     appeal () {
-      console.log('link =========')
-      console.log(this.pay_info)
       if (this.order_type === 2) {
         this.$router.push({
           path: '/appeal',

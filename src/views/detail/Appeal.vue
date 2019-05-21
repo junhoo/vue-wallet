@@ -24,7 +24,7 @@
           <p class="loadbtn" @click="showImgSelec(0)">取消</p>
         </van-popup>
         <van-dialog v-model="show2" title="" :closeOnClickOverlay='true' :showConfirmButton='false'>
-          <img :src="Url" class="previewImg">
+          <img :src="Url" class="previewImg" @click="showImgSelec(2)">
         </van-dialog>
         <!-- 订单信息 -->
         <section>
@@ -233,10 +233,13 @@ export default {
           this.$toast(e.msg)
         })
     },
-    // 点击图片弹框
     showImgSelec (i) {
       if (i === 0) {
         this.show = !this.show
+        return false
+      }
+      if (i === 2) {
+        this.show2 = !this.show2
         return false
       }
       this.show = !this.show
@@ -255,7 +258,8 @@ export default {
     }
   },
   filters: {
-    payTypeText: function (value) {
+    payTypeText: function (val) {
+      let value = val || '0'
       // value = value.toString()
       if (value === 1) {
         value = '支付宝'
@@ -266,7 +270,8 @@ export default {
       }
       return value
     },
-    orderStatus: function (value) {
+    orderStatus: function (val) {
+      let value = val || '0'
       value = value.toString()
       if (value === '2') {
         value = '待确认'
