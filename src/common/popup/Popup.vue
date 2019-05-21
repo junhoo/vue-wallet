@@ -109,6 +109,8 @@ export default {
       this.$emit('onchildpopup', type) // 定义->子组件声明的事件
     },
     closeDiv () {
+      const stateval = sessionStorage.getItem('condition')
+      sessionStorage.setItem(stateval, '1')
       this.$emit('update:show', false)
     }
   },

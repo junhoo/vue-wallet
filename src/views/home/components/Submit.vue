@@ -424,8 +424,8 @@ export default {
     .inputs {
       box-sizing: border-box;
       width: 90%;
-      height: 60px;
-      line-height: 60px;
+      height: 65px;
+      line-height: 65px;
       margin-bottom: 10px;
       font-size: 50px;
       color: #050505;

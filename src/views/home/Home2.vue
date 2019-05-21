@@ -158,11 +158,11 @@ export default {
   },
   mounted () {
     const orderno = sessionStorage.getItem('submitno')
-    console.log(sessionStorage.getItem(orderno))
+    // console.log(sessionStorage.getItem(orderno))
     const isfinish = sessionStorage.getItem(orderno)
     const islogin = sessionStorage.getItem('randomcode')
     if (isfinish !== '1' && islogin !== '' && islogin !== null) {
-      console.log('======= keepwatch =======')
+      // console.log('======= keepwatch =======')
       if (sessionStorage.getItem('errlogin') === '1') {
         // none
       } else {
@@ -171,7 +171,7 @@ export default {
     }
   },
   beforeDestroy () {
-    console.log('=== 1234')
+    // console.log('=== 1234')
     clearInterval(this.timerHeart)
     clearTimeout(this.timerConnect)
     // this.timerHeart = null
@@ -210,11 +210,12 @@ export default {
           const stateval = userno + _list.a_status_str
           if (sessionStorage.getItem(stateval) !== '1') {
             sessionStorage.setItem(stateval, '0')
+            sessionStorage.setItem('condition', stateval)
           }
 
           if (_list.a_status_str === '接单用户取消,匹配中' || (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 2)) {
-            console.log('')
-            console.log('=== home: rematch')
+            // console.log('')
+            // console.log('=== home: rematch')
             if (!this.showMatching) {
               this.showTopHint('订单被取消')
             }
@@ -239,7 +240,7 @@ export default {
             sessionStorage.setItem(orderno, '1')
           }
 
-          console.log(_list.a_status_str.includes('交易完成'))
+          // console.log(_list.a_status_str.includes('交易完成'))
           if (_list.a_status_str.includes('交易完成')) {
             clearInterval(this.loopOrder)
             this.loopOrder = null
@@ -270,7 +271,7 @@ export default {
       post(url, data)
         .then(res => {
           this.loadingVal = false
-          console.log('home: A端订单', res)
+          // console.log('home: A端订单', res)
           const _list = res.data.list
           if (!_list) { return }
 
@@ -300,8 +301,8 @@ export default {
           }
 
           const orderno = _list.order_no
-          console.log(_list.a_status_str)
-          console.log(orderno)
+          // console.log(_list.a_status_str)
+          // console.log(orderno)
           if (sessionStorage.getItem(orderno) === '0' && _list.a_status_str === '交易完成') {
             this.order_no = _list.order_no
             this.popupName = '交易完成'
@@ -462,7 +463,7 @@ export default {
         return
       }
       if (type === '去匹配') {
-        console.log('home: home 下单成功-订单匹配中')
+        // console.log('home: home 下单成功-订单匹配中')
         this.showMatching = true
         this.order_no = sessionStorage.getItem('submitno')
         return
@@ -585,10 +586,10 @@ export default {
 
       const userno = sessionStorage.getItem('submitno')
       const stateval = userno + orderType
+      let getcurval = sessionStorage.getItem(stateval)
+      // sessionStorage.setItem(stateval, '1')
       // console.log('A:')
       // console.log(stateval)
-      const getcurval = sessionStorage.getItem(stateval)
-      sessionStorage.setItem(stateval, '1')
       // console.log('B:')
       // console.log(getcurval)
       // console.log(getcurval === '0')
