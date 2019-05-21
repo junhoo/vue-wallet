@@ -100,7 +100,7 @@ export default {
       timerLink: null,
       timerHint: null,
       textHint: '',
-      detailType: '充值', // 充值 提现 未到账
+      detailType: '', // 充值 提现 未到账
       boundType: '',
       hasDetail: false,
       showPopup: false,
@@ -177,6 +177,7 @@ export default {
     // this.timerHeart = null
     // this.timerConnect = null
     clearInterval(this.loopOrder)
+    this.loopOrder = null
   },
   methods: {
     fnloops () {
@@ -260,6 +261,7 @@ export default {
             this.showTopHint(e.msg)
           }
           clearInterval(this.loopOrder)
+          this.loopOrder = null
         })
     },
 
@@ -298,6 +300,7 @@ export default {
 
           if (_list.a_status_str.includes('交易完成')) {
             clearInterval(this.loopOrder)
+            this.loopOrder = null
           }
 
           const orderno = _list.order_no
@@ -850,6 +853,7 @@ export default {
       }
     },
     restart () {
+      this.websocket = null
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }

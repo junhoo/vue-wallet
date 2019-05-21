@@ -120,18 +120,21 @@
           <button>提交审核</button>
         </div>
       </footer>
+      <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
     </div>
   </div>
 </template>
 
 <script>
+import CommonLoading from 'common/loading/Loading'
 import { post } from '@/assets/js/fetch'
 import { compress, convertBase64UrlToBlob } from '@/assets/js/fileTools'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'SettingBound',
   components: {
-    CommonHeader
+    CommonHeader,
+    CommonLoading
   },
   data () {
     return {
@@ -155,7 +158,8 @@ export default {
       istrue1: true,
       istrue2: true,
       istrue3: true,
-      userCertifyMsg: {}
+      userCertifyMsg: {},
+      loadingVal: false
     }
   },
   computed: {
@@ -308,6 +312,7 @@ export default {
         })
     },
     submit (index) {
+      this.loadingVal = true
       if (index === 1) {
         this.$router.go(-1)
         return false
@@ -351,6 +356,7 @@ export default {
       data.credentials_type = this.liActive
       post(url + url1, data)
         .then(res => {
+          this.loadingVal = false
           if (res.code === 10000) {
             sessionStorage.setItem('istrue1', JSON.stringify(this.istrue1))
             sessionStorage.setItem('istrue2', JSON.stringify(this.istrue2))
@@ -363,6 +369,7 @@ export default {
           }
         })
         .catch(e => {
+          this.loadingVal = false
           this.$toast(e.msg)
         })
     },

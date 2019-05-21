@@ -67,9 +67,9 @@
                 <li class="qrcode">
                   <span class="m_left">收款二维码</span>
                   <div class="m_right">
-                    <img class="QR" :src="pay_url" alt=""><br>
-                    <a href="javascript:void(0);" @click="savePicture()">保存二维码</a>
-                    <!-- <a :href="pay_url" :download="pay_url">保存二维码</a> -->
+                    <img class="QR" :src="pay_url" alt="" style="z-index: 9999"><br>
+                    <!-- <a href="javascript:void(0);">长按图片保存</a> -->
+                    <p class="hine-text">长按图片保存</p>
                   </div>
                 </li>
              </div>
@@ -214,44 +214,6 @@ export default {
     this.getOrderDel()
   },
   methods: {
-    // 图片下载
-    savePicture () {
-      this.onPlusReady(function () {
-        var picurl = this.pay_url
-        var picname = '_downloads/erwei.png'
-        var dtask = this.plus.downloader.createDownload(picurl, {}, function (d, status) {
-          if (status === 200) {
-            this.plus.gallery.save(picname, function () {
-              alert('已保存到手机相册')
-            }, function () {
-              alert('保存失败，请重试！')
-            })
-          } else {}
-        })
-        dtask.start()
-      })
-    },
-    // createIframe (imgSrc) {
-    //   console.log(2)
-    //   if (document.getElementById('IframeReportImg').length === 0) {
-    //     window.html('<iframe style="display:none;" id="IframeReportImg" name="IframeReportImg" onload="downloadImg();" width="0" height="0" src="about:blank"></iframe>')
-    //   }
-    //   if (document.getElementById('IframeReportImg').attr('src') !== imgSrc) {
-    //     document.getElementById('IframeReportImg').attr('src')
-    //   } else {
-    //     this.downloadImg()
-    //   }
-    // },
-    // downloadImg () {
-    //   console.log(3)
-    //   if (document.getElementById('IframeReportImg').src !== 'about:blank') {
-    //     window.frames['IframeReportImg'].document.execCommand('SaveAs')
-    //   }
-    // },
-    // download (imgSrc) {
-    //   console.log(1)
-    //   this.createIframe(this.pay_url)
-    // },
     callback () {},
     // 获取订单信息
     getOrderDel () {
@@ -267,7 +229,6 @@ export default {
           this.orderType = this.orderDetailData.status || 0
           this.order_type = this.orderDetailData.order_type
           this.pay_info = res.data.list.pay_type
-          console.log(res.data.list)
           this.rest_time2 = this.orderDetailData.rest_time
           this.rest_time = this.orderDetailData.apply_time
           this.loadingVal = false
@@ -317,6 +278,7 @@ export default {
         this.payText = '微信支付'
         this.payText2 = '微信账号'
       }
+      this.payTypeMsg()
     },
     checkoutPay (i) {
       this.show = !this.show
@@ -485,6 +447,14 @@ export default {
           color: #010101;
           flex: 1;
           text-align: right;
+          #qrcode{
+            position: absolute;
+            top: 0;
+            left: 0;
+            img{
+              display: none !important
+            }
+          }
           .right_icon{
             width: 35px;
             margin-left: 25px
@@ -532,6 +502,14 @@ export default {
             color: #1359D2;
             border-bottom: 1px solid #1359D2;
             line-height: auto !important
+          }
+          .hine-text {
+            margin: 0 auto;
+            margin-top: 20px;
+            height: 30px;
+            line-height: 30px;
+            width: 130px;
+            border-bottom: 1px solid #1359D2;
           }
         }
       }

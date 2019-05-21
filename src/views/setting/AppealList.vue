@@ -11,7 +11,7 @@
           <div class="item" v-for="(item, index) in itemData" :key="index" @click="toADetail(item.complain_no)">
             <div class="m_left">
               <p>申诉单号：{{item.complain_no}}</p>
-              <span class="m-time">{{item.add_time}}</span>
+              <span class="m-time">{{item.add_time | formatDate}}</span>
             </div>
             <div class="m_right">
               <span :class="{'red':item.status == 1, 'yellow':item.status == 2, 'green':item.status == 3}">{{item.status|statusTxt}}</span>
@@ -184,9 +184,6 @@ export default {
       }
     }
     .van-list{
-      text-align: center
-    }
-    .data-list /deep/ .van-list{
       text-align: center
     }
   }

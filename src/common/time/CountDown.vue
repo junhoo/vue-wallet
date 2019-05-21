@@ -61,7 +61,8 @@ export default {
             if (day <= 0 && hour <= 0) {
               format = `${min}:${sec}`
             }
-            self.content = '（倒计时' + format + '）'
+            // self.content = '（倒计时' + format + '）'
+            self.content = format
           } else {
             if (day > 0) {
               format = `${day}天${hour}小时${min}分${sec}秒`
