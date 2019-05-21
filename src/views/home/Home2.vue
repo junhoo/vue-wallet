@@ -697,7 +697,7 @@ export default {
       }
     },
     restart () {
-       this.websocket = null
+      this.websocket = null
       if (this.timerConnect) {
         clearTimeout(this.timerConnect)
       }
