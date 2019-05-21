@@ -265,6 +265,9 @@ export default {
         this.pay_name = this.pay_info.bank_pay.bank_name
         this.pay_remarks = this.pay_info.bank_pay.pay_remarks
       }
+      if (this.pay_remarks.includes('(null)')) {
+        this.pay_remarks = ''
+      }
     },
     // 切换支付方式
     payChange (name) {
@@ -504,11 +507,13 @@ export default {
             line-height: auto !important
           }
           .hine-text {
+            color: #1359D2;
             margin: 0 auto;
             margin-top: 20px;
             height: 30px;
             line-height: 30px;
-            width: 130px;
+            width: 180px;
+            font-size: 26px;
             border-bottom: 1px solid #1359D2;
           }
         }

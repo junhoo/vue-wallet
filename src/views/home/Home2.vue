@@ -406,7 +406,8 @@ export default {
     },
 
     cancelOrder () {
-      console.log('home: 去取消订单')
+      clearInterval(this.loopOrder)
+      this.loopOrder = null
       this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
