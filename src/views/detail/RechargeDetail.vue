@@ -527,7 +527,6 @@ export default {
           .QR{
             width: 214px;
             height: 214px;
-            border: 1px solid red;
           }
           a{
             color: #1359D2;
