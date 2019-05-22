@@ -174,10 +174,10 @@ export default {
     // console.log('=== 1234')
     clearInterval(this.timerHeart)
     clearTimeout(this.timerConnect)
-    // this.timerHeart = null
-    // this.timerConnect = null
     clearInterval(this.loopOrder)
-    this.loopOrder = null
+    if (this.loopOrder) {
+      clearInterval(this.loopOrder)
+    }
   },
   methods: {
     fnloops () {
@@ -406,8 +406,9 @@ export default {
     },
 
     cancelOrder () {
-      clearInterval(this.loopOrder)
-      this.loopOrder = null
+      if (this.loopOrder) {
+        clearInterval(this.loopOrder)
+      }
       this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
@@ -1004,7 +1005,7 @@ main {
       transform: translateX(-50%);
       width: 445px;
       height: 445px;
-      background: url('~imgurl/match_1.png') no-repeat;
+      background: url('~imgurl/wait_show.gif') no-repeat;
       background-size: 445px 445px;
       // background: url('~imgurl/ppppp.png') no-repeat;
       // animation: spin steps(36, end) 5s infinite;
