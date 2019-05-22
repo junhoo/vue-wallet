@@ -193,6 +193,15 @@ export default {
       post(url, data)
         .then(res => {
           const _list = res.data.list
+          if (_list === null) {
+            this.hasDetail = false
+            this.popupName = '被取消'
+            this.showPopup = true
+            // 清除
+            clearInterval(this.loopOrder)
+            this.loopOrder = null
+            console.log('==== stop')
+          }
           if (!_list) { return }
 
           // 倒计时
