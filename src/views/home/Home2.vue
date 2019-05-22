@@ -161,12 +161,17 @@ export default {
     // console.log(sessionStorage.getItem(orderno))
     const isfinish = sessionStorage.getItem(orderno)
     const islogin = sessionStorage.getItem('randomcode')
-    if (isfinish !== '1' && islogin !== '' && islogin !== null) {
-      // console.log('======= keepwatch =======')
-      if (sessionStorage.getItem('errlogin') === '1') {
-        // none
-      } else {
-        this.fnloops()
+    if (localStorage.getItem('cancel') === '自动取消') {
+      // none
+      this.clearding()
+    } else {
+      if (isfinish !== '1' && islogin !== '' && islogin !== null) {
+        // console.log('======= keepwatch =======')
+        if (sessionStorage.getItem('errlogin') === '1') {
+          // none
+        } else {
+          this.fnloops()
+        }
       }
     }
   },
@@ -180,6 +185,12 @@ export default {
     }
   },
   methods: {
+    clearding () {
+      clearInterval(this.loopOrder)
+      if (this.loopOrder) {
+        clearInterval(this.loopOrder)
+      }
+    },
     fnloops () {
       this.loopOrder = setInterval(() => {
         this.loopCurOrder()
@@ -193,16 +204,19 @@ export default {
       post(url, data)
         .then(res => {
           const _list = res.data.list
-          if (_list === null) {
+          if (!_list) { return }
+
+          // 充值-取消
+          if (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 1) {
             this.hasDetail = false
             this.popupName = '被取消'
             this.showPopup = true
-            // 清除
-            clearInterval(this.loopOrder)
-            this.loopOrder = null
+
+            this.clearding() // 清除
             console.log('==== stop')
+            localStorage.setItem('cancel', '自动取消')
+            return
           }
-          if (!_list) { return }
 
           // 倒计时
           let countTimed = parseInt(_list.rest_time)
@@ -233,6 +247,7 @@ export default {
             this.order_no = _list.order_no
             this.order_type = _list.order_type
             this.showMatching = true
+            this.hasDetail = false
             return
           }
 
