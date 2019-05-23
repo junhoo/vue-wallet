@@ -101,8 +101,13 @@ export default {
   },
   computed: {
     collectionMoney () {
-      const sum = parseFloat(this.detailInfo.order_amount) * parseFloat(this.detailInfo.rate)
-      const rate = (parseFloat(this.detailInfo.order_amount) - parseFloat(sum)).toFixed(2)
+      let rate = ''
+      if (parseInt(this.detailInfo.order_type) === 1) {
+        rate = this.detailInfo.order_amount
+      } else {
+        const sum = parseFloat(this.detailInfo.order_amount) * parseFloat(this.detailInfo.rate)
+        rate = (parseFloat(this.detailInfo.order_amount) - parseFloat(sum)).toFixed(2)
+      }
       return rate
     }
   },

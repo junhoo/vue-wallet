@@ -382,6 +382,7 @@ export default {
             sessionStorage.setItem('randomcode', '')
             this.showTopHint(res.msg)
           }
+          sessionStorage.setItem('errlogin', '0')
         })
         .catch(e => {
           console.log('autoLogin')
@@ -1097,10 +1098,10 @@ main {
   opacity: 0;
 }
 .fade-enter-active {
-  transition: opacity .5s;
+  transition: opacity .65s;
 }
 .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity .65s;
 }
 </style>
 
