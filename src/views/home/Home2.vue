@@ -161,7 +161,7 @@ export default {
     // console.log(sessionStorage.getItem(orderno))
     const isfinish = sessionStorage.getItem(orderno)
     const islogin = sessionStorage.getItem('randomcode')
-    if (localStorage.getItem('cancel') === '自动取消') {
+    if (localStorage.getItem('zdqx') === '1') {
       // none
       this.clearding()
     } else {
@@ -191,6 +191,7 @@ export default {
         clearInterval(this.loopOrder)
       }
     },
+
     fnloops () {
       this.loopOrder = setInterval(() => {
         this.loopCurOrder()
@@ -214,9 +215,10 @@ export default {
 
             this.clearding() // 清除
             console.log('==== stop')
-            localStorage.setItem('cancel', '自动取消')
+            localStorage.setItem('zdqx', '1')
             return
           }
+          localStorage.setItem('zdqx', '0')
 
           // 倒计时
           let countTimed = parseInt(_list.rest_time)
@@ -335,7 +337,7 @@ export default {
             this.popupName = '交易完成'
             this.popupMoney = _list.order_amount
             this.showPopup = true
-            sessionStorage.setItem(orderno, '1')
+            sessionStorage.setItem(orderno, '1') // 设置已完成
           }
           const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
