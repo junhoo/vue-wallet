@@ -312,7 +312,6 @@ export default {
         })
     },
     submit (index) {
-      this.loadingVal = true
       if (index === 1) {
         this.$router.go(-1)
         return false
@@ -341,6 +340,7 @@ export default {
         this.$toast('请上传手持证件照')
         return false
       }
+      this.loadingVal = true
       const url = this.$api.user
       var url1 = '/api/Authentication/addAuthentication'
       if (!this.firstUpload) {
