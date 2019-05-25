@@ -206,7 +206,7 @@ export default {
           }
         })
         .catch(e => {
-          alert(e)
+          // alert(e)
           console.log(e)
           console.log('uploadFile')
           this.$toast(e.msg)

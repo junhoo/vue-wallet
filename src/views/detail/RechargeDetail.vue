@@ -68,7 +68,8 @@
                   <span class="m_left">收款二维码</span>
                   <div class="m_right">
                     <img class="QR" :src="pay_url" alt="" style="z-index: 9999"><br>
-                    <a href="javascript:void(0);">长按保存二维码</a>
+                    <!-- <a href="javascript:void(0);">长按图片保存</a> -->
+                    <p class="hine-text">长按图片保存</p>
                   </div>
                 </li>
              </div>
@@ -264,6 +265,9 @@ export default {
         this.pay_name = this.pay_info.bank_pay.bank_name
         this.pay_remarks = this.pay_info.bank_pay.pay_remarks
       }
+      if (this.pay_remarks.includes('(null)')) {
+        this.pay_remarks = ''
+      }
     },
     // 切换支付方式
     payChange (name) {
@@ -407,7 +411,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   .rechargeMain{
-    padding: 36px 30px 420px;
+    padding: 36px 30px 220px; // 420px;
     ul{
       width: 100%;
       margin-bottom: 24px;
@@ -501,6 +505,16 @@ export default {
             color: #1359D2;
             border-bottom: 1px solid #1359D2;
             line-height: auto !important
+          }
+          .hine-text {
+            color: #1359D2;
+            margin: 0 auto;
+            margin-top: 20px;
+            height: 30px;
+            line-height: 30px;
+            width: 180px;
+            font-size: 26px;
+            border-bottom: 1px solid #1359D2;
           }
         }
       }

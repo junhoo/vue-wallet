@@ -53,21 +53,21 @@
       <!-- 提示信息 -->
       <section>
         <div class="tip" v-show="orderType == 6">
-          <span> 注意：</span><br>
-          <span>1：当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻</span><br>
-          <span>2：如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配其他买方</span>
+          <p> 注意：</p>
+          <p>1：当前已有买方匹配您的提现订单，正在准备付款，请稍后片刻</p>
+          <p>2：如果在10分钟内，买方未向你付款，系统将自动为您的订单重新匹配其他买方</p>
         </div>
         <div class="tip" v-show="orderType == 7">
-          <span> 注意：</span><br>
-          <span>1：买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“确认收款”按钮</span><br>
-          <span>2：如果10分钟内未收到买方付款，请点击下方申诉按钮进行申诉。</span>
-          <span>3：2小时后，系统自动为您确认收款，请及时核实或发起申诉。</span>
+          <p> 注意：</p>
+          <p>1：买方已成功向你支付款项，如果您已经收到该笔款项，请点击下方“确认收款”按钮</p>
+          <p>2：如果10分钟内未收到买方付款，请点击下方申诉按钮进行申诉。</p>
+          <p>3：30分钟，系统自动为您确认收款，请及时核实或发起申诉。</p>
         </div>
       </section>
     </div>
     <common-footer :rest_time="rest_time" v-on:refreshData='getOrderDel' v-if="orderType == 7 || orderType == 5" :orderDetailData="orderDetailData" :order_no="order_no" :order_type="order_type" tip1="确认付款" tip2="取消订单" :showfooter="orderType" okTxt="未收到买方付款到账？"></common-footer>
   </div>
-   <common-loading v-else :show.sync='loadingVal' :mask="true"></common-loading>
+  <common-loading v-else :show.sync='loadingVal' :mask="true"></common-loading>
 </div>
 </template>
 <script>
@@ -303,9 +303,11 @@ export default {
     font-size: 26px;
     color: #C2C2C2;
     padding: 10px 0 34px;
-    span{
+    p {
+      padding-top: 10px;
       display: inline-block;
-      margin-bottom: 20px
+      height: 40px;
+      line-height: 40px;
     }
   }
 }

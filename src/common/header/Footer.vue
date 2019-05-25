@@ -7,7 +7,8 @@
     </div>
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 1">
-    <div class="foote clearfix">
+    <!-- 说暂时不使用 -->
+    <!-- <div class="foote clearfix">
       <p v-if="endCountdown == 0">
         发起申诉
         <count-down :endTime="rest_time"
@@ -17,12 +18,13 @@
         </count-down>
       </p>
       <p v-if="endCountdown == 1" @click="appeal()" class="borbtn">发起申诉</p>
-    </div>
+    </div> -->
   </div>
   <div v-else-if="(showfooter == 3 || showfooter == 7) && order_type == 2">
     <div class="foo clearfix">
       <p @click="submit2()">确认收款</p>
-      <p class="appbtn" v-if="endCountdown2 == 0">
+      <!-- 说暂时不使用 -->
+      <!-- <p class="appbtn" v-if="endCountdown2 == 0">
         发起申诉
         <count-down :endTime="rest_time"
           endText=""
@@ -30,7 +32,7 @@
           v-on:callbackEvent='oncallback'>
         </count-down>
       </p>
-      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p>
+      <p @click="appeal()" class="borbtn" v-if="endCountdown2 == 1">发起申诉</p> -->
     </div>
   </div>
   <div v-else>
@@ -48,6 +50,7 @@
     <p class="actBtn cancel" @click="cancelOrder(0)">继续交易</p>
   </van-popup>
   <common-loading :show.sync='loadingVal' :mask="true"></common-loading>
+  <dialog-box :show.sync='dialogBoxVal' :dialog-option="dialogOption" v-on:dialogboxevent='onDialogBox'></dialog-box>
 </div>
 </template>
 
@@ -55,11 +58,13 @@
 import { post } from '@/assets/js/fetch'
 import CountDown from 'common/time/CountDown'
 import CommonLoading from 'common/loading/Loading'
+import DialogBox from 'common/dialog/Dialog'
 export default {
   name: 'Footer',
   components: {
     CountDown,
-    CommonLoading
+    CommonLoading,
+    DialogBox
   },
   props: {
     okTxt: String,
@@ -76,7 +81,14 @@ export default {
       show: false,
       loadingVal: false,
       endCountdown: 0,
-      endCountdown2: 0
+      endCountdown2: 0,
+      dialogBoxVal: false, // 显示对话框
+      dialogOption: {
+        title: '提示',
+        text: '该笔订单己发起申诉，是否确认收款',
+        cancelButtonText: '取消',
+        confirmButtonText: '确认'
+      }
     }
   },
   methods: {
@@ -132,7 +144,7 @@ export default {
         })
     },
     // 确认收款
-    submit2 () {
+    submit3 () {
       this.loadingVal = true
       var data = {
         token: sessionStorage.getItem('randomcode'),
@@ -147,9 +159,36 @@ export default {
         .catch(e => {
           this.loadingVal = false
           console.log(e)
-          console.log('网络错误3')
+          console.log('网络错误3.1')
           this.$toast(e.msg)
         })
+    },
+    // 检测是否申诉
+    submit2 () {
+      var data = {
+        token: sessionStorage.getItem('randomcode'),
+        order_no: this.order_no
+      }
+      let url = this.$api.order + '/api/Complain/checkComplain'
+      post(url, data)
+        .then(res => {
+          if (res.data.list) {
+            this.dialogBoxVal = true
+          } else {
+            this.submit3()
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          console.log('网络错误3.0')
+          this.$toast(e.msg)
+        })
+    },
+    onDialogBox (type) {
+      if (type) {
+        this.dialogBoxVal = false
+        this.submit3()
+      }
     },
     appeal () {
       if (this.order_type === 2) {

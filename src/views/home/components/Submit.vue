@@ -419,7 +419,7 @@ export default {
       font-size: 26px;
     }
     .blank {
-      height: 35px;
+      height: 25px;
     }
     .inputs {
       box-sizing: border-box;

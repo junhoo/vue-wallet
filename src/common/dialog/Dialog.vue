@@ -51,11 +51,11 @@ export default {
       this.$emit('update:show', false) // 触发 input 事件，并传入新值
     },
     submit () {
-      this.$emit('dialogboxEvent', true)
+      this.$emit('dialogboxevent', true)
     },
     cancel () {
       this.closeDiv()
-      this.$emit('dialogboxEvent', false)
+      this.$emit('dialogboxevent', false)
     }
   }
 }
@@ -124,7 +124,7 @@ export default {
         button {
           width: 180px;
           line-height: 70px;
-          background:#0078ff;
+          background:#4264FB;
           border-radius: 8px;
           color: #fff;
         }

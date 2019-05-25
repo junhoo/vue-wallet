@@ -161,12 +161,17 @@ export default {
     // console.log(sessionStorage.getItem(orderno))
     const isfinish = sessionStorage.getItem(orderno)
     const islogin = sessionStorage.getItem('randomcode')
-    if (isfinish !== '1' && islogin !== '' && islogin !== null) {
-      // console.log('======= keepwatch =======')
-      if (sessionStorage.getItem('errlogin') === '1') {
-        // none
-      } else {
-        this.fnloops()
+    if (localStorage.getItem('zdqx') === '1') {
+      // none
+      this.clearding()
+    } else {
+      if (isfinish !== '1' && islogin !== '' && islogin !== null) {
+        // console.log('======= keepwatch =======')
+        if (sessionStorage.getItem('errlogin') === '1') {
+          // none
+        } else {
+          this.fnloops()
+        }
       }
     }
   },
@@ -174,11 +179,19 @@ export default {
     // console.log('=== 1234')
     clearInterval(this.timerHeart)
     clearTimeout(this.timerConnect)
-    // this.timerHeart = null
-    // this.timerConnect = null
     clearInterval(this.loopOrder)
+    if (this.loopOrder) {
+      clearInterval(this.loopOrder)
+    }
   },
   methods: {
+    clearding () {
+      clearInterval(this.loopOrder)
+      if (this.loopOrder) {
+        clearInterval(this.loopOrder)
+      }
+    },
+
     fnloops () {
       this.loopOrder = setInterval(() => {
         this.loopCurOrder()
@@ -193,6 +206,19 @@ export default {
         .then(res => {
           const _list = res.data.list
           if (!_list) { return }
+
+          // 充值-取消
+          if (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 1) {
+            this.hasDetail = false
+            this.popupName = '被取消'
+            this.showPopup = true
+
+            this.clearding() // 清除
+            console.log('==== stop')
+            localStorage.setItem('zdqx', '1')
+            return
+          }
+          localStorage.setItem('zdqx', '0')
 
           // 倒计时
           let countTimed = parseInt(_list.rest_time)
@@ -223,6 +249,7 @@ export default {
             this.order_no = _list.order_no
             this.order_type = _list.order_type
             this.showMatching = true
+            this.hasDetail = false
             return
           }
 
@@ -260,6 +287,7 @@ export default {
             this.showTopHint(e.msg)
           }
           clearInterval(this.loopOrder)
+          this.loopOrder = null
         })
     },
 
@@ -298,6 +326,7 @@ export default {
 
           if (_list.a_status_str.includes('交易完成')) {
             clearInterval(this.loopOrder)
+            this.loopOrder = null
           }
 
           const orderno = _list.order_no
@@ -308,7 +337,7 @@ export default {
             this.popupName = '交易完成'
             this.popupMoney = _list.order_amount
             this.showPopup = true
-            sessionStorage.setItem(orderno, '1')
+            sessionStorage.setItem(orderno, '1') // 设置已完成
           }
           const mock = { data: _list }
           const pools = ['匹配中', '匹配成功', '重新匹配成功', '未到账']
@@ -353,6 +382,7 @@ export default {
             sessionStorage.setItem('randomcode', '')
             this.showTopHint(res.msg)
           }
+          sessionStorage.setItem('errlogin', '0')
         })
         .catch(e => {
           console.log('autoLogin')
@@ -403,7 +433,9 @@ export default {
     },
 
     cancelOrder () {
-      console.log('home: 去取消订单')
+      if (this.loopOrder) {
+        clearInterval(this.loopOrder)
+      }
       this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
@@ -1000,7 +1032,7 @@ main {
       transform: translateX(-50%);
       width: 445px;
       height: 445px;
-      background: url('~imgurl/match_1.png') no-repeat;
+      background: url('~imgurl/wait_show.gif') no-repeat;
       background-size: 445px 445px;
       // background: url('~imgurl/ppppp.png') no-repeat;
       // animation: spin steps(36, end) 5s infinite;
@@ -1066,10 +1098,10 @@ main {
   opacity: 0;
 }
 .fade-enter-active {
-  transition: opacity .5s;
+  transition: opacity .65s;
 }
 .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity .65s;
 }
 </style>
 
