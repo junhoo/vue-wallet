@@ -1,16 +1,17 @@
 import CryptoJS from '@/assets/js/aes.js'
 
-// 加密密钥16位
-const key = '37962202945339491692654053117998'
-// 加密向量16位
-const iv = '0798736492443041'
+const key = '5333836321762353' // 加密密钥16位
+const iv = '0798736492443041' // 加密向量16位
+// const key = '123456'
+// const iv = '0798736492443041111111'
+
 export function encrypt (data) {
   const _key = CryptoJS.enc.Utf8.parse(key)
-  console.log('_key')
-  console.log(_key)
+  // console.log('_key')
+  // console.log(_key)
   const _iv = CryptoJS.enc.Utf8.parse(iv)
-  console.log('_iv')
-  console.log(_iv)
+  // console.log('_iv')
+  // console.log(_iv)
   const _obj = {
     iv: _iv,
     mode: CryptoJS.mode.CBC,

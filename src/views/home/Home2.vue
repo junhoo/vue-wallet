@@ -205,7 +205,10 @@ export default {
       post(url, data)
         .then(res => {
           const _list = res.data.list
-          if (!_list) { return }
+          if (!_list) {
+            this.clearding()
+            return
+          }
 
           // 充值-取消
           if (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 1) {
@@ -355,8 +358,12 @@ export default {
 
     testAes () {
       console.log('home: === xxx')
-      const addstring = '6666666'
-      const encode = encrypt(addstring)
+      let addstring = '6666666'
+      var str = {
+        aaa: '878787'
+      }
+      const encode = encrypt(JSON.stringify(str))
+      // const encode = encrypt(addstring)
       const decode = decrypt(encode)
       console.log('home: === 原值' + addstring)
       console.log('home: === 加密' + encode)
