@@ -147,12 +147,12 @@ export default {
         line-height: 92px;
         padding-left: 48px;
         font-family: MicrosoftYaHei;
-        font-weight:400;
+        font-weight: 400;
         .boxs {
           display: flex;
           justify-content: space-between;
           padding-right: 67px;
-          border-bottom: 1px solid #E9E9E9;
+          border-bottom: 1px solid #e9e9e9;
           font-size: 28px;
           background: url('~imgurl/set_arrows.png') no-repeat right 28px center;
           background-size: 15px 25px;

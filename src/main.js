@@ -18,16 +18,15 @@ import 'vant/lib/tab/style'
 import 'vant/lib/tabs/style'
 
 const Vue = require('vue')
+
 Vue.use(Popup)
 Vue.use(RadioGroup)
 Vue.use(List)
 Vue.use(Loading)
 Vue.use(Toast)
 Vue.use(Step).use(Steps)
-
 Vue.use(Toast)
 Vue.use(VueBus)
-
 Vue.use(Tab)
 Vue.use(Tabs)
 
