@@ -455,6 +455,9 @@ export default {
       }
       let url = this.$api.order
       url += this.order_type === 1 ? '/api/order/cancelRechangeOrder' : '/api/order/cancelOrder'
+      if (sessionStorage.getItem('subval') === '2') {
+        url = this.$api.order + '/api/order/cancelOrder'
+      }
       post(url, data)
         .then(res => {
           if (res.data.list === true) {
