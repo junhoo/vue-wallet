@@ -112,6 +112,15 @@
         </div>
       </main>
       <footer>
+        <div v-show="ischange || firstUpload">
+          <button v-if="userCertifyMsg.status != 1" class="show-color" @click="submit(0)">提交审核</button>
+          <button v-else @click="submit(1)">开始使用</button>
+        </div>
+        <div v-show="!ischange && !firstUpload">
+          <button>提交审核</button>
+        </div>
+      </footer>
+      <footer v-if="0">
         <div v-show="hasData">
           <button v-if="userCertifyMsg.status != 1" :class="{'show-color': hasData}" @click="submit(0)">提交审核</button>
           <button v-else @click="submit(1)">开始使用</button>
@@ -160,9 +169,19 @@ export default {
       istrue3: true,
       userCertifyMsg: {},
       loadingVal: false
+      // ischange: false
     }
   },
   computed: {
+    ischange () {
+      if (!this.firstUpload) {
+        if (this.username === this.userCertifyMsg.name && this.userNo === this.userCertifyMsg.credentials_no && this.liActive === this.userCertifyMsg.credentials_type && this.cardUrl1 === '' && this.cardUrl2 === '' && this.cardUrl3 === '') {
+          return false
+        } else {
+          return true
+        }
+      }
+    },
     hasData () {
       if (this.hasInfo) { // 有数据
         // const _info = this.userCertifyMsg
@@ -310,35 +329,52 @@ export default {
         })
     },
     submit (index) {
-      this.loadingVal = true
       if (index === 1) {
         this.$router.go(-1)
         return false
       }
-      if (this.username === '') {
+      if (this.username === '' && this.firstUpload) {
         this.$toast('请填写真实姓名')
         return false
       }
-      if (this.userNo === '') {
+      if (this.userNo === '' && this.firstUpload) {
         this.$toast('请填写证件号码')
         return false
       }
-      if (this.liActive === 1 && this.userNo.length < 15) {
+      if (this.liActive === 1 && this.userNo.length < 15 && this.firstUpload) {
         this.$toast('请填写至少15位身份证号')
         return false
       }
-      if (this.cardUrl1 === '') {
+      if (this.cardUrl1 === '' && this.firstUpload) {
         this.$toast('请上传证件正面照')
         return false
       }
-      if (this.cardUrl2 === '') {
+      if (this.cardUrl2 === '' && this.firstUpload) {
         this.$toast('请上传证件背面照')
         return false
       }
-      if (this.cardUrl3 === '') {
+      if (this.cardUrl3 === '' && this.firstUpload) {
         this.$toast('请上传手持证件照')
         return false
       }
+      // 判断是否有修改
+      if (!this.firstUpload) {
+        // if (this.username === this.userCertifyMsg.name && this.userNo === this.userCertifyMsg.credentials_no && this.liActive === this.userCertifyMsg.credentials_type && this.cardUrl1 === '' && this.cardUrl2 === '' && this.cardUrl3 === '') {
+        //   this.$toast('请至少填写一项修改信息')
+        //   return false
+        // }
+        // 判断图片是否为空，为空就赋值为返回的值
+        if (this.cardUrl1 === '') {
+          this.cardUrl1 = this.userCertifyMsg.credentials_asurface
+        }
+        if (this.cardUrl2 === '') {
+          this.cardUrl2 = this.userCertifyMsg.credentials_bsurface
+        }
+        if (this.cardUrl3 === '') {
+          this.cardUrl3 = this.userCertifyMsg.hold_certificates
+        }
+      }
+      this.loadingVal = true
       const url = this.$api.user
       var url1 = '/api/Authentication/addAuthentication'
       if (!this.firstUpload) {
