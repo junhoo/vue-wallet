@@ -164,8 +164,6 @@ export default {
   },
   computed: {
     hasData () {
-      console.log('=== computed')
-      console.log(this.hasInfo)
       if (this.hasInfo) { // 有数据
         // const _info = this.userCertifyMsg
         // const pools = [this.username, this.userNo, _info.credentials_asurface, _info.credentials_bsurface, _info.hold_certificates]

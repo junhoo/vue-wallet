@@ -31,7 +31,7 @@
            </li>
            <li>
              <span class="m_left">实际到账</span>
-             <i class="m_right">{{orderDetailData.real_amount}}CNY</i>
+             <i class="m_right">{{Number(orderDetailData.real_amount).toFixed(2)}}CNY</i>
            </li>
            <li>
              <span class="m_left">下单时间</span>

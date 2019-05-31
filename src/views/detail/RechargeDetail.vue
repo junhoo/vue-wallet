@@ -19,7 +19,7 @@
              </li>
              <li>
                <span class="m_left">付款金额</span>
-               <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
+               <i class="m_right">{{orderDetailData.payCount}}CNY</i>
              </li>
              <li>
                <span class="m_left">充值积分</span>
@@ -224,11 +224,15 @@ export default {
       let url = this.$api.order + '/api/order/payDetail'
       post(url, data)
         .then(res => {
-          this.orderDetailData = res.data.list.order_detail
+          var _list = res.data.list
+          var listDetail = _list.order_detail
+          var rate = Number(listDetail.rate) * Number(listDetail.order_amount)
+          listDetail.payCount = (Number(listDetail.order_amount) - Number(rate)).toFixed(2)
+          this.orderDetailData = listDetail
           this.payway = this.orderDetailData.pay_type || 0
           this.orderType = this.orderDetailData.status || 0
           this.order_type = this.orderDetailData.order_type
-          this.pay_info = res.data.list.pay_type
+          this.pay_info = _list.pay_type
           this.rest_time2 = this.orderDetailData.rest_time
           this.rest_time = this.orderDetailData.apply_time
           this.loadingVal = false
