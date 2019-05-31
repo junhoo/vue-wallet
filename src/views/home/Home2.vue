@@ -131,7 +131,9 @@ export default {
       websocket: '',
       randomStr: '',
       saveMsg: {},
-      tests: '1558063270'
+      tests: '1558063270',
+      loopCount: 0,
+      loopTimed: 7500
     }
   },
   created () {
@@ -176,12 +178,12 @@ export default {
     }
   },
   beforeDestroy () {
-    // console.log('=== 1234')
     clearInterval(this.timerHeart)
     clearTimeout(this.timerConnect)
     clearInterval(this.loopOrder)
     if (this.loopOrder) {
       clearInterval(this.loopOrder)
+      this.loopCount = 0
     }
   },
   methods: {
@@ -189,13 +191,16 @@ export default {
       clearInterval(this.loopOrder)
       if (this.loopOrder) {
         clearInterval(this.loopOrder)
+        this.loopCount = 0
       }
     },
 
     fnloops () {
       this.loopOrder = setInterval(() => {
+        this.loopTimed = this.loopCount >= 2 ? 7500 : 3800
+        this.loopCount += 1
         this.loopCurOrder()
-      }, 8000)
+      }, this.loopTimed)
     },
 
     loopCurOrder () {
@@ -268,12 +273,12 @@ export default {
             this.hasDetail = false
             this.showPopup = true
             sessionStorage.setItem(orderno, '1')
+            this.loopCount = 0
           }
 
           // console.log(_list.a_status_str.includes('交易完成'))
           if (_list.a_status_str.includes('交易完成')) {
-            clearInterval(this.loopOrder)
-            this.loopOrder = null
+            this.clearding()
           }
 
           // 往下走
@@ -289,8 +294,7 @@ export default {
           } else {
             this.showTopHint(e.msg)
           }
-          clearInterval(this.loopOrder)
-          this.loopOrder = null
+          this.clearding()
         })
     },
 
@@ -440,9 +444,7 @@ export default {
     },
 
     cancelOrder () {
-      if (this.loopOrder) {
-        clearInterval(this.loopOrder)
-      }
+      this.clearding()
       this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
