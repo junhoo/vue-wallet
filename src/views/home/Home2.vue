@@ -122,7 +122,7 @@ export default {
       },
       order_no: '',
       rest_time: 0,
-      order_type: '1', // 1充值 2提现
+      order_type: 1, // 1充值 2提现
       existServer: false,
       timerHeart: null,
       timerPopup: null,
@@ -211,9 +211,11 @@ export default {
         .then(res => {
           const _list = res.data.list
           if (!_list) {
+            console.log('kkkkkkkkkk')
             this.clearding()
             return
           }
+          this.order_type = _list.order_type
 
           // 充值-取消
           if (_list.a_status_str === '自动取消' && parseInt(_list.order_type) === 1) {
@@ -444,13 +446,15 @@ export default {
     },
 
     cancelOrder () {
-      this.clearding()
+      clearInterval(this.loopOrder)
+      this.loopCount = 0
       this.loadingVal = true
       let data = {
         token: sessionStorage.getItem('randomcode'),
         order_no: this.order_no
       }
-      const url = this.$api.order + '/api/order/cancelRechangeOrder'
+      let url = this.$api.order
+      url += this.order_type === 1 ? '/api/order/cancelRechangeOrder' : '/api/order/cancelOrder'
       post(url, data)
         .then(res => {
           if (res.data.list === true) {

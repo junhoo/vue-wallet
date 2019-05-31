@@ -1,8 +1,8 @@
 const master = {
-  user: 'http://user.service.19zf.in',
-  order: 'http://order.service.19zf.in',
-  wallet: 'http://wallet.service.19zf.in',
-  socket: 'http://push.service.19zf.in/api/websocket/getUrl'
+  user: 'http://user.service.qmjtpl.com',
+  order: 'http://order.service.qmjtpl.com',
+  wallet: 'http://wallet.service.qmjtpl.com',
+  socket: 'http://push.service.qmjtpl.com/api/websocket/getUrl'
 }
 
 const dev = {
