@@ -19,7 +19,7 @@
            </li>
            <li>
              <span class="m_left">收款金额</span>
-             <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
+             <i class="m_right">{{Number(orderDetailData.real_amount).toFixed(2)}}CNY</i>
            </li>
            <li>
              <span class="m_left">提现积分</span>
