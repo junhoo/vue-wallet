@@ -19,7 +19,7 @@
              </li>
              <li>
                <span class="m_left">付款金额</span>
-               <i class="m_right">{{orderDetailData.payCount}}CNY</i>
+               <i class="m_right">{{orderDetailData.order_amount}}CNY</i>
              </li>
              <li>
                <span class="m_left">充值积分</span>

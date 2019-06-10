@@ -25,8 +25,7 @@
           </div>
         </li>
         <li>
-          <!-- <div class="boxs" @click="jumpIn(4)"> -->
-          <div class="boxs" @click="testAes()">
+          <div class="boxs" @click="jumpIn(4)">
             <span class="text-left">在线客服</span>
             <span class="text-right"></span>
           </div>
@@ -57,31 +56,6 @@ export default {
     this.userMsg = JSON.parse(sessionStorage.getItem('userMsg'))
   },
   methods: {
-    testAes () {
-      console.log('home: === xxx')
-      // let addstring = '6666666'
-      // const encode = encrypt(addstring)
-      const encode = encrypt('878787')
-      var str = {
-        aaa: encode
-      }
-      const decode = decrypt(encode)
-      console.log('home: === 原值 ' + JSON.stringify(str))
-      console.log('home: === 加密 ' + encode)
-      console.log('home: === 解密 ' + decode)
-      var url = this.$api.user + '/api/index/jiemi'
-      var data = str
-      console.log('post:')
-      console.log(data)
-      post(url, data)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(e => {
-          console.log(e)
-        })
-    },
-
     jumpIn (i) {
       if (i === 1) {
         this.$router.push({ path: '/setting/settingCertification' })
