@@ -6,15 +6,21 @@ const master = {
 }
 
 const dev = {
+  // hzczst测试
+  user: 'http://user.service.hzczst.com',
+  order: 'http://order.service.hzczst.com',
+  wallet: 'http://wallet.service.hzczst.com',
+  socket: 'http://push.service.hzczst.cn/api/websocket/getUrl'
+  // 168测试
   // user: 'http://user.service.168mi.cn',
   // order: 'http://order.service.168mi.cn',
   // wallet: 'http://wallet.service.168mi.cn',
   // socket: 'http://push.service.168mi.cn/api/websocket/getUrl'
   // 19线上:
-  user: 'http://user.service.19zf.in',
-  order: 'http://order.service.19zf.in',
-  wallet: 'http://wallet.service.19zf.in',
-  socket: 'http://push.service.19zf.in/api/websocket/getUrl'
+  // user: 'http://user.service.19zf.in',
+  // order: 'http://order.service.19zf.in',
+  // wallet: 'http://wallet.service.19zf.in',
+  // socket: 'http://push.service.19zf.in/api/websocket/getUrl'
   // qm线上
   // user: 'http://user.service.qmjtpl.com',
   // order: 'http://order.service.qmjtpl.com',

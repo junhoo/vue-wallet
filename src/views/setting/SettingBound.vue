@@ -119,7 +119,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { post } from '@/assets/js/fetch'
 import { compress, convertBase64UrlToBlob } from '@/assets/js/fileTools'
 // import DialogBox from 'common/dialog/Dialog'
@@ -241,9 +240,9 @@ export default {
     // event上传图片
     uploadFile (event) {
       let file = event.target.files[0]
-      console.log(file)
-      console.log(file.size)
-      console.log(file.size / 1024) // 518
+      // console.log(file)
+      // console.log(file.size)
+      // console.log(file.size / 1024) // 518
       if (!/image\/\w+/.test(file.type)) {
         this.showTopHint('请选择图片')
         return false
@@ -291,8 +290,9 @@ export default {
         url += '/api/Upload/uploadAliPayFile'
       }
 
-      post(url, param)
+      post(url, param, false)
         .then(res => {
+          console.log(res)
           const imgurl = res.data.list.url
           if (imgurl) {
             this.showMask = true
@@ -458,16 +458,11 @@ export default {
 
     getUserMsg () {
       const data = { token: sessionStorage.getItem('randomcode') }
-      let url = this.$api.user
-      axios.post(url + '/api/user/getUserInfo', data)
+      let url = this.$api.user + '/api/user/getUserInfo'
+      post(url, data)
         .then(res => {
-          res = res.data
-          if (res.code === 10000) {
-            sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
-            this.$router.go(-1)
-          } else {
-            this.showTopHint(res.msg)
-          }
+          sessionStorage.setItem('userMsg', JSON.stringify(res.data.list))
+          this.$router.go(-1)
         })
         .catch(e => {
           console.log(e)

@@ -305,7 +305,7 @@ export default {
       } else {
         url += '/api/Upload/uploadHMpassFile'
       }
-      post(url, param)
+      post(url, param, false)
         .then(res => {
           const imgurl = res.data.list.url
           if (res.code === 10000) {

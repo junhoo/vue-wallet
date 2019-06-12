@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { encrypt, decrypt } from '@/assets/js/secret.js'
 
 // axios.defaults.timeout = 5000;
 // axios.defaults.baseURL ='http://www.baidu.com'; //填写域名
@@ -68,11 +69,13 @@ import axios from 'axios'
 //     return Promise.resolve(err.response)
 // })
 
-export function post (url, data) {
+export function post (url, data, use = true) {
   return new Promise((resolve, reject) => {
-    axios.post(url, data)
+    const str = !use ? data : encodeURIComponent(encrypt(JSON.stringify(data)))
+    axios.post(url, str)
       .then(res => {
-        res = res.data
+        const decode = decrypt(res.data)
+        res = JSON.parse(decode)
         if (parseInt(res.code) === 10000) {
           resolve(res)
         } else {

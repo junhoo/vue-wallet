@@ -36,8 +36,6 @@
 </template>
 
 <script>
-import { post } from '@/assets/js/fetch'
-import { encrypt, decrypt } from '@/assets/js/secret.js'
 import CommonHeader from 'common/header/Header'
 export default {
   name: 'Setting2',
